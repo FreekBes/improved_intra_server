@@ -1,0 +1,8 @@
+nogit.php
+test.php
+db/*.json
+settings/*.json
+banners/*
+!banners/*.txt
+!banners/*.sh
+!banners/*.md
