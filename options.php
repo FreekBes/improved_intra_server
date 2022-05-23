@@ -75,6 +75,8 @@
 							<option value="pyxis">Pyxis</option>
 							<option value="vela">Vela</option>
 							<option disabled value="null">More coming eventually</option>
+							<!-- do not add color schemes here, instead add them to options.js to dynamically load available ones -->
+							<!-- old ones left in here for versions of the extension < 3.1.0 -->
 						</select>
 					</fieldset>
 					<fieldset>
