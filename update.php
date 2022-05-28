@@ -46,6 +46,7 @@
 		"S*expires_in",
 		"S*created_at",
 		"S*refresh_token",
+		"Sext_version",
 		"Stheme",
 		"Scolors",
 		"Bshow-custom-profiles",
@@ -68,6 +69,7 @@
 		null,
 		null,
 		null,
+		"unknown",
 		"system",
 		"default",
 		true,
@@ -177,6 +179,9 @@
 			unset($userSettings[$neverSave[$i]]);
 		}
 	}
+
+	// add server-set keys
+	$userSettings["timestamp"] = time();
 
 	// parse git username (can be gitplatform@username)
 	if (!empty($userSettings["link-github"])) {
