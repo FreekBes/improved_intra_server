@@ -147,10 +147,18 @@
 					</fieldset>
 				</section>
 				<section>
-					<h3>Campus specific</h3>
+					<h3>Codam specific</h3>
 					<fieldset>
 						<label for="codam-monit"><span>Replace Black Hole with Codam's Monitoring Progress</span><span>Show a user's progress towards Codam's Monitoring System in profile banners</span></label>
 						<input type="checkbox" value="true" id="codam-monit" name="codam-monit" checked />
+					</fieldset>
+					<fieldset>
+						<label for="codam-buildingtimes-public"><span>Share your buildingtime data with other Improved Intra users</span><span>Only applies if you share your buildingtimes with Improved Intra</span></label>
+						<input type="checkbox" value="true" id="codam-buildingtimes-public" name="codam-buildingtimes-public" />
+					</fieldset>
+					<fieldset>
+						<label for="codam-buildingtimes-chart"><span>Replace logtime chart with buildingtime chart</span><span>Replace the logtime data of the logtime chart with buildingtime (if available)</span></label>
+						<input type="checkbox" value="true" id="codam-buildingtimes-chart" name="codam-buildingtimes-chart" checked />
 					</fieldset>
 					<fieldset>
 						<label for="codam-auto-equip-coa-title"><span>Auto-equip coalition titles</span><span>Automatically equip your rank's Intra title when one is available</span></label>

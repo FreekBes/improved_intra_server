@@ -60,6 +60,8 @@
 		"Scustom-banner-pos",
 		"Slink-github",
 		"Bcodam-monit",
+		"Bcodam-buildingtimes-public",
+		"Bcodam-buildingtimes-chart",
 		"Bcodam-auto-equip-coa-title"
 	));
 	array_push($version_defaults, array(
@@ -83,6 +85,8 @@
 		"center-center",
 		"",
 		true,
+		false,
+		false,
 		false
 	));
 	$neverSave = array("access_token", "expires_in", "created_at", "refresh_token");

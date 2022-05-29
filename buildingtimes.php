@@ -40,8 +40,6 @@
 	}
 
 	// check if user is okay with sharing building times...
-	// TODO: enable
-	/*
 	$settings_file = "settings/" . $_GET["username"] . ".json";
 	if (!file_exists($settings_file)) {
 		http_response_code(403);
@@ -58,7 +56,6 @@
 		http_response_code(403);
 		respond("success", "Building times of user are private", new stdClass);
 	}
-	*/
 
 	$times_file = "db/buildingtimes/" . $_GET["username"] . ".json";
 	if (!file_exists($times_file)) {
