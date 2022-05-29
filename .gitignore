@@ -1,6 +1,7 @@
 nogit.php
 test.php
 db/*.json
+db/*/*.json
 settings/*.json
 banners/*
 !banners/*.txt
