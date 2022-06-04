@@ -26,6 +26,13 @@
 			cursor: pointer;
 			text-decoration: underline;
 		}
+		.info-box {
+			font-family: "Roboto Condensed", Helvetica, Verdana, Arial, sans-serif;
+			text-align: left;
+			font-weight: 300;
+			font-size: 1em;
+			padding: 0px 12px;
+		}
 	</style>
 </head>
 <body class="limitwidth">
@@ -116,6 +123,9 @@
 				</section>
 				<section>
 					<h3>Customize your profile</h3>
+					<div class="info-box">
+						<p>Everyone with the Improved Intra extension installed will be able to see the customizations you make here.</p>
+					</div>
 					<fieldset style="display: none;">
 						<label for="custom-banner-url"><span>Custom profile banner background</span><span>Override banner image with a custom one</span></label>
 						<input type="url" value="" id="custom-banner-url" name="custom-banner-url" placeholder="Leave empty to use default header" title="Leave empty to use default header" />
