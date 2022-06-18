@@ -47,4 +47,14 @@
 		}
 		return (null);
 	}
+
+	function is_valid_username($username) {
+		if ($username == "null" || $username == "undefined") {
+			return (false);
+		}
+		if (preg_match('/[^a-z\-]/', $username)) {
+			return (false);
+		}
+		return (true);
+	}
 ?>

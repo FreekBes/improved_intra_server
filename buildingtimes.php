@@ -14,13 +14,9 @@
 	}
 
 	// do some security checks before checking server files...
-	if ($_GET["username"] == "null" || $_GET["username"] == "undefined") {
+	if (!is_valid_username($_GET["username"])) {
 		http_response_code(403);
 		respond("warning", "Invalid username");
-	}
-	if (preg_match('/[^a-z\-]/', $_GET["username"])) {
-		http_response_code(406);
-		respond("warning", "Invalid characters in username");
 	}
 
 	// check if user is okay with sharing building times...
