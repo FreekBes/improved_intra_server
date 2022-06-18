@@ -7,8 +7,8 @@
 	header("Cache-Control: post-check=0, pre-check=0", false);
 	header("Pragma: no-cache");
 
-	// set respond function
-	function respond($type, $msg, $data = null) {
+	// set custom respond function, only for this page
+	function respond_auth($type, $msg, $data = null) {
 ?>
 <!DOCTYPE html>
 <html>
@@ -126,14 +126,14 @@
 	}
 
 	// include authorization methods
-	require_once("auth.php");
+	require_once("include/auth.php");
 
 	// check code
 	if (isset($_GET["code"]) && !empty($_GET["code"])) {
 		$res = exchange($_GET["code"], "authorization_code");
 		if (empty($res)) {
 			http_response_code(503);
-			respond("error", "Could not exchange Intra authorization code for access token: service unavailable");
+			respond_auth("error", "Could not exchange Intra authorization code for access token: service unavailable");
 		}
 		else {
 			if (isset($res["auth"]["error"])) {
@@ -152,17 +152,17 @@
 						http_response_code(500);
 						break;
 				}
-				respond("error", $res["auth"]["error"], $res);
+				respond_auth("error", $res["auth"]["error"], $res);
 			}
 			else {
 				http_response_code(200);
-				respond("success", "Access code retrieved", $res);
+				respond_auth("success", "Access code retrieved", $res);
 			}
 		}
 	}
 	else {
 		http_response_code(302);
 		header("Location: ".get_auth_page_url());
-		respond("redirect", "Redirecting to authorization page... See Location field in header for URL");
+		respond_auth("redirect", "Redirecting to authorization page... See Location field in header for URL");
 	}
 ?>

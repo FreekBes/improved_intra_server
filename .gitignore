@@ -1,3 +1,4 @@
+include/nogit.php
 nogit.php
 test.php
 db/*.json

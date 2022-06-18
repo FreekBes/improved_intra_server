@@ -1,23 +1,7 @@
 <?php
+	require_once("include/respond.php");
+
 	@session_start();
-
-	// set headers
-	header('Content-Type: application/json; charset=utf-8');
-	header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
-	header("Cache-Control: post-check=0, pre-check=0", false);
-	header("Pragma: no-cache");
-
-	// set respond function
-	function respond($type = "success", $msg, $data = null) {
-		$res = array();
-		$res["type"] = $type;
-		$res["message"] = $msg;
-		if (!empty($data)) {
-			$res["data"] = $data;
-		}
-		echo json_encode($res, JSON_UNESCAPED_UNICODE|JSON_PRETTY_PRINT);
-		die();
-	}
 
 	// redirect to delete.php if sync == false, this request is probably a misdirected one then
 	if (isset($_POST["sync"]) && $_POST["sync"] === "false" || $_POST["sync"] === 0) {
@@ -27,10 +11,10 @@
 	}
 
 	// include authorization methods
-	require_once("auth.php");
+	require_once("include/auth.php");
 
 	// include parsing methods
-	require_once("parsing.php");
+	require_once("include/parsing.php");
 
 	// set expected values per settings version (starts at version 1)
 	// values start with an identifier: S for string, B for boolean, N for number (integer)
@@ -166,6 +150,7 @@
 	}
 
 	// check if username matches the one found using the access token provided...
+	// line below is commented out since front-end of extension handles access token refreshing (by calling testkey.php)
 	// refresh_access_token_if_needed($userSettings["refresh_token"], intval($userSettings["created_at"]), intval($userSettings["expires_in"]));
 	$userInfoFromIntra = get_user_info($userSettings["access_token"]);
 	if ($userSettings["username"] != $userInfoFromIntra["login"]) {

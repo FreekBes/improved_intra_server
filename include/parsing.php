@@ -1,4 +1,30 @@
 <?php
+	function delete_old_user_banner($username) {
+		foreach (glob("banners/".$username."*.*") as $filename) {
+			if (exif_imagetype($filename) !== false) {
+				unlink($filename);
+			}
+		}
+	}
+
+	function get_image_ext($path, $mime = null) {
+		if (!$mime) {
+			$mime = exif_imagetype($path);
+		}
+		switch ($mime) {
+			case IMAGETYPE_GIF:
+				return ("gif");
+			case IMAGETYPE_JPEG:
+				return ("jpeg");
+			case IMAGETYPE_PNG:
+				return ("png");
+			case IMAGETYPE_WEBP:
+				return ("webp");
+			default:
+				return (false);
+		}
+	}
+
 	function parse_custom_banner_url(&$userSettings) {
 		if (empty($userSettings["custom-banner-url"])) {
 			delete_old_user_banner($userSettings["username"]);

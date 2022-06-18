@@ -1,6 +1,6 @@
 <?php
 	// include non-git variables
-	require_once("nogit.php");
+	require_once("api.php");
 
 	// setup session
 	@session_start();
@@ -54,14 +54,9 @@
 		}
 	}
 
-	function access_token_expired($createdAt, $expiresIn) {
-		$currentTimestamp = time();
-		return ($createdAt + $expiresIn >= $currentTimestamp - 7200);
-	}
-
 	// refresh access token if it expires within two hours
 	function refresh_access_token_if_needed($refreshToken, $createdAt, $expiresIn) {
-		if (access_token_expired($createdAt, $expiresIn)) {
+		if (token_expired($createdAt, $expiresIn)) {
 			return (exchange($refreshToken, "refresh_token"));
 		}
 		else {
@@ -120,6 +115,7 @@
 		curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($postData));
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 		$response = curl_exec($ch);
+
 		if ($response !== false) {
 			try {
 				$ret = array();
@@ -146,31 +142,5 @@
 		global $clientID, $clientSecret, $redirectURL, $scopes;
 
 		return ("https://api.intra.42.fr/oauth/authorize?client_id=".$clientID."&redirect_uri=".urlencode($redirectURL)."&response_type=code&scope=".implode("%20", $scopes)."&state=".$_SESSION["state"]);
-	}
-
-	function delete_old_user_banner($username) {
-		foreach (glob("banners/".$username."*.*") as $filename) {
-			if (exif_imagetype($filename) !== false) {
-				unlink($filename);
-			}
-		}
-	}
-
-	function get_image_ext($path, $mime = null) {
-		if (!$mime) {
-			$mime = exif_imagetype($path);
-		}
-		switch ($mime) {
-			case IMAGETYPE_GIF:
-				return ("gif");
-			case IMAGETYPE_JPEG:
-				return ("jpeg");
-			case IMAGETYPE_PNG:
-				return ("png");
-			case IMAGETYPE_WEBP:
-				return ("webp");
-			default:
-				return (false);
-		}
 	}
 ?>

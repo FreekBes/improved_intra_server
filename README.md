@@ -10,7 +10,7 @@ The extension only talks directly with the [https://darkintra.freekb.es](https:/
 ### Actual setup
 Set up a web server to use PHP. This script was written with PHP 7.3 in mind, so I suggest you also install this version or later. Also, make sure to allow all origins from requests (CORS) (e.g. by adding an Apache rule: `Header set Access-Control-Allow-Origin "*"`)
 
-Fill in the required details in the file *nogit.php.example* and rename it to *nogit.php*.
+Fill in the required details in the file *include/nogit.php.example* and rename it to *include/nogit.php*.
 
 Next, make sure to not allow access to any file in the *db* folder, as this folder is intended for internal use by the back-end code only. It contains trival information of the users connecting to your server, such as access tokens and more. Therefore, again, make sure this entire folder is *completely inaccessible* to the outside world.
 

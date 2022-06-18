@@ -1,23 +1,10 @@
 <?php
+	require_once("include/respond.php");
+
 	@session_start();
 
-	// set headers
-	header('Content-Type: application/json; charset=utf-8');
-	header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
-	header("Cache-Control: post-check=0, pre-check=0", false);
-	header("Pragma: no-cache");
-
-	// set respond function
-	function respond($type = "success", $msg) {
-		$data = array();
-		$data["type"] = $type;
-		$data["message"] = $msg;
-		echo json_encode($data, JSON_UNESCAPED_UNICODE|JSON_PRETTY_PRINT);
-		die();
-	}
-
 	// include authorization methods
-	require_once("auth.php");
+	require_once("include/auth.php");
 
 	// trim entire post array
 	$_POST = array_map("trim", $_POST);
@@ -40,6 +27,7 @@
 		}
 
 		// check if username matches the one found using the access token provided...
+		// line below is commented out since front-end of extension handles access token refreshing (by calling testkey.php)
 		// refresh_access_token_if_needed($userSettings["refresh_token"], intval($userSettings["created_at"]), intval($userSettings["expires_in"]));
 		$userInfoFromIntra = get_user_info($userSettings["access_token"]);
 		if ($userSettings["username"] != $userInfoFromIntra["login"]) {
