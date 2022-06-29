@@ -21,58 +21,41 @@
 	// values with a * are required
 	$client_version = 0;
 	$latest_version = 1;
-	$version_specifics = array(null);
-	$version_defaults = array(null);
-	array_push($version_specifics, array(
-		"S*access_token",
-		"S*username",
-		"B*sync",
-		"S*expires_in",
-		"S*created_at",
-		"S*refresh_token",
-		"Sext_version",
-		"Stheme",
-		"Scolors",
-		"Bshow-custom-profiles",
-		"Bhide-broadcasts",
-		"Blogsum-month",
-		"Blogsum-week",
-		"Bhide-goals",
-		"Bold-blackhole",
-		"Bclustermap",
-		"Scustom-banner-url",
-		"Scustom-banner-pos",
-		"Slink-github",
-		"Bcodam-monit",
-		"Bcodam-buildingtimes-public",
-		"Bcodam-buildingtimes-chart",
-		"Bcodam-auto-equip-coa-title"
+	$version_settings = array(null);
+	array_push($version_settings, array(
+		"S*access_token" => null,
+		"S*username" => null,
+		"B*sync" => true,
+		"S*expires_in" => null,
+		"S*created_at" => null,
+		"S*refresh_token" => null,
+		"Sext_version" => "unknown",
+		"Stheme" => "system",
+		"Scolors" => "default",
+		"Bshow-custom-profiles" => true,
+		"Bhide-broadcasts" => false,
+		"Blogsum-month" => true,
+		"Blogsum-week" => true,
+		"Bhide-goals" => false,
+		"Bholygraph-morecursuses" => false,
+		"Bold-blackhole" => false,
+		"Bclustermap" => true,
+		"Scustom-banner-url" => "",
+		"Scustom-banner-pos" => "center-center",
+		"Slink-github" => "",
+		"Bcodam-monit" => true,
+		"Bcodam-buildingtimes-public" => false,
+		"Bcodam-buildingtimes-chart" => false,
+		"Bcodam-auto-equip-coa-title" => false
 	));
-	array_push($version_defaults, array(
-		null,
-		null,
-		true,
-		null,
-		null,
-		null,
-		"unknown",
-		"system",
-		"default",
-		true,
-		false,
-		true,
-		true,
-		false,
-		false,
-		true,
-		"",
-		"center-center",
-		"",
-		true,
-		false,
-		false,
-		false
-	));
+	$version_specifics = $version_settings;
+	foreach ($version_specifics as &$version_data) {
+		$version_data = array_keys($version_data);
+	}
+	$version_defaults = $version_settings;
+	foreach ($version_defaults as &$version_data) {
+		$version_data = array_values($version_data);
+	}
 	$neverSave = array("access_token", "expires_in", "created_at", "refresh_token");
 
 	// check client settings version
