@@ -112,7 +112,7 @@
 		<h1>An error occurred</h1>
 		<p>An error occurred while authorizing with your Intranet 42 account.</p>
 		<details>
-			<summary><?php echo $data["auth"]["error_description"]; ?></summary>
+			<summary><?php echo (!empty($data["auth"]) ? $data["auth"]["error_description"] : $msg); ?></summary>
 			<code><?php echo json_encode($data, JSON_UNESCAPED_UNICODE|JSON_PRETTY_PRINT); ?></code>
 		</details>
 <?php
