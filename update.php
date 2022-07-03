@@ -50,10 +50,16 @@
 	));
 	$version_specifics = $version_settings;
 	foreach ($version_specifics as &$version_data) {
+		if (empty($version_data)) {
+			continue;
+		}
 		$version_data = array_keys($version_data);
 	}
 	$version_defaults = $version_settings;
 	foreach ($version_defaults as &$version_data) {
+		if (empty($version_data)) {
+			continue;
+		}
 		$version_data = array_values($version_data);
 	}
 	$neverSave = array("access_token", "expires_in", "created_at", "refresh_token");
