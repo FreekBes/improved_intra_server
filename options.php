@@ -136,7 +136,7 @@
 					</fieldset>
 					<div id="custom-header-preview" style="display: none;">
 						<figure>
-							<img id="current-custom-banner" src="https://i.imgur.com/2dxaFs9.jpeg" />
+							<img id="current-custom-banner" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" />
 							<figcaption>Current custom header image</figcaption>
 						</figure>
 						<div class="options-buttons">
