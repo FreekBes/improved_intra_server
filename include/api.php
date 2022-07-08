@@ -52,7 +52,7 @@
 		if ($username == "null" || $username == "undefined") {
 			return (false);
 		}
-		if (preg_match('/[^a-z\-]/', $username)) {
+		if (preg_match('/[^a-z0-9\-]/', $username)) {
 			return (false);
 		}
 		return (true);
