@@ -33,6 +33,8 @@
 		curl_setopt($ch, CURLOPT_URL,"https://api.intra.42.fr/v2/me");
 		curl_setopt($ch, CURLOPT_HTTPHEADER, array( "Content-Type: application/json" , "Authorization: Bearer ".$accessToken ));
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
+		curl_setopt($ch, CURLOPT_TIMEOUT, 10);
 		$response = curl_exec($ch);
 		if ($response !== false) {
 			try {
@@ -114,6 +116,8 @@
 		curl_setopt($ch, CURLOPT_POST, true);
 		curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($postData));
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
+		curl_setopt($ch, CURLOPT_TIMEOUT, 10);
 		$response = curl_exec($ch);
 
 		if ($response !== false) {
@@ -134,6 +138,9 @@
 			}
 		}
 		else {
+			if (curl_errno($ch)) {
+				header("Debug-Curl-Error: " . curl_error($ch));
+			}
 			return (null);
 		}
 	}
