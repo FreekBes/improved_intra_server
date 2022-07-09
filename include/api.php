@@ -2,7 +2,8 @@
 	require_once("nogit.php");
 
 	// obtain shared memory space
-	$shm = shm_attach(43);
+	// temporarily disabled
+	// $shm = shm_attach(43);
 
 	function token_expired($createdAt, $expiresIn) {
 		// 7200 seconds less: say it expired 2 hours in advance.
@@ -12,6 +13,8 @@
 
 	function get_client_token() {
 		global $shm, $clientID, $clientSecret;
+
+		return (null); // TODO do not use shm
 
 		if (shm_has_var($shm, 0x01)) {
 			$full_auth = json_decode(unserialize(shm_get_var($shm, 0x01)), true);
