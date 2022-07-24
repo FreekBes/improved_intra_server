@@ -307,7 +307,8 @@
 				$lastFetchTime = @filemtime($fileName);
 				$earlierFetched = json_decode(file_get_contents($fileName), true);
 			}
-			echo "Fetching changes since " . date($dateFormat, $lastFetchTime) . "\n";
+			echo "Fetching changes in projects_users since " . date($dateFormat, $lastFetchTime) . "\n";
+			echo "It is now " . date($dateFormat) . "\n";
 			$startTime = time() - 1;
 			$outstandings = get_outstandings($login, $userID, $earlierFetched, $lastFetchTime);
 			if (!file_put_contents($fileName, json_encode($outstandings, JSON_UNESCAPED_UNICODE))) {
