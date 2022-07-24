@@ -109,6 +109,10 @@
 						<label for="logsum-week"><span>Show cumulative logtimes per week</span><span>When hovering over the logtimes chart, show user's cumulative hours per week</span></label>
 						<input type="checkbox" value="true" id="logsum-week" name="logsum-week" checked />
 					</fieldset>
+					<fieldset>
+						<label for="holygraph-morecursuses"><span>Show more cursuses in the Holy Graph</span><span>Allow selection of additional cursuses in the Holy Graph viewer</span></label>
+						<input type="checkbox" value="true" id="holygraph-morecursuses" name="holygraph-morecursuses" />
+					</fieldset>
 				</section>
 				<section>
 					<h3>Black Hole</h3>
@@ -132,7 +136,7 @@
 					</fieldset>
 					<div id="custom-header-preview" style="display: none;">
 						<figure>
-							<img id="current-custom-banner" src="https://i.imgur.com/2dxaFs9.jpeg" />
+							<img id="current-custom-banner" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" />
 							<figcaption>Current custom header image</figcaption>
 						</figure>
 						<div class="options-buttons">

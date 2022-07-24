@@ -2,7 +2,8 @@
 	require_once("nogit.php");
 
 	// obtain shared memory space
-	$shm = shm_attach(43);
+	// temporarily disabled
+	// $shm = shm_attach(43);
 
 	function token_expired($createdAt, $expiresIn) {
 		// 7200 seconds less: say it expired 2 hours in advance.
@@ -12,6 +13,8 @@
 
 	function get_client_token() {
 		global $shm, $clientID, $clientSecret;
+
+		return (null); // TODO do not use shm
 
 		if (shm_has_var($shm, 0x01)) {
 			$full_auth = json_decode(unserialize(shm_get_var($shm, 0x01)), true);
@@ -30,6 +33,8 @@
 		curl_setopt($ch, CURLOPT_POST, true);
 		curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($postData));
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
+		curl_setopt($ch, CURLOPT_TIMEOUT, 10);
 		$response = curl_exec($ch);
 
 		if ($response !== false) {
@@ -52,7 +57,7 @@
 		if ($username == "null" || $username == "undefined") {
 			return (false);
 		}
-		if (preg_match('/[^a-z\-]/', $username)) {
+		if (preg_match('/[^a-z0-9\-]/', $username)) {
 			return (false);
 		}
 		return (true);
