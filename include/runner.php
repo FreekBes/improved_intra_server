@@ -3,6 +3,8 @@
 	// This is not the best solution. Some day I will upgrade it to something better.
 	// It is also horrible code. One day! One day it will be better. Todo?
 
+	chdir(dirname(__FILE__));
+
 	require_once("cli.php");
 	if (!is_cli()) {
 		http_response_code(403);
