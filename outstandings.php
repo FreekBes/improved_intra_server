@@ -34,6 +34,6 @@
 	}
 
 	http_response_code(200);
-	header("Last-Modified: " . date("D, d M Y H:m:s", filemtime($fileName)) . " GMT");
+	header("Last-Modified: " . date("D, d M Y H:i:s", filemtime($fileName)) . " GMT");
 	respond("success", "Outstandings for user, per projectsUser", $outstandings);
 ?>
