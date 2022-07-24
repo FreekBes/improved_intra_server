@@ -18,11 +18,29 @@
 	}
 
 	$dateFormat = "Y-m-d\TH:i:s.000\Z";
+	$start = time();
+	$userAmount = 0;
+	$teamAmount = 0;
+	$evalAmount = 0;
+
+	function exit_hook() {
+		global $start, $userAmount, $teamAmount, $evalAmount;
+		$date1 = new DateTime();
+		$date2 = new DateTime();
+		$date1->setTimestamp($start);
+		$date2->setTimestamp(time());
+		$interval = date_diff($date1, $date2);
+		echo "\nAll done! Processed $userAmount users, $teamAmount teams and $evalAmount evals in " . $interval->format('%h hours and %m minutes') . ".\n";
+		exit();
+	}
+	register_shutdown_function('exit_hook');
+	declare(ticks = 1);
+	pcntl_signal(SIGINT, 'exit_hook');
 
 	// returns an object containing all teamIDs per projectUser
 	// createdSince can be a timestamp to only return teamIDs created after this timestamp
 	function get_team_ids($userName, $userID, $createdSince = 0) {
-		global $tokens, $dateFormat;
+		global $tokens, $dateFormat, $teamAmount;
 
 		$teamIDs = array();
 		$cacheFile = "../db/teamids/$userName.json";
@@ -85,6 +103,7 @@
 					$xPage = intval($headers["x-page"]);
 					$xPerPage = intval($headers["x-per-page"]);
 					$itemsFetched = min($xPerPage * $xPage, $xTotal);
+					$teamAmount += $itemsFetched;
 					echo "$userName: teamID fetching: gathered $itemsFetched of $xTotal \n";
 					if ($itemsFetched >= $xTotal) {
 						break; // we have! quit the infinite loop
@@ -122,7 +141,7 @@
 
 	// $lastCheck is a timestamp of the last check
 	function get_outstandings($userName, $userID, $earlierFetched, $lastCheck = 0) {
-		global $tokens, $dateFormat;
+		global $tokens, $dateFormat, $evalAmount;
 
 		$teamIDs = get_team_ids($userName, $userID, $lastCheck);
 		$projectsUserIDs = array_keys($teamIDs);
@@ -225,6 +244,7 @@
 						$xPage = intval($headers["x-page"]);
 						$xPerPage = intval($headers["x-per-page"]);
 						$itemsFetched = min($xPerPage * $xPage, $xTotal);
+						$evalAmount += $itemsFetched;
 						echo "$userName: outstanding flags: processed $itemsFetched of $xTotal \n";
 						if ($itemsFetched >= $xTotal) {
 							break; // we have! quit the infinite loop
@@ -282,7 +302,8 @@
 		echo "No user settings files found\n";
 		die();
 	}
-	$amount = count($userFiles);
+	$totalUsers = count($userFiles);
+	echo "Starting run at " . date($dateFormat, $start);
 
 	foreach ($userFiles as $i=>$userFile) {
 		$login = pathinfo($userFile, PATHINFO_FILENAME);
@@ -299,7 +320,7 @@
 			echo "User $login not found on Intra\n";
 		}
 		else {
-			echo "Fetching outstandings for $login ($userID) --- ".($i+1)." of $amount users...\n";
+			echo "Fetching outstandings for $login ($userID) --- ".($i+1)." of $totalUsers users...\n";
 			$fileName = "../db/outstandings/$login.json";
 			$lastFetchTime = 0;
 			$earlierFetched = array();
@@ -316,6 +337,10 @@
 			}
 			touch($fileName, $startTime - 1); // modify the file write time to the time we started fetching (-1 second to accomodate for ms)
 			echo "\n";
+			$userAmount++;
 		}
 	}
+
+	// calculate stats
+	register_shutdown_function()
 ?>
