@@ -17,16 +17,27 @@
 		$tokens = get_client_tokens(); // TODO: replace with actual renewal
 	}
 
+	$dateFormat = "Y-m-d\TH:i:s.000\Z";
+
 	// returns an object containing all teamIDs per projectUser
-	function get_team_ids($userName, $userID) {
-		global $tokens;
+	// createdSince can be a timestamp to only return teamIDs created after this timestamp
+	function get_team_ids($userName, $userID, $createdSince = 0) {
+		global $tokens, $dateFormat;
 
 		$teamIDs = array();
-		$page = 1;
+		$cacheFile = "../db/teamids/$userName.json";
+
+		// read from cache
+		if (file_exists($cacheFile)) {
+			$teamIDs = json_decode(file_get_contents($cacheFile), true);
+		}
+
 		$ch = curl_init();
-		while (true) { // infinitely loop until all evaluations are fetched
+		$page = 1;
+		$filters = "range[updated_at]=".date($dateFormat, $createdSince).",".date($dateFormat);
+		while (true) { // infinitely loop until all teamIDs are fetched
 			$headers = array();
-			curl_setopt($ch, CURLOPT_URL,"https://api.intra.42.fr/v2/users/".strval($userID)."/projects_users?filter[status]=finished&page[size]=100&page[number]=".$page);
+			curl_setopt($ch, CURLOPT_URL,"https://api.intra.42.fr/v2/users/".strval($userID)."/projects_users?".$filters."&page[size]=100&page[number]=".$page);
 			curl_setopt($ch, CURLOPT_HTTPHEADER, array( "Content-Type: application/json" , "Authorization: Bearer ".$tokens["access_token"] ));
 			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 			curl_setopt($ch, CURLOPT_HEADERFUNCTION, function($ch, $header) use(&$headers) {
@@ -79,7 +90,6 @@
 						break; // we have! quit the infinite loop
 					}
 					$page++;
-					sleep(1); // sleep to prevent 429
 				}
 				else if ($info['http_code'] == 429) {
 					// sleep the requested time to prevent more 429 errors, then try again
@@ -106,14 +116,15 @@
 			}
 		}
 		curl_close($ch);
+		file_put_contents($cacheFile, json_encode($teamIDs, JSON_UNESCAPED_UNICODE)); // cache
 		return ($teamIDs);
 	}
 
-	function get_outstandings($userName, $userID) {
-		global $tokens;
+	// $lastCheck is a timestamp of the last check
+	function get_outstandings($userName, $userID, $earlierFetched, $lastCheck = 0) {
+		global $tokens, $dateFormat;
 
-		$retrieveFromTeamIDs = array();
-		$teamIDs = get_team_ids($userName, $userID);
+		$teamIDs = get_team_ids($userName, $userID, $lastCheck);
 		$projectsUserIDs = array_keys($teamIDs);
 		if ($teamIDs === false) {
 			echo "$userName: error fetching teamIDs\n";
@@ -132,16 +143,33 @@
 			$projectsUser["best"] = 0; // init outstandings amount for best team
 			$teamAmount = count($projectsUser["all"]);
 			for ($i = 0; $i < $teamAmount; $i++) {
-				array_push($retrieveFromTeamIDs, $projectsUser["all"][$i]); // add this teamID to list of teamIDs to retrieve the mark from
 				$projectsUser["all"][$i] = 0; // init outstandings amount for one of user's teams
+			}
+		}
+
+		// overwrite outstanding amounts with earlier fetched data where possible
+		if (!empty($earlierFetched)) {
+			foreach ($earlierFetched as $key=>$projectsUser) {
+				if (!isset($outstandings[$key])) {
+					$outstandings[$key] = array();
+					$outstandings[$key]["all"] = array();
+				}
+				$outstandings[$key]["current"] = $earlierFetched[$key]["current"];
+				$outstandings[$key]["best"] = $earlierFetched[$key]["best"];
+				$teamAmount = count($projectsUser["all"]);
+				for ($i = 0; $i < $teamAmount; $i++) {
+					$outstandings[$key]["all"][$i] = $earlierFetched[$key]["all"][$i];
+				}
 			}
 		}
 
 		$ch = curl_init();
 		$page = 1;
+		// flag_id 9 is the outstanding mark
+		$filters = "filter[flag_id]=9".(!empty($lastCheck) ? "&range[updated_at]=".date($dateFormat, $lastCheck).",".date($dateFormat) : "");
 		while (true) { // infinitely loop until all evaluations are fetched
 			$headers = array();
-			curl_setopt($ch, CURLOPT_URL,"https://api.intra.42.fr/v2/users/".strval($userID)."/scale_teams/as_corrected?page[size]=100&page[number]=".$page);
+			curl_setopt($ch, CURLOPT_URL,"https://api.intra.42.fr/v2/users/".strval($userID)."/scale_teams/as_corrected?".$filters."&page[size]=100&page[number]=".$page);
 			curl_setopt($ch, CURLOPT_HTTPHEADER, array( "Content-Type: application/json" , "Authorization: Bearer ".$tokens["access_token"] ));
 			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 			curl_setopt($ch, CURLOPT_HEADERFUNCTION, function($ch, $header) use(&$headers) {
@@ -229,9 +257,6 @@
 				echo "$userName: curl error: " . curl_error($ch) . "\n";
 				return (false);
 			}
-
-			// sleep to prevent 429
-			sleep(1);
 		}
 		curl_close($ch);
 		echo "$userName: done!\n";
@@ -272,14 +297,21 @@
 		}
 		else {
 			echo "Fetching outstandings for $login ($userID) --- ".($i+1)." of $amount users...\n";
-			$outstandings = get_outstandings($login, $userID);
-			if (!file_put_contents("../db/outstandings/$login.json", json_encode($outstandings, JSON_UNESCAPED_UNICODE))) {
+			$fileName = "../db/outstandings/$login.json";
+			$lastFetchTime = 0;
+			$earlierFetched = array();
+			if (file_exists($fileName)) {
+				$lastFetchTime = @filemtime($fileName);
+				$earlierFetched = json_decode(file_get_contents($fileName), true);
+			}
+			echo "Fetching changes since " . date($dateFormat, $lastFetchTime) . "\n";
+			$startTime = time() - 1;
+			$outstandings = get_outstandings($login, $userID, $earlierFetched, $lastFetchTime);
+			if (!file_put_contents($fileName, json_encode($outstandings, JSON_UNESCAPED_UNICODE))) {
 				echo "$login: error writing outstandings to file\n";
 			}
+			touch($fileName, $startTime - 1); // modify the file write time to the time we started fetching (-1 second to accomodate for ms)
 			echo "\n";
 		}
-
-		// sleep to prevent 429
-		sleep(1);
 	}
 ?>
