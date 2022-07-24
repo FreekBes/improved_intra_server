@@ -1,32 +1,19 @@
 <?php
 	require_once("nogit.php");
 
-	// obtain shared memory space
-	// temporarily disabled
-	// $shm = shm_attach(43);
-
 	function token_expired($createdAt, $expiresIn) {
 		// 7200 seconds less: say it expired 2 hours in advance.
 		// For just in case Intra API f*cked up the timezones and $createdAt is not UTC.
 		return ($createdAt + $expiresIn < time() - 7200);
 	}
 
-	function get_client_token() {
-		global $shm, $clientID, $clientSecret;
-
-		return (null); // TODO do not use shm
-
-		if (shm_has_var($shm, 0x01)) {
-			$full_auth = json_decode(unserialize(shm_get_var($shm, 0x01)), true);
-			if (!token_expired(intval($full_auth["created_at"]), intval($full_auth["expires_in"]))) {
-				return ($full_auth["access_token"]);
-			}
-		}
+	function get_client_tokens() {
+		global $internalClientID, $internalClientSecret;
 
 		$ch = curl_init();
 		$postData = array(
-			"client_id" => $clientID,
-			"client_secret" => $clientSecret,
+			"client_id" => $internalClientID,
+			"client_secret" => $internalClientSecret,
 			"grant_type" => "client_credentials"
 		);
 		curl_setopt($ch, CURLOPT_URL,"https://api.intra.42.fr/oauth/token");
@@ -43,8 +30,7 @@
 				if (array_key_exists("error", $json)) {
 					return (null);
 				}
-				shm_put_var($shm, 0x01, serialize($response));
-				return ($json["access_token"]);
+				return ($json);
 			}
 			catch (Exception $e) {
 				return (null);
@@ -73,6 +59,8 @@
 		if ($response !== false) {
 			try {
 				$json = json_decode($response, true);
+				if (empty($json))
+					return (false);
 				if (array_key_exists("error", $json))
 					return (false);
 				if (!array_key_exists("id", $json[0])) {
@@ -85,69 +73,6 @@
 			}
 		}
 		return (false);
-	}
-
-	// returns an object containing all teamIDs per projectUser
-	function get_team_ids($token, $userID) {
-		$teamIDs = array();
-		$page = 1;
-		while (true) { // infinitely loop until all evaluations are fetched
-			$ch = curl_init();
-			$headers = array();
-			curl_setopt($ch, CURLOPT_URL,"https://api.intra.42.fr/v2/users/".strval($userID)."/projects_users?filter[status]=finished&page[size]=100&page[number]=".$page);
-			curl_setopt($ch, CURLOPT_HTTPHEADER, array( "Content-Type: application/json" , "Authorization: Bearer ".$token ));
-			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-			curl_setopt($ch, CURLOPT_HEADERFUNCTION, function($ch, $header) use(&$headers) {
-				$len = strlen($header);
-				$header = explode(':', $header, 2);
-				if (count($header) < 2) { // ignore invalid headers
-					return $len;
-				}
-				$headers[strtolower(trim($header[0]))] = trim($header[1]);
-				return $len;
-			});
-			$response = curl_exec($ch);
-
-			if ($response !== false) {
-				try {
-					$json = json_decode($response, true);
-					foreach ($json as &$projectsUser) {
-						if ($projectsUser["validated?"]) {
-							$projUID = $projectsUser["id"];
-							$teamIDs[$projUID] = array();
-							$teamIDs[$projUID]["current"] = $projectsUser["current_team_id"];
-							$teamIDsInProj = array();
-							$highestMark = -INF;
-							$highestMarkTeam = $projectsUser["current_team_id"]; // placeholder, will get overwritten in upcoming foreach
-							foreach ($projectsUser["teams"] as &$team) {
-								array_push($teamIDsInProj, $team["id"]);
-								if ($team["final_mark"] > $highestMark) {
-									$highestMark = $team["final_mark"];
-									$highestMarkTeam = $team["id"];
-								}
-							}
-							$teamIDs[$projUID]["best"] = $highestMarkTeam;
-							$teamIDs[$projUID]["all"] = array_reverse($teamIDsInProj); // in reverse order, assuming a higher ID means team was created later
-						}
-					}
-				}
-				catch (Exception $e) {
-					return (false);
-				}
-
-				// check if we've gone through all pages
-				$itemsFetched = intval($headers["x-per-page"]) * intval($headers["x-page"]);
-				if ($itemsFetched >= intval($headers["x-total"])) {
-					break; // we have! quit the infinite loop
-				}
-				$page++;
-				sleep(1); // sleep to prevent 429
-			}
-			else {
-				return (false);
-			}
-		}
-		return ($teamIDs);
 	}
 
 	// for finding the ProjectUserID from an object returned by get_team_ids
