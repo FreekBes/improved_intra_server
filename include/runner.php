@@ -148,6 +148,7 @@
 		}
 
 		// overwrite outstanding amounts with earlier fetched data where possible
+		/*
 		if (!empty($earlierFetched)) {
 			foreach ($earlierFetched as $key=>$projectsUser) {
 				if (!isset($outstandings[$key])) {
@@ -162,11 +163,13 @@
 				}
 			}
 		}
+		*/
 
 		$ch = curl_init();
 		$page = 1;
 		// flag_id 9 is the outstanding mark
-		$filters = "future=false&range[updated_at]=".date($dateFormat, $lastCheck).",".date($dateFormat);
+		// $filters = "filter[future]=false&range[updated_at]=".date($dateFormat, $lastCheck).",".date($dateFormat);
+		$filters = "filter[future]=false&filter[flag_id]=9";
 		while (true) { // infinitely loop until all evaluations are fetched
 			$headers = array();
 			curl_setopt($ch, CURLOPT_URL,"https://api.intra.42.fr/v2/users/".strval($userID)."/scale_teams/as_corrected?".$filters."&page[size]=100&page[number]=".$page);
@@ -215,26 +218,6 @@
 									$outstandingsForProj["all"][$teamIndex]++; // increase its outstanding amount by 1
 								}
 							}
-							else if ($eval["flag"]["positive"] === false) { // if not positive, remove an outstanding flag. This way the amount CAN be come negative
-								$teamIDsForProj = &$teamIDs[$projectsUserID];
-								$outstandingsForProj = &$outstandings[$projectsUserID];
-
-								if ($eval["team"]["id"] == $teamIDsForProj["current"]) { // this evaluation was done for the current team
-									// echo "$userName: Decreased CURRENT of " . $projectsUserID . " by one\n";
-									$outstandingsForProj["current"]--; // decrease its outstanding amount by 1
-								}
-
-								if ($eval["team"]["id"] == $teamIDsForProj["best"]) { // this evaluation was done for the team with the highest mark
-									// echo "$userName: Decreased BEST of " . $projectsUserID . " by one\n";
-									$outstandingsForProj["best"]--; // decrease its outstanding amount by 1
-								}
-
-								$teamIndex = array_search($eval["team"]["id"], $teamIDsForProj["all"]);
-								if ($teamIndex !== false) { // team is listed in list of teamIDs for this user's projects
-									// echo "$userName: Decreased ALL index " . $teamIndex . " (" . $teamIDsForProj["all"][$teamIndex] . ") of " . $projectsUserID . " by one\n";
-									$outstandingsForProj["all"][$teamIndex]--; // decrease its outstanding amount by 1
-								}
-							}
 						}
 
 						// check if we've gone through all pages
@@ -242,7 +225,7 @@
 						$xPage = intval($headers["x-page"]);
 						$xPerPage = intval($headers["x-per-page"]);
 						$itemsFetched = min($xPerPage * $xPage, $xTotal);
-						echo "$userName: projects: processed $itemsFetched of $xTotal \n";
+						echo "$userName: outstanding flags: processed $itemsFetched of $xTotal \n";
 						if ($itemsFetched >= $xTotal) {
 							break; // we have! quit the infinite loop
 						}
