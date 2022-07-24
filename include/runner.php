@@ -338,8 +338,9 @@
 				echo "$login: error writing outstandings to file\n";
 			}
 			touch($fileName, $startTime - 1); // modify the file write time to the time we started fetching (-1 second to accomodate for ms)
-			echo "\n";
 			$userAmount++;
+			echo "\nNow sleeping for 6 seconds to prevent hitting the hourly rate limit...\n\n";
+			sleep(6);
 		}
 	}
 
