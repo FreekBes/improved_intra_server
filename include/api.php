@@ -56,19 +56,30 @@
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 		$response = curl_exec($ch);
 
-		if ($response !== false) {
-			try {
-				$json = json_decode($response, true);
-				if (empty($json))
-					return (false);
-				if (array_key_exists("error", $json))
-					return (false);
-				if (!array_key_exists("id", $json[0])) {
-					return (-1);
+		if (!curl_errno($ch)) {
+			$info = curl_getinfo($ch);
+			if ($info['http_code'] == 200) {
+				try {
+					$json = json_decode($response, true);
+					if (empty($json))
+						return (false);
+					if (array_key_exists("error", $json))
+						return (false);
+					if (!array_key_exists("id", $json[0])) {
+						return (-1);
+					}
+					return (intval($json[0]["id"]));
 				}
-				return (intval($json[0]["id"]));
+				catch (Exception $e) {
+					return (false);
+				}
 			}
-			catch (Exception $e) {
+			else if ($info['http_code'] == 429) {
+				sleep(1);
+				return get_user_id($token, $login);
+			}
+			else {
+				// TODO 401 error
 				return (false);
 			}
 		}
