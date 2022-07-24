@@ -97,10 +97,21 @@
 						<label for="clustermap"><span>Make logged in location clickable</span><span>When a user is available, clicking on their location will open the cluster map</span></label>
 						<input type="checkbox" value="true" id="clustermap" name="clustermap" checked />
 					</fieldset>
+					<fieldset title="Note: only works for students who have used the Improved Intra extension in the past">
+						<label for="outstandings"><span>Show outstanding flags</span><span>Display stars next to project grades for the amount of outstanding flags received</span></label>
+						<input type="checkbox" value="true" id="outstandings" name="outstandings" checked />
+					</fieldset>
 					<fieldset>
 						<label for="hide-broadcasts"><span>Hide broadcasts button</span><span>Hide the blue megaphone floating button on the dashboard</span></label>
 						<input type="checkbox" value="true" id="hide-broadcasts" name="hide-broadcasts" checked />
 					</fieldset>
+					<fieldset>
+						<label for="holygraph-morecursuses"><span>Show more cursuses in the Holy Graph</span><span>Allow selection of additional cursuses in the Holy Graph viewer</span></label>
+						<input type="checkbox" value="true" id="holygraph-morecursuses" name="holygraph-morecursuses" />
+					</fieldset>
+				</section>
+				<section>
+					<h3>Logtimes</h3>
 					<fieldset>
 						<label for="logsum-month"><span>Show monthly logtimes</span><span>Show every month's total logtime in the logtime chart</span></label>
 						<input type="checkbox" value="true" id="logsum-month" name="logsum-month" checked />
@@ -108,10 +119,6 @@
 					<fieldset>
 						<label for="logsum-week"><span>Show cumulative logtimes per week</span><span>When hovering over the logtimes chart, show user's cumulative hours per week</span></label>
 						<input type="checkbox" value="true" id="logsum-week" name="logsum-week" checked />
-					</fieldset>
-					<fieldset>
-						<label for="holygraph-morecursuses"><span>Show more cursuses in the Holy Graph</span><span>Allow selection of additional cursuses in the Holy Graph viewer</span></label>
-						<input type="checkbox" value="true" id="holygraph-morecursuses" name="holygraph-morecursuses" />
 					</fieldset>
 				</section>
 				<section>

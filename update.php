@@ -36,6 +36,7 @@
 		"Bhide-broadcasts" => false,
 		"Blogsum-month" => true,
 		"Blogsum-week" => true,
+		"Boutstandings" => true,
 		"Bhide-goals" => false,
 		"Bholygraph-morecursuses" => false,
 		"Bold-blackhole" => false,
