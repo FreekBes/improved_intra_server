@@ -9,7 +9,7 @@
 		$res = array();
 		$res["type"] = $type;
 		$res["message"] = $msg;
-		if (!empty($data)) {
+		if ($data !== null) {
 			$res["data"] = $data;
 		}
 		echo json_encode($res, JSON_UNESCAPED_UNICODE|JSON_PRETTY_PRINT);
