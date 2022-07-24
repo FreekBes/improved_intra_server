@@ -61,7 +61,7 @@
 					</fieldset>
 					<fieldset style="display: none;">
 						<label for="sync"><span>Synchronize my settings</span><span>Synchronize your settings using your Intra's username</span></label>
-						<input type="checkbox" value="true" id="sync" name="sync" checked disabled />
+						<input type="checkbox" value="true" id="sync" name="sync" checked def-checked="true" disabled />
 					</fieldset>
 				</section>
 				<section>
@@ -88,22 +88,22 @@
 					</fieldset>
 					<fieldset>
 						<label for="show-custom-profiles"><span>Allow customized profiles</span><span>Show customized profiles, such as custom banner imagery</span></label>
-						<input type="checkbox" value="true" id="show-custom-profiles" name="show-custom-profiles" checked />
+						<input type="checkbox" value="true" id="show-custom-profiles" name="show-custom-profiles" checked def-checked="true" />
 					</fieldset>
 				</section>
 				<section>
 					<h3>General improvements</h3>
 					<fieldset>
 						<label for="clustermap"><span>Make logged in location clickable</span><span>When a user is available, clicking on their location will open the cluster map</span></label>
-						<input type="checkbox" value="true" id="clustermap" name="clustermap" checked />
+						<input type="checkbox" value="true" id="clustermap" name="clustermap" checked def-checked="true" />
 					</fieldset>
 					<fieldset title="Note: only works for students who have used the Improved Intra extension in the past">
 						<label for="outstandings"><span>Show outstanding flags</span><span>Display stars next to project grades for the amount of outstanding flags received</span></label>
-						<input type="checkbox" value="true" id="outstandings" name="outstandings" checked />
+						<input type="checkbox" value="true" id="outstandings" name="outstandings" checked def-checked="true" />
 					</fieldset>
 					<fieldset>
 						<label for="hide-broadcasts"><span>Hide broadcasts button</span><span>Hide the blue megaphone floating button on the dashboard</span></label>
-						<input type="checkbox" value="true" id="hide-broadcasts" name="hide-broadcasts" checked />
+						<input type="checkbox" value="true" id="hide-broadcasts" name="hide-broadcasts" checked def-checked="true" />
 					</fieldset>
 					<fieldset>
 						<label for="holygraph-morecursuses"><span>Show more cursuses in the Holy Graph</span><span>Allow selection of additional cursuses in the Holy Graph viewer</span></label>
@@ -114,11 +114,11 @@
 					<h3>Logtimes</h3>
 					<fieldset>
 						<label for="logsum-month"><span>Show monthly logtimes</span><span>Show every month's total logtime in the logtime chart</span></label>
-						<input type="checkbox" value="true" id="logsum-month" name="logsum-month" checked />
+						<input type="checkbox" value="true" id="logsum-month" name="logsum-month" checked def-checked="true" />
 					</fieldset>
 					<fieldset>
 						<label for="logsum-week"><span>Show cumulative logtimes per week</span><span>When hovering over the logtimes chart, show user's cumulative hours per week</span></label>
-						<input type="checkbox" value="true" id="logsum-week" name="logsum-week" checked />
+						<input type="checkbox" value="true" id="logsum-week" name="logsum-week" checked def-checked="true" />
 					</fieldset>
 				</section>
 				<section>
@@ -171,7 +171,7 @@
 					<h3>Codam specific</h3>
 					<fieldset>
 						<label for="codam-monit"><span>Replace Black Hole with Codam's Monitoring Progress</span><span>Show a user's progress towards Codam's Monitoring System in profile banners</span></label>
-						<input type="checkbox" value="true" id="codam-monit" name="codam-monit" checked />
+						<input type="checkbox" value="true" id="codam-monit" name="codam-monit" checked def-checked="true" />
 					</fieldset>
 					<fieldset>
 						<label for="codam-buildingtimes-public"><span>Share your buildingtime data with other Improved Intra users</span><span>Only applies if you share your buildingtimes with Improved Intra</span></label>
@@ -179,7 +179,7 @@
 					</fieldset>
 					<fieldset>
 						<label for="codam-buildingtimes-chart"><span>Replace logtime chart with buildingtime chart</span><span>Replace the logtime data of the logtime chart with buildingtime (if available)</span></label>
-						<input type="checkbox" value="true" id="codam-buildingtimes-chart" name="codam-buildingtimes-chart" checked />
+						<input type="checkbox" value="true" id="codam-buildingtimes-chart" name="codam-buildingtimes-chart" checked def-checked="true" />
 					</fieldset>
 					<fieldset>
 						<label for="codam-auto-equip-coa-title"><span>Auto-equip coalition titles</span><span>Automatically equip your rank's Intra title when one is available</span></label>
