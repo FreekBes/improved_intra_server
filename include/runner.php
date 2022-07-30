@@ -39,6 +39,70 @@
 	declare(ticks = 1);
 	pcntl_signal(SIGINT, 'exit_hook');
 
+	function get_user_id($login) {
+		global $tokens;
+
+		$ch = curl_init();
+		curl_setopt($ch, CURLOPT_URL,"https://api.intra.42.fr/v2/users?filter[login]=".urlencode($login));
+		curl_setopt($ch, CURLOPT_HTTPHEADER, array( "Content-Type: application/json" , "Authorization: Bearer ".$tokens["access_token"] ));
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		$headers = array();
+		curl_setopt($ch, CURLOPT_HEADERFUNCTION, function($ch, $header) use(&$headers) {
+			$len = strlen($header);
+			$header = explode(':', $header, 2);
+			if (count($header) < 2) { // ignore invalid headers
+				return $len;
+			}
+			$headers[strtolower(trim($header[0]))] = trim($header[1]);
+			return $len;
+		});
+		$response = curl_exec($ch);
+
+		if (!curl_errno($ch)) {
+			$info = curl_getinfo($ch);
+			if ($info['http_code'] == 200) {
+				try {
+					$json = json_decode($response, true);
+					if (empty($json))
+						return (false);
+					if (array_key_exists("error", $json))
+						return (false);
+					if (!array_key_exists("id", $json[0])) {
+						return (-1);
+					}
+					return (intval($json[0]["id"]));
+				}
+				catch (Exception $e) {
+					return (false);
+				}
+			}
+			else if ($info['http_code'] == 429) {
+				$server_time = strtotime($headers["date"]);
+				$now = time();
+				$elapsed = max($now - $server_time, 0);
+				$retry_after = intval($headers["retry-after"]);
+				$wait = $retry_after - $elapsed;
+				echo "$login: error 429, waiting $wait seconds...\n";
+				sleep($wait);
+				return get_user_id($login);
+			}
+			else if ($info['http_code'] == 401) {
+				echo "$userName: access token expired, refreshing...\n";
+				renew_access_tokens();
+				sleep(1);
+				return get_user_id($login);
+			}
+			else {
+				return (false);
+			}
+		}
+		else {
+			echo "$userName: curl error: " . curl_error($ch) . "\n";
+		}
+		curl_close($ch);
+		return (false);
+	}
+
 	// returns an object containing all teamIDs per projectUser
 	// createdSince can be a timestamp to only return teamIDs created after this timestamp
 	function get_team_ids($userName, $userID, $createdSince = 0) {
@@ -314,7 +378,7 @@
 			continue;
 		}
 
-		$userID = get_user_id($tokens["access_token"], $login);
+		$userID = get_user_id($login);
 		if ($userID === false) {
 			echo "Unable to fetch userID for user $login\n";
 		}

@@ -49,43 +49,6 @@
 		return (true);
 	}
 
-	function get_user_id($token, $login) {
-		$ch = curl_init();
-		curl_setopt($ch, CURLOPT_URL,"https://api.intra.42.fr/v2/users?filter[login]=".urlencode($login));
-		curl_setopt($ch, CURLOPT_HTTPHEADER, array( "Content-Type: application/json" , "Authorization: Bearer ".$token ));
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-		$response = curl_exec($ch);
-
-		if (!curl_errno($ch)) {
-			$info = curl_getinfo($ch);
-			if ($info['http_code'] == 200) {
-				try {
-					$json = json_decode($response, true);
-					if (empty($json))
-						return (false);
-					if (array_key_exists("error", $json))
-						return (false);
-					if (!array_key_exists("id", $json[0])) {
-						return (-1);
-					}
-					return (intval($json[0]["id"]));
-				}
-				catch (Exception $e) {
-					return (false);
-				}
-			}
-			else if ($info['http_code'] == 429) {
-				sleep(1);
-				return get_user_id($token, $login);
-			}
-			else {
-				// TODO 401 error
-				return (false);
-			}
-		}
-		return (false);
-	}
-
 	// for finding the ProjectUserID from an object returned by get_team_ids
 	function get_project_user_id_from_team_ids($teamIDs, $teamID) {
 		foreach ($teamIDs as $projectsUserID => &$projectsUserTeamIDs) {
