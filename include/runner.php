@@ -32,7 +32,7 @@
 		$date1->setTimestamp($start);
 		$date2->setTimestamp(time());
 		$interval = date_diff($date1, $date2);
-		echo "\nAll done! Processed $userAmount users, $teamAmount teams and $evalAmount evals in " . $interval->format('%h hours and %m minutes') . ".\n";
+		echo "\nAll done! Processed $userAmount users, $teamAmount teams and $evalAmount evals in " . $interval->format('%h hours, %m minutes and %s seconds') . ".\n";
 		exit();
 	}
 	register_shutdown_function('exit_hook');
@@ -89,7 +89,6 @@
 			else if ($info['http_code'] == 401) {
 				echo "$userName: access token expired, refreshing...\n";
 				renew_access_tokens();
-				sleep(1);
 				return get_user_id($login);
 			}
 			else {
@@ -403,8 +402,9 @@
 			}
 			touch($fileName, $startTime - 1); // modify the file write time to the time we started fetching (-1 second to accomodate for ms)
 			$userAmount++;
-			echo "\nNow sleeping for 6 seconds to prevent hitting the hourly rate limit...\n\n";
-			sleep(6);
+			//echo "\nNow sleeping for 6 seconds to prevent hitting the hourly rate limit...";
+			echo "\n\n";
+			//sleep(6);
 		}
 	}
 
