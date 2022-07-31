@@ -4,7 +4,7 @@ This repository contains the back-end for use with the [Improved Intra](https://
 
 ## Setup
 ### Keep in mind...
-The extension only talks directly with the [https://darkintra.freekb.es](https://darkintra.freekb.es/) domain. This means you cannot set this server up without forking the extension's source code and changing all references to this domain to whatever domain you choose to run this back-end code on. Or, you can redirect calls to this domain to your domain - that might also work.
+The extension only talks directly with the [https://iintra.freekb.es](https://iintra.freekb.es/) domain. This means you cannot set this server up without forking the extension's source code and changing all references to this domain to whatever domain you choose to run this back-end code on. Or, you can redirect calls to this domain to your domain - that might also work.
 
 
 ### Actual setup
