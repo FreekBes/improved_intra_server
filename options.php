@@ -174,14 +174,6 @@
 						<input type="checkbox" value="true" id="codam-monit" name="codam-monit" checked def-checked="true" />
 					</fieldset>
 					<fieldset>
-						<label for="codam-buildingtimes-public"><span>Share your buildingtime data with other Improved Intra users</span><span>Only applies if you share your buildingtimes with Improved Intra</span></label>
-						<input type="checkbox" value="true" id="codam-buildingtimes-public" name="codam-buildingtimes-public" />
-					</fieldset>
-					<fieldset>
-						<label for="codam-buildingtimes-chart"><span>Replace logtime chart with buildingtime chart</span><span>Replace the logtime data of the logtime chart with buildingtime (if available)</span></label>
-						<input type="checkbox" value="true" id="codam-buildingtimes-chart" name="codam-buildingtimes-chart" checked def-checked="true" />
-					</fieldset>
-					<fieldset>
 						<label for="codam-auto-equip-coa-title"><span>Auto-equip coalition titles</span><span>Automatically equip your rank's Intra title when one is available</span></label>
 						<input type="checkbox" value="true" id="codam-auto-equip-coa-title" name="codam-auto-equip-coa-title" />
 					</fieldset>

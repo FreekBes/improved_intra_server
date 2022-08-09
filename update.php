@@ -45,8 +45,6 @@
 		"Scustom-banner-pos" => "center-center",
 		"Slink-github" => "",
 		"Bcodam-monit" => true,
-		"Bcodam-buildingtimes-public" => false,
-		"Bcodam-buildingtimes-chart" => false,
 		"Bcodam-auto-equip-coa-title" => false
 	));
 	$version_specifics = $version_settings;
