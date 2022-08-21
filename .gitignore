@@ -1,10 +1,6 @@
-include/nogit.php
-nogit.php
-test.php
-db/*.json
-db/*/*.json
-settings/*.json
 banners/*
 !banners/*.txt
-!banners/*.sh
-!banners/*.md
+
+.secret.env
+.venv
+__pycache__
