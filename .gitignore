@@ -4,3 +4,5 @@ banners/*
 .secret.env
 .venv
 __pycache__
+
+*.log

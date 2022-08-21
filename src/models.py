@@ -100,6 +100,28 @@ class Evaluation(db.Model):
 			.format(self.intra_id, self.intra_team_id, self.success, self.outstanding, self.mark, self.evaluator_id, self.evaluated_at)
 
 
+class OAuth2Token(db.Model):
+	__tablename__ = 'oauth2tokens'
+	user_id = Column(Integer, ForeignKey('users.intra_id'), primary_key=True)
+	name = Column(String(40))
+	token_type = Column(String(40))
+	access_token = Column(String(200))
+	refresh_token = Column(String(200))
+	expires_at = Column(Integer)
+
+	def __repr__(self):
+		return "<OAuth2Token user_id={}, name='{}', token_type='{}', access_token={}, refresh_token={}, expires_at={}>"\
+			.format(self.user_id, self.name, self.token_type, str(self.access_token is not None), str(self.refresh_token is not None), self.expires_at)
+
+	def to_token(self):
+		return dict(
+			access_token=self.access_token,
+			token_type=self.token_type,
+			refresh_token=self.refresh_token,
+			expires_at=self.expires_at,
+		)
+
+
 class Profile(db.Model):
 	__tablename__ = 'profiles'
 	user_id = Column(Integer, ForeignKey('users.intra_id'), primary_key=True)

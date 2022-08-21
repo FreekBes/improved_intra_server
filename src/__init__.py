@@ -1,6 +1,7 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy_utils import database_exists, create_database
+from sqlalchemy.sql import func
 import os
 import platform
 from dotenv import dotenv_values
@@ -17,6 +18,7 @@ config['SQLALCHEMY_DATABASE_URI'] = f"postgresql+psycopg2://{config['PSQL_USER']
 print('Initializing Flask...')
 app = Flask(__name__)
 app.config.from_mapping(config)
+app.secret_key = config['SESSION_KEY']
 db = SQLAlchemy(app)
 print('Flask initialized')
 
@@ -36,6 +38,14 @@ db.create_all()
 db.session.commit()
 print('Database models initialized')
 
+# Set up default content
+print('Initializing default content...')
+from src import defaults
+defaults.populate_banner_pos(db.session)
+defaults.populate_color_schemes(db.session)
+print('Default content initialized')
+
 # Import routes
 from src.v1 import routes
 from src.v2 import routes
+from . import oauth
