@@ -15,7 +15,7 @@ class BannerImg(db.Model):
 	__tablename__ = 'banner_imgs'
 	id = Column(Integer, primary_key=True)
 	user_id = Column(Integer, ForeignKey('users.intra_id'), nullable=True)
-	url = Column(String)
+	url = Column(String(256))
 	width = Column(Integer, default=0)
 	height = Column(Integer, default=0)
 	size = Column(Integer, default=0) # File size in bytes
@@ -129,8 +129,8 @@ class Profile(db.Model):
 	user_id = Column(Integer, ForeignKey('users.intra_id'), primary_key=True)
 	banner_img = Column(Integer, ForeignKey('banner_imgs.id'), nullable=True, default=None)
 	banner_pos = Column(Integer, default=1)
-	link_git = Column(String, nullable=True, default=None)
-	link_web = Column(String, nullable=True, default=None)
+	link_git = Column(String(256), nullable=True, default=None)
+	link_web = Column(String(256), nullable=True, default=None)
 	updated_at = Column(DateTime(timezone=False), onupdate=func.now(), default=func.now())
 
 	def __init__(self, user_id):
