@@ -56,15 +56,17 @@ class Campus(db.Model):
 	__tablename__ = 'campuses'
 	intra_id = Column(Integer, primary_key=True, autoincrement=False)
 	name = Column(String)
+	city = Column(String)
 	country = Column(String)
 
 	def __repr__(self):
-		return "<Campus intra_id={}, name='{}', country='{}'>"\
-			.format(self.intra_id, self.name, self.country)
+		return "<Campus intra_id={}, name='{}', city='{}', country='{}'>"\
+			.format(self.intra_id, self.name, self.city, self.country)
 
-	def __init__(self, intra_id, name, country):
+	def __init__(self, intra_id, name, city, country):
 		self.intra_id = intra_id
 		self.name = name
+		self.city = city
 		self.country = country
 
 
@@ -131,6 +133,9 @@ class Profile(db.Model):
 	link_web = Column(String, nullable=True, default=None)
 	updated_at = Column(DateTime(timezone=False), onupdate=func.now(), default=func.now())
 
+	def __init__(self, user_id):
+		self.user_id = user_id
+
 	def __repr__(self):
 		return "<Profile user_id={}, banner_img={}, banner_pos={}, updated_at='{}'>"\
 			.format(self.user_id, self.banner_img, self.banner_pos, self.updated_at)
@@ -140,7 +145,7 @@ class Settings(db.Model):
 	__tablename__ = 'settings'
 	user_id = Column(Integer, ForeignKey('users.intra_id'), primary_key=True)
 	updated_at = Column(DateTime(timezone=False), onupdate=func.now(), default=func.now())
-	updated_ver = Column(String, nullable=True)
+	updated_ver = Column(String, default=None, nullable=True)
 	theme = Column(Integer, default=1)
 	colors = Column(Integer, ForeignKey('color_schemes.id'), default=1)
 	show_custom_profiles = Column(Boolean, default=True)
@@ -154,6 +159,9 @@ class Settings(db.Model):
 	clustermap = Column(Boolean, default=True)
 	codam_monit = Column(Boolean, default=True)
 	codam_auto_equip_coa_title = Column(Boolean, default=False)
+
+	def __init__(self, user_id):
+		self.user_id = user_id
 
 	def __repr__(self):
 		return "<Settings user_id={}, updated_at='{}', updated_ver='{}', theme={}, colors={}, show_custom_profiles={}, hide_broadcasts={}, logsum_month={}, " + \
