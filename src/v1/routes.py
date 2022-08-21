@@ -1,7 +1,7 @@
 from flask import session, jsonify
 import logging
 from urllib.parse import urlparse
-from .. import app
+from .. import app, db
 from ..models import ColorScheme, BannerImg, BannerPosition, Profile, Settings, User
 from ..oauth import authstart
 
@@ -17,17 +17,17 @@ def oldConnect():
 
 @app.route('/settings/<login>.json', methods=['GET'])
 def oldSettings(login):
-	#try:
-	db_user = User.query.filter_by(login = login).one()
-	db_settings = Settings.query.filter_by(user_id=db_user.intra_id).one()
-	db_colors = ColorScheme.query.filter_by(id=db_settings.colors).one()
-	db_profile = Profile.query.filter_by(user_id=db_user.intra_id).one()
-	db_banner_img = None
-	if db_profile.banner_img:
-		db_banner_img = BannerImg.query.filter_by(id=db_profile.banner_img).first()
-	db_banner_pos = BannerPosition.query.filter_by(id=db_profile.banner_pos).one()
-	#except:
-	#	return '404 Not Found', 404
+	try:
+		db_user = db.session.query(User.intra_id, User.login).filter(User.login == login).one()
+		db_settings = db.session.query(Settings).filter(Settings.user_id == db_user.intra_id).one() # This query can be sped up by selecting only what is needed in the future
+		db_colors = db.session.query(ColorScheme.internal_name).filter(ColorScheme.id == db_settings.colors).one()
+		db_profile = db.session.query(Profile.banner_img, Profile.banner_pos, Profile.link_git).filter(Profile.user_id == db_user.intra_id).one()
+		db_banner_pos = db.session.query(BannerPosition.internal_name).filter(BannerPosition.id == db_profile.banner_pos).one()
+		db_banner_img = None
+		if db_profile.banner_img:
+			db_banner_img = db.session.query(BannerImg.url).filter(BannerImg.id == db_profile.banner_img).first()
+	except:
+		return '404 Not Found', 404
 	resp = {
 		'username': db_user.login,
 		'sync': True,
