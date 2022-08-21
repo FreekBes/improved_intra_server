@@ -3,9 +3,9 @@ from .models import BannerPosition, ColorScheme
 
 def populate_banner_pos(db_session):
 	defaultBannerPositions = [
-		BannerPosition('center center', 'Centered (default)'),
-		BannerPosition('center top', 'Top'),
-		BannerPosition('center bottom', 'Bottom')
+		BannerPosition('center center', 'center-center', 'Centered (default)'),
+		BannerPosition('center top', 'center-top', 'Top'),
+		BannerPosition('center bottom', 'center-bottom', 'Bottom')
 	]
 	for bannerPos in defaultBannerPositions:
 		if not BannerPosition.query.filter_by(css_val = bannerPos.css_val).first():

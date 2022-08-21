@@ -41,14 +41,16 @@ class BannerPosition(db.Model):
 	__tablename__ = 'banner_positions'
 	id = Column(Integer, primary_key=True)
 	css_val = Column(String, unique=True)
+	internal_name = Column(String, unique=True)
 	name = Column(String, unique=True)
 
 	def __repr__(self):
-		return "<BannerPosition id={}, css_val='{}', name='{}'>"\
-			.format(self.id, self.css_val, self.name)
+		return "<BannerPosition id={}, css_val='{}', internal_name='{}', name='{}'>"\
+			.format(self.id, self.css_val, self.internal_name, self.name)
 
-	def __init__(self, css_val, name):
+	def __init__(self, css_val, internal_name, name):
 		self.css_val = css_val
+		self.internal_name = internal_name
 		self.name = name
 
 
@@ -103,7 +105,7 @@ class Evaluation(db.Model):
 
 
 class OAuth2Token(db.Model):
-	__tablename__ = 'oauth2tokens'
+	__tablename__ = 'oauth2_tokens'
 	user_id = Column(Integer, ForeignKey('users.intra_id'), primary_key=True)
 	name = Column(String(40))
 	token_type = Column(String(40))
@@ -128,7 +130,7 @@ class Profile(db.Model):
 	__tablename__ = 'profiles'
 	user_id = Column(Integer, ForeignKey('users.intra_id'), primary_key=True)
 	banner_img = Column(Integer, ForeignKey('banner_imgs.id'), nullable=True, default=None)
-	banner_pos = Column(Integer, default=1)
+	banner_pos = Column(Integer, ForeignKey('banner_positions.id'), default=1)
 	link_git = Column(String(256), nullable=True, default=None)
 	link_web = Column(String(256), nullable=True, default=None)
 	updated_at = Column(DateTime(timezone=False), onupdate=func.now(), default=func.now())
