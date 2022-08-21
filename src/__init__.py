@@ -2,6 +2,7 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy_utils import database_exists, create_database
 import os
+import platform
 from dotenv import dotenv_values
 
 # Load config from .env files
@@ -16,15 +17,16 @@ config['SQLALCHEMY_DATABASE_URI'] = f"postgresql+psycopg2://{config['PSQL_USER']
 print('Initializing Flask...')
 app = Flask(__name__)
 app.config.from_mapping(config)
-print(config['SQLALCHEMY_DATABASE_URI'])
 db = SQLAlchemy(app)
 print('Flask initialized')
 
 # Set up database
 if not database_exists(db.engine.url):
 	print('Database \'iintra\' does not exist, creating...')
-	print('If the program hangs here for a long time, please check your PostgreSQL installation. Especially on WSL!')
-	create_database(db.engine.url)
+	if 'microsoft' in platform.uname()[2].lower():
+		print('You are using Microsoft\'s Windows Subsystem for Linux, which under WSL1 has problems with PostgreSQL.')
+		print('If the program hangs here, you will need to switch to WSL2 to continue.')
+	create_database(db.engine.url, encoding='utf8', template='template0')
 	print('Database created')
 
 # Set up tables

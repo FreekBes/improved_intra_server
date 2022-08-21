@@ -3,42 +3,61 @@ This repository contains the back-end for use with the [Improved Intra](https://
 
 
 ## Requirements
+This guide is written with Debian 11 ("Bullseye") in mind. It should also work on Windows Subsystem for Linux.
 
 ### Install PostgreSQL
 ```sh
-sudo apt install -y wget
+sudo apt install -y wget lsb-release gnupg2
 sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
 wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
 sudo apt update && sudo apt install -y postgresql
 ```
+More installation options available [here](https://www.postgresql.org/download/).
 
-### Install python3 and dependencies
+### Set up PostgreSQL
 ```sh
-sudo apt install -y python3 python3-pip libpq-dev
-pip install virtualenv
-```
+# Enable PostgreSQL at boot
+sudo systemctl enable postgresql
 
-### Create PostgreSQL database (optional)
-```sh
+# Start PostgreSQL now
+sudo service postgresql start
+
+# Launch and enter a PostgreSQL console
 sudo -u postgres psql postgres
 ```
 ```postgresql
-CREATE DATABASE "iintra" WITH OWNER "postgres" ENCODING 'UTF8' LC_COLLATE = 'en_US.UTF-8' LC_CTYPE = 'en_US.UTF-8';
+--- Set password for postgres user to 'postgres' (you can modify this)
+ALTER USER postgres PASSWORD 'postgres';
+
+--- Create database (optional, __init__.py will do this for you)
+CREATE DATABASE "iintra" WITH OWNER "postgres" ENCODING 'UTF8';
+
+--- Exit PostgreSQL console
+EXIT;
 ```
 
-
-## Setup
-
-Initialize the virtual environment:
+### Install Python3
 ```sh
-# After 15.1.0
-virtualenv .venv && source .venv/bin/activate && pip install -r requirements.txt
-
-# Before 15.1.0
-virtualenv --no-site-packages --distribute .venv && source .venv/bin/activate && pip install -r requirements.txt
+sudo apt install -y python3 python3-pip python-setuptools libpq-dev python3-virtualenv virtualenv
 ```
 
-Or, if already initialized, start the virtual environment:
+### Initialize the virtual environment
 ```sh
-source .venv/bin/activate
+# Create a virtual environment
+sudo virtualenv -p python3 .venv
+
+# Start the virtual environment
+. .venv/bin/activate
+
+# Install packages
+sudo .venv/bin/pip install -r requirements.txt
+```
+
+## Starting the server
+```sh
+# Start the virtual environment
+. .venv/bin/activate
+
+# And start the server
+python run.py
 ```
