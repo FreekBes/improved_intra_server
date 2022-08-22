@@ -73,7 +73,7 @@
 	}
 	if (!isset($version_specifics[$client_version])) {
 		http_response_code(400);
-		respond("error", "Invalid value for GET key 'settings'");
+		respond("error", "Invalid value for GET key 'v'");
 	}
 
 	// trim entire post array
