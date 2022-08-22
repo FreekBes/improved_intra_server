@@ -92,7 +92,6 @@
 		</style>
 	</head>
 	<body>
-		<code style="display: none;" id="result"><?php echo json_encode($data, JSON_UNESCAPED_UNICODE); ?></code>
 <?php
 	switch ($type) {
 		case "redirect":
@@ -103,12 +102,14 @@
 			break;
 		case "success":
 ?>
+		<code style="display: none;" id="result"><?php echo json_encode($data, JSON_UNESCAPED_UNICODE); ?></code>
 		<h1>Authentication succesful</h1>
 		<p>Improved Intra 42 is now connected to your Intranet account.<br><span id="action">You can safely close this tab.</span><br><small id="clicker" style="display: none;">Or click <a id="redir_link" href="#" target="_self">here</a> if you are not being redirected...</small></p>
 <?php
 			break;
 		case "error":
 ?>
+		<code style="display: none;" id="result"><?php echo json_encode($data, JSON_UNESCAPED_UNICODE); ?></code>
 		<h1>An error occurred</h1>
 		<p>An error occurred while authorizing with your Intranet 42 account.</p>
 		<details>
