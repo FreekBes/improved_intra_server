@@ -1,9 +1,17 @@
-from flask import Flask
+# App info
+__version__ = '2.0.0' # Server version, not Improved Intra version
+__target_ext_version__ = '3.4.0' # Targeting Improved Intra extension version
+__author__ = 'Freek Bes'
+
+# Imports
+import os
+import platform
+from werkzeug import __version__ as __werkzeug_version__
+from flask import Flask, request, __version__ as __flask_version__
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy_utils import database_exists, create_database
 from sqlalchemy.sql import func
-import os
-import platform
+from urllib.parse import urlparse
 from dotenv import dotenv_values
 
 # Load config from .env files
@@ -49,3 +57,22 @@ print('Default content initialized')
 from src.v1 import routes
 from src.v2 import routes
 from . import oauth
+
+# Set up headers
+@app.after_request
+def add_headers(response):
+	response.headers['X-Frame-Options'] = 'sameorigin'
+	response.headers['Vary'] = 'Origin'
+	response.headers['X-Content-Type-Options'] = 'nosniff'
+	response.headers['X-Powered-By'] = 'Werkzeug/{} Flask/{} Python/{}'.format(__werkzeug_version__, __flask_version__, platform.python_version())
+	response.headers['X-Target-Version'] = 'ImprovedIntra/{}'.format(__target_ext_version__)
+	response.headers['Server'] = 'ImprovedIntraServer/{}'.format(__version__)
+
+	origin = request.environ.get('HTTP_ORIGIN', None)
+	if origin is not None:
+		origin_host = urlparse(origin).hostname
+		if origin_host is not None and (origin_host == 'intra.42.fr' or origin_host.endswith('.intra.42.fr')):
+			response.headers['Access-Control-Allow-Origin'] = 'https://{}'.format(origin_host)
+			response.headers['X-Frame-Options'] = 'allow-from'
+
+	return response
