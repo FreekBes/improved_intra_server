@@ -1,18 +1,27 @@
-from flask import session, jsonify
+from flask import session, jsonify, request, redirect, url_for, render_template
 import logging
+import json
+import time
 from urllib.parse import urlparse
 from .. import app, db
 from ..models import ColorScheme, BannerImg, BannerPosition, Profile, Settings, User
 from ..oauth import authstart
+from .forms import OldSettings
 
 logging.basicConfig(filename=app.config['LOG_FILE'], level=logging.DEBUG, format=app.config['LOG_FORMAT'])
 
 
 @app.route('/connect.php', methods=['GET'])
 def oldConnect():
-	if not 'login' in session:
+	if not 'login' in session or not 'v1_conn_data' in session:
 		return authstart(1)
-	return 'Connected V1', 200
+	# if not 'v1_conn_data' in session:
+	# 	return render_template('v1connect.html', data={'type': 'error', 'message': 'No authorization data found in session', 'auth': {'error_description': 'No authorization data found in session'}})
+	ret_data = {'type': 'success', 'auth': session['v1_conn_data'], 'user': {'login': session['login']}}
+	ret_data['auth']['expires_in'] = int(session['v1_conn_data']['expires_at'] - time.time())
+	if ret_data['auth']['expires_in'] <= 1:
+		return authstart(1) # token expired, get a new one right away
+	return render_template('v1connect.html', data=ret_data, data_json=json.dumps(ret_data))
 
 
 @app.route('/settings/<login>.json', methods=['GET'])
@@ -50,8 +59,35 @@ def oldSettings(login):
 		'codam-auto-equip-coa-title': True,
 		'timestamp': int(db_settings.updated_at.timestamp()),
 
-		'link-github': urlparse(db_profile.link_git).path.lstrip('/') if db_profile.link_git else None,
-		'custom-banner-url': db_banner_img.url if db_banner_img else None,
+		'link-github': urlparse(db_profile.link_git).path.lstrip('/') if db_profile.link_git else '',
+		'custom-banner-url': db_banner_img.url if db_banner_img else '',
 		'custom-banner-pos': db_banner_pos.internal_name
 	}
 	return jsonify(resp), 200
+
+
+@app.route('/options.php', methods=['GET'])
+def oldOptions():
+	if not 'login' in session:
+		return redirect(url_for('oldConnect'), 302)
+	return render_template('v1options.html')
+
+
+@app.route('/update.php', methods=['GET', 'POST'])
+def oldUpdate():
+	if not request.method == 'POST':
+		return {'type': 'error', 'message': 'Method should be POST'}, 405
+	if not 'login' in session:
+		# TODO: replace with access token validation
+		return {'type': 'error', 'message': 'Unauthorized'}, 401
+	if not request.form.get('sync') is 'true':
+		# TODO: replace by 307 to /delete.php
+		return {'type': 'error', 'message': 'Syncing is disabled'}, 400
+	if not 'v' in request.args:
+		return {'type': 'error', 'message': 'GET key \'v\' (version) is not set, but is required'}, 400
+	if not 'v' == '1':
+		return {'type': 'error', 'message': 'Invalid value for GET key \'v\''}, 400
+	form = OldSettings()
+	if form.validate():
+		return {'type': 'success', 'message': 'Settings saved', 'data': form.json()}, 201
+	return {'type': 'error', 'message': 'Invalid form'}, 400

@@ -1,4 +1,4 @@
-from flask import url_for, session, jsonify, redirect
+from flask import url_for, session, redirect
 from authlib.integrations.flask_client import OAuth
 from sqlalchemy.sql import func
 from .models import Campus, OAuth2Token, Profile, Settings, User
@@ -108,5 +108,8 @@ def auth():
 
 	# Redirect after auth
 	if session['v'] == 1:
-		return redirect(url_for('oldConnect'), 301)
-	return redirect(url_for('connect'), 301)
+		session['v1_conn_data'] = token
+		del session['v1_conn_data']['expires_in']
+		session['v1_conn_data']['expires_at'] = db_token.expires_at
+		return redirect(url_for('oldConnect'), 302)
+	return redirect(url_for('connect'), 302)
