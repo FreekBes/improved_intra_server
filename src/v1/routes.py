@@ -80,7 +80,7 @@ def oldUpdate():
 	if not 'login' in session:
 		# TODO: replace with access token validation
 		return {'type': 'error', 'message': 'Unauthorized'}, 401
-	if not request.form.get('sync') is 'true':
+	if request.form.get('sync') != 'true':
 		# TODO: replace by 307 to /delete.php
 		return {'type': 'error', 'message': 'Syncing is disabled'}, 400
 	if not 'v' in request.args:
