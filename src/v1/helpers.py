@@ -71,7 +71,7 @@ def set_v1_settings(form:OldSettings):
 		db_profile:Profile = db.session.query(Profile).filter(Settings.user_id == db_user.intra_id).one()
 
 		# Banner position
-		db_banner_pos:BannerPosition = db.session.query(BannerPosition.id).filter(BannerPosition.internal_name == form.custom_banner_pos).one()
+		db_banner_pos:BannerPosition = db.session.query(BannerPosition.id).filter(BannerPosition.internal_name == form.custom_banner_pos.data).one()
 		db_profile.banner_pos = db_banner_pos.id
 
 		# Banner image from url

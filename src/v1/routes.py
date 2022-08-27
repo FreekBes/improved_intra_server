@@ -7,6 +7,7 @@ from ..models import OAuth2Token
 from ..oauth import authstart
 from .forms import OldSettings
 from .helpers import get_v1_settings, set_v1_settings
+from werkzeug.datastructures import CombinedMultiDict
 
 logging.basicConfig(filename=app.config['LOG_FILE'], level=logging.DEBUG, format=app.config['LOG_FORMAT'])
 
@@ -73,7 +74,7 @@ def oldUpdate():
 		return { 'type': 'error', 'message': 'Form username does not match the one found in your session' }, 403
 	if request.form.get('sync') != 'true':
 		return { 'type': 'error', 'message': 'Syncing is disabled in the form, cannot proceed' }, 400
-	form = OldSettings(request.form)
+	form = OldSettings(CombinedMultiDict(request.files, request.form))
 	if form.validate():
 		if set_v1_settings(form):
 			return { 'type': 'success', 'message': 'Settings saved', 'data': get_v1_settings(form.username.data) }, 201

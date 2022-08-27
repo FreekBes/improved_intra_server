@@ -6,7 +6,7 @@ from . import app
 from urllib.request import urlopen
 
 ALLOWED_IMG_TYPES = ['jpg', 'jpe', 'jpeg', 'png', 'gif']
-BANNERS_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'static', 'banners')
+BANNERS_PATH = os.path.join(app.instance_path, 'static', 'banners')
 
 def upload_banner(file, file_name:str, username:str):
 	try:
