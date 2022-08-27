@@ -4,6 +4,38 @@ from .. import db
 from ..banners import upload_banner, get_banner_info
 from .forms import OldSettings
 from flask import request
+import re
+
+
+def valid_github_username(username):
+	_rex = re.compile('^[a-z\d](?:[a-z\d]|-(?=[a-z\d])){0,38}$')
+	return True if _rex.fullmatch(username.lower()) else False
+
+
+def unparse_github_username(git_link):
+	if '@' in git_link:
+		split_git = git_link.split('@')
+		if len(split_git[1]) > 0 and valid_github_username(split_git[1]):
+			if split_git[0] == 'github.com':
+				return 'github@' + split_git[1]
+			elif split_git[0] == 'gitlab.com':
+				return 'gitlab@' + split_git[1]
+	return ''
+
+
+def parse_github_username(git_user):
+	if '@' in git_user:
+		split_git = git_user.split('@')
+		if len(split_git[1]) == 0 or not valid_github_username(split_git[1]):
+			return ''
+		if split_git[0] == 'github':
+			return 'github.com@' + split_git[1]
+		elif split_git[0] == 'gitlab':
+			return 'gitlab.com@' + split_git[1]
+		else:
+			return split_git[0] + '@' + split_git[1]
+	return 'github.com@' + git_user
+
 
 def get_v1_settings(login:str):
 	try:
@@ -40,7 +72,7 @@ def get_v1_settings(login:str):
 		'codam-auto-equip-coa-title': True,
 		'timestamp': int(db_settings.updated_at.timestamp()),
 
-		'link-github': urlparse(db_profile.link_git).path.lstrip('/') if db_profile.link_git else '',
+		'link-github': unparse_github_username(db_profile.link_git) if db_profile.link_git else '',
 		'custom-banner-url': db_banner_img.url if db_banner_img else '',
 		'custom-banner-pos': db_banner_pos.internal_name
 	}
@@ -69,6 +101,7 @@ def set_v1_settings(form:OldSettings):
 
 		# Update profile
 		db_profile:Profile = db.session.query(Profile).filter(Settings.user_id == db_user.intra_id).one()
+		db_profile.link_git = parse_github_username(form.link_github.data) if form.link_github.data else None
 
 		# Banner position
 		db_banner_pos:BannerPosition = db.session.query(BannerPosition.id).filter(BannerPosition.internal_name == form.custom_banner_pos.data).one()
