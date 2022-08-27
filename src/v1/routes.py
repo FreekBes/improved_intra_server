@@ -99,8 +99,8 @@ def oldUpdate():
 		return {'type': 'error', 'message': 'Syncing is disabled'}, 400
 	if not 'v' in request.args:
 		return {'type': 'error', 'message': 'GET key \'v\' (version) is not set, but is required'}, 400
-	if not 'v' == '1':
-		return {'type': 'error', 'message': 'Invalid value for GET key \'v\''}, 400
+	if request.args['v'] != '1':
+		return {'type': 'error', 'message': 'Invalid value for GET key \'v\'', 'v': request.args['v']}, 400
 	form = OldSettings()
 	if form.validate():
 		return {'type': 'success', 'message': 'Settings saved', 'data': form.json()}, 201
