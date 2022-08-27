@@ -13,7 +13,8 @@ def get_v1_settings(login:str):
 		db_banner_img:BannerImg = None
 		if db_profile.banner_img:
 			db_banner_img = db.session.query(BannerImg.url).filter(BannerImg.id == db_profile.banner_img).first()
-	except:
+	except Exception as e:
+		print(e)
 		return None
 	resp = {
 		'username': db_user.login,
