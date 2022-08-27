@@ -70,7 +70,7 @@ def oldUpdate():
 	form = OldSettings(request.form)
 	if form.validate():
 		# TODO: save the new settings
-		return {'type': 'success', 'message': 'Settings saved', 'data': get_v1_settings(form.username)}, 201
+		return {'type': 'success', 'message': 'Settings saved', 'data': get_v1_settings(request.form.get('username'))}, 201
 	form_errors = dict()
 	for field_name, error_msgs in form.errors.items():
 		form_errors[field_name] = list()
