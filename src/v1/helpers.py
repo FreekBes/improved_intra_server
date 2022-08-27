@@ -21,7 +21,7 @@ def get_v1_settings(login:str):
 		'sync': True,
 
 		'ext_version': db_settings.updated_ver,
-		'theme': "dark" if db_settings.theme == 2 else "light" if db_settings.theme == 3 else "system",
+		'theme': "dark" if db_settings.theme == 2 else 'light' if db_settings.theme == 3 else 'system',
 		'colors': db_colors.internal_name,
 		'show-custom-profiles': db_settings.show_custom_profiles,
 		'hide-broadcasts': db_settings.hide_broadcasts,
@@ -46,4 +46,28 @@ def get_v1_settings(login:str):
 
 
 def set_v1_settings(form:OldSettings):
-	return
+	try:
+		db_user:User = db.session.query(User.intra_id, User.login).filter(User.login == form.username.data).one()
+
+		# Update basic settings
+		db_settings:Settings = db.session.query(Settings).filter(Settings.user_id == db_user.intra_id).one()
+		db_settings.clustermap = form.clustermap.data
+		db_settings.codam_auto_equip_coa_title = form.codam_auto_equip_coa_title.data
+		db_settings.codam_monit = form.codam_monit.data
+		db_settings.hide_broadcasts = form.hide_broadcasts.data
+		db_settings.hide_goals = form.hide_goals.data
+		db_settings.holygraph_more_cursuses = form.holygraph_more_cursuses.data
+		db_settings.logsum_month = form.logsum_month.data
+		db_settings.logsum_week = form.logsum_week.data
+		db_settings.old_blackhole = form.old_blackhole.data
+		db_settings.outstandings = form.outstandings.data
+		db_settings.show_custom_profiles = form.show_custom_profiles.data
+		db_settings.theme = 2 if form.theme.data == 'dark' else 3 if form.theme.data == 'light' else 1
+		db_settings.updated_ver = form.ext_version.data
+
+		db.session.merge(db_settings)
+		db.session.commit()
+	except Exception as e:
+		print(e)
+		return False
+	return True

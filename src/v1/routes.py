@@ -6,7 +6,7 @@ from .. import app
 from ..models import OAuth2Token
 from ..oauth import authstart
 from .forms import OldSettings
-from .helpers import get_v1_settings
+from .helpers import get_v1_settings, set_v1_settings
 
 logging.basicConfig(filename=app.config['LOG_FILE'], level=logging.DEBUG, format=app.config['LOG_FORMAT'])
 
@@ -16,8 +16,8 @@ def oldConnect():
 	if not 'uid' in session or not 'v1_conn_data' in session:
 		return authstart(1)
 	# if not 'v1_conn_data' in session:
-	# 	return render_template('v1connect.j2', data={'type': 'error', 'message': 'No authorization data found in session', 'auth': {'error_description': 'No authorization data found in session'}})
-	ret_data = {'type': 'success', 'auth': session['v1_conn_data'], 'user': {'login': session['login']}}
+	# 	return render_template('v1connect.j2', data={ 'type': 'error', 'message': 'No authorization data found in session', 'auth': { 'error_description': 'No authorization data found in session' } })
+	ret_data = { 'type': 'success', 'auth': session['v1_conn_data'], 'user': { 'login': session['login'] } }
 	ret_data['auth']['expires_in'] = int(session['v1_conn_data']['expires_at'] - time.time())
 	if ret_data['auth']['expires_in'] <= 1:
 		return authstart(1) # token expired, get a new one right away
@@ -41,39 +41,41 @@ def oldOptions():
 @app.route('/testkey.php', methods=['GET', 'POST'])
 def oldTestKey():
 	if not request.method == 'POST':
-		return {'type': 'error', 'message': 'Method should be POST'}, 405
+		return { 'type': 'error', 'message': 'Method should be POST' }, 405
 	if not 'uid' in session:
-		return {'type': 'error', 'message': 'No ongoing session, authenticate first'}, 410
+		return { 'type': 'error', 'message': 'No ongoing session, authenticate first' }, 410
 	try:
 		db_token = OAuth2Token.query.filter_by(user_id=session['uid']).first()
 		if request.form.get('access_token') != db_token.access_token:
-			return {'type': 'error', 'message': 'Access token no longer works'}, 410
-		return {'type': 'success', 'message': 'Access token still works'}, 200
+			return { 'type': 'error', 'message': 'Access token no longer works' }, 410
+		return { 'type': 'success', 'message': 'Access token still works' }, 200
 	except:
-		return {'type': 'error', 'message': 'No access token in DB, authenticate again'}, 410
+		return { 'type': 'error', 'message': 'No access token in DB, authenticate again' }, 410
 
 
 @app.route('/update.php', methods=['GET', 'POST'])
 def oldUpdate():
 	if not request.method == 'POST':
-		return {'type': 'error', 'message': 'Method should be POST'}, 405
+		return { 'type': 'error', 'message': 'Method should be POST' }, 405
 	if not 'uid' in session:
 		# TODO: replace with access token validation
-		return {'type': 'error', 'message': 'Unauthorized'}, 401
+		return { 'type': 'error', 'message': 'Unauthorized' }, 401
 	if request.form.get('sync') != 'true':
 		# TODO: replace by 307 to /delete.php
-		return {'type': 'error', 'message': 'Syncing is disabled'}, 400
+		return { 'type': 'error', 'message': 'Syncing is disabled' }, 400
 	if not 'v' in request.args:
-		return {'type': 'error', 'message': 'GET key \'v\' (version) is not set, but is required'}, 400
+		return { 'type': 'error', 'message': 'GET key \'v\' (version) is not set, but is required' }, 400
 	if request.args['v'] != '1':
-		return {'type': 'error', 'message': 'Invalid value for GET key \'v\'', 'v': request.args['v']}, 400
+		return { 'type': 'error', 'message': 'Invalid value for GET key \'v\'', 'v': request.args['v'] }, 400
 	form = OldSettings(request.form)
 	if form.validate():
-		# TODO: save the new settings
-		return {'type': 'success', 'message': 'Settings saved', 'data': get_v1_settings(request.form.get('username'))}, 201
+		if set_v1_settings(form):
+			return { 'type': 'success', 'message': 'Settings saved', 'data': get_v1_settings(form.username.data) }, 201
+		else:
+			return { 'type': 'error', 'message': 'Could not save settings', 'data': get_v1_settings(form.username.data) }, 500
 	form_errors = dict()
 	for field_name, error_msgs in form.errors.items():
 		form_errors[field_name] = list()
 		for error_msg in error_msgs:
 			form_errors[field_name].append(error_msg)
-	return {'type': 'error', 'message': 'Invalid form', 'form_errors': form_errors}, 400
+	return { 'type': 'error', 'message': 'Invalid form', 'form_errors': form_errors }, 400
