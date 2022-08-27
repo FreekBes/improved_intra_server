@@ -76,11 +76,16 @@ sudo systemctl enable iintra-server.service
 ```
 
 ### Set up nginx as reverse-proxy
-#### With self-signed certificate
 ```sh
 # Copy snippet
 cp ./useful/iintra.nginx.snippet.conf /etc/nginx/snippets/
 
+# Remove default server
+rm -f /etc/nginx/sites-enabled/default
+```
+
+#### Use with self-signed certificate
+```sh
 # Create SSL certificate for HTTPS support
 sudo mkdir -p /etc/nginx/ssl
 sudo openssl req -newkey rsa:2048 -x509 -days 365 -nodes \
@@ -95,12 +100,9 @@ ln -s /etc/nginx/sites-available/iintra.freekb.es.conf /etc/nginx/sites-enabled/
 sudo systemctl restart nginx
 ```
 
-#### Without SSL support
+#### Use without SSL support
 Useful if you want to add a certificate yourself, for example using `certbot`.
 ```sh
-# Copy snippet
-cp ./useful/iintra.nginx.snippet.conf /etc/nginx/snippets/
-
 # Copy server config
 cp ./useful/nginx.example.conf /etc/nginx/sites-available/iintra.freekb.es.conf
 ln -s /etc/nginx/sites-available/iintra.freekb.es.conf /etc/nginx/sites-enabled/
