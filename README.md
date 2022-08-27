@@ -77,10 +77,10 @@ sudo systemctl enable iintra-server.service
 
 ### Set up nginx as reverse-proxy
 ```sh
-# Copy snippet
-cp ./useful/iintra.nginx.snippet.conf /etc/nginx/snippets/
+# Copy custom nginx config snippets
+cp ./useful/*.nginx.snippet.conf /etc/nginx/snippets/
 
-# Remove default server
+# Remove default nginx server
 rm -f /etc/nginx/sites-enabled/default
 ```
 
