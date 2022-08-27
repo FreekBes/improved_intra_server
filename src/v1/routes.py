@@ -38,6 +38,7 @@ def oldOptions():
 		return redirect(url_for('oldConnect'), 302)
 	return render_template('v1options.j2')
 
+
 @app.route('/testkey.php', methods=['GET', 'POST'])
 def oldTestKey():
 	if not request.method == 'POST':
@@ -53,20 +54,25 @@ def oldTestKey():
 		return { 'type': 'error', 'message': 'No access token in DB, authenticate again' }, 410
 
 
+@app.route('/delete.php')
+def oldDelete():
+	return { 'type': 'error', 'message': 'The delete endpoint has been removed' }, 404
+
+
 @app.route('/update.php', methods=['GET', 'POST'])
 def oldUpdate():
 	if not request.method == 'POST':
 		return { 'type': 'error', 'message': 'Method should be POST' }, 405
-	if not 'uid' in session:
-		# TODO: replace with access token validation
-		return { 'type': 'error', 'message': 'Unauthorized' }, 401
-	if request.form.get('sync') != 'true':
-		# TODO: replace by 307 to /delete.php
-		return { 'type': 'error', 'message': 'Syncing is disabled' }, 400
 	if not 'v' in request.args:
 		return { 'type': 'error', 'message': 'GET key \'v\' (version) is not set, but is required' }, 400
 	if request.args['v'] != '1':
 		return { 'type': 'error', 'message': 'Invalid value for GET key \'v\'', 'v': request.args['v'] }, 400
+	if not 'uid' in session:
+		return { 'type': 'error', 'message': 'Unauthorized' }, 401
+	if session['login'] != request.form.get('username'):
+		return { 'type': 'error', 'message': 'Form username does not match the one found in your session' }, 403
+	if request.form.get('sync') != 'true':
+		return { 'type': 'error', 'message': 'Syncing is disabled in the form, cannot proceed' }, 400
 	form = OldSettings(request.form)
 	if form.validate():
 		if set_v1_settings(form):

@@ -1,6 +1,5 @@
 from flask import url_for, session, redirect
 from authlib.integrations.flask_client import OAuth
-from sqlalchemy.sql import func
 from .models import Campus, OAuth2Token, Profile, Settings, User
 from . import app, db
 import logging
