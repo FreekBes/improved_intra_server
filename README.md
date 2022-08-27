@@ -129,9 +129,13 @@ cp useful/iintra-server.service /etc/systemd/system/
 sudo systemctl daemon-reload
 sudo systemctl restart iintra-server.service
 
-# Update nginx config and restart (usually not required)
+# Update nginx snippets
+cp ./useful/*.nginx.snippet.conf /etc/nginx/snippets/
+
 # Do not run this step if you do not use a self-signed certificate but do use SSL/HTTPS
 cp ./useful/nginx.example.conf /etc/nginx/sites-available/iintra.freekb.es.conf
+
+# Restart nginx
 sudo systemctl restart nginx
 ```
 
