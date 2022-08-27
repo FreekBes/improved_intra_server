@@ -19,7 +19,7 @@ def upload_banner(file, file_name:str, username:str):
 		url = app.config['IINTRA_URL'] + 'banners/' + file_name
 		return os.path.basename(banner_file), url
 	except Exception as e:
-		print(e)
+		print("An exception occurred while uploading a banner: {}".format(str(e)))
 		return None, None
 
 

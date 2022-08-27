@@ -16,7 +16,7 @@ def get_v1_settings(login:str):
 		if db_profile.banner_img:
 			db_banner_img = db.session.query(BannerImg.url).filter(BannerImg.id == db_profile.banner_img).first()
 	except Exception as e:
-		print(e)
+		print("An exception occurred while retrieving v1 settings: {}".format(str(e)))
 		return None
 	resp = {
 		'username': db_user.login,
@@ -96,6 +96,6 @@ def set_v1_settings(form:OldSettings):
 		db.session.merge(db_settings)
 		db.session.commit()
 	except Exception as e:
-		print(e)
+		print("An exception occurred while setting v1 settings: {}".format(str(e)))
 		return False
 	return True
