@@ -129,9 +129,6 @@ cp useful/iintra-server.service /etc/systemd/system/
 sudo systemctl daemon-reload
 sudo systemctl restart iintra-server.service
 
-# Restart postgresql to prevent authentication errors (SSL error: decryption failed or bad record mac)
-sudo systemctl restart postgresql
-
 # Update nginx config and restart (usually not required)
 # Do not run this step if you do not use a self-signed certificate but do use SSL/HTTPS
 cp ./useful/nginx.example.conf /etc/nginx/sites-available/iintra.freekb.es.conf
