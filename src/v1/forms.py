@@ -1,14 +1,18 @@
-from flask_wtf import Form
+from flask_wtf import FlaskForm
 from wtforms import StringField, SelectField, BooleanField, HiddenField
 from wtforms.validators import Optional, DataRequired, URL as URLValidator
 from flask_wtf.file import FileField, FileAllowed
-from flask_uploads import UploadSet
-from ..banners import ALLOWED_IMG_TYPES
+from flask_uploads import UploadSet, configure_uploads
+from ..banners import ALLOWED_IMG_TYPES, BANNERS_PATH
+from .. import app
 
-images = UploadSet('images', ALLOWED_IMG_TYPES)
+images = UploadSet('images', ALLOWED_IMG_TYPES, default_dest=lambda app: BANNERS_PATH)
+configure_uploads(app, (images))
 
 # Do not update these settings, as these are the only ones that v2 of Improved Intra supports
-class OldSettings(Form):
+class OldSettings(FlaskForm):
+	class Meta:
+		csrf = False
 	access_token = HiddenField('Intra API access token', name='access_token', validators=[DataRequired()])
 	username = StringField('Currently logged in user', name='username', validators=[DataRequired()])
 	sync = BooleanField('Synchronize my settings', name='sync', validators=[DataRequired()])

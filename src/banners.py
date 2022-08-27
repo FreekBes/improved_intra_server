@@ -5,19 +5,20 @@ from PIL import Image
 from . import app
 from urllib.request import urlopen
 
-ALLOWED_IMG_TYPES = ['jpg', 'jpe', 'jpeg', 'png', 'gif']
-BANNERS_PATH = os.path.join(app.instance_path, 'static', 'banners')
+ALLOWED_IMG_TYPES = ['jpg', 'jpeg', 'png', 'gif']
+BANNERS_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'static', 'banners')
 
-def upload_banner(file, file_name:str, username:str):
+def upload_banner(file, file_name, username:str):
 	try:
 		image_data = file.read()
 		ext = imghdr.what(None, image_data)
 		if ext not in ALLOWED_IMG_TYPES:
 			return None, None
-		banner_file = os.path.join(BANNERS_PATH, username + '-' + int(time()) + '.' + ext)
-		open(banner_file, 'w').write(image_data)
-		url = app.config['IINTRA_URL'] + 'banners/' + file_name
-		return os.path.basename(banner_file), url
+		banner_file = username + '-' + str(int(time())) + '.' + ext
+		banner_path = os.path.join(BANNERS_PATH, banner_file)
+		open(banner_path, 'wb').write(image_data)
+		url = app.config['IINTRA_URL'] + 'banners/' + banner_file
+		return banner_file, url
 	except Exception as e:
 		print("An exception occurred while uploading a banner: {}".format(str(e)))
 		return None, None

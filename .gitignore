@@ -1,5 +1,5 @@
-banners/*
-!banners/*.txt
+static/banners/*
+!static/banners/*.txt
 
 .secret.env
 .venv

@@ -82,14 +82,19 @@ def set_v1_settings(form:OldSettings):
 				w, h, s = get_banner_info(form.custom_banner_url.data)
 				if w and h and s:
 					db_banner_img_url = BannerImg(db_user.intra_id, form.custom_banner_url.data, width=w, height=h, size=s)
-					db.session.insert(db_banner_img_url)
+					db.session.add(db_banner_img_url)
+					db.session.flush()
+					db.session.refresh(db_banner_img)
+					db_profile.banner_img = db_banner_img.id
 
 		# Banner image upload
 		if form.custom_banner_upload.data:
-			banner_file, url = upload_banner(request.FILES[form.custom_banner_upload.name], form.custom_banner_upload.data, form.username.data)
+			banner_file, url = upload_banner(request.files[form.custom_banner_upload.name], form.custom_banner_upload.data, form.username.data)
 			if banner_file and url:
 				db_banner_img = BannerImg(db_user.intra_id, url)
-				db.session.insert(db_banner_img)
+				db.session.add(db_banner_img)
+				db.session.flush()
+				db.session.refresh(db_banner_img)
 				db_profile.banner_img = db_banner_img.id
 
 		db.session.merge(db_profile)

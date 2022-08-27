@@ -74,7 +74,7 @@ def oldUpdate():
 		return { 'type': 'error', 'message': 'Form username does not match the one found in your session' }, 403
 	if request.form.get('sync') != 'true':
 		return { 'type': 'error', 'message': 'Syncing is disabled in the form, cannot proceed' }, 400
-	form = OldSettings(CombinedMultiDict(request.files, request.form))
+	form = OldSettings(CombinedMultiDict([request.files, request.form]))
 	if form.validate():
 		if set_v1_settings(form):
 			return { 'type': 'success', 'message': 'Settings saved', 'data': get_v1_settings(form.username.data) }, 201
