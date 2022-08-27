@@ -19,4 +19,6 @@ def disconnect():
 		return 'Already logged out', 200
 	session.pop('login')
 	session.pop('uid')
+	session.pop('v')
+	session.pop('v1_conn_data')
 	return 'Logged out', 200

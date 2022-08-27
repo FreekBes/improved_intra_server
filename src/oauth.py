@@ -58,7 +58,6 @@ def auth():
 	session['login'] = user['login']
 	session['uid'] = user['id']
 	print("Login: {}".format(user['login']))
-	print("User: {}".format(user))
 
 	# Add campus(es) to DB
 	for campus in user['campus']:
@@ -108,13 +107,9 @@ def auth():
 	db.session.commit()
 
 	# Redirect after auth
-	if 'v' in session:
-		version = session['v']
-		session.pop('v')
-		if version == 1:
-			session['v1_conn_data'] = token
-			del session['v1_conn_data']['expires_in']
-			session['v1_conn_data']['expires_at'] = db_token.expires_at
-			session.pop('v1_conn_data')
-			return redirect(url_for('oldConnect'), 302)
+	if 'v' in session and session['v'] == 1:
+		session['v1_conn_data'] = token
+		del session['v1_conn_data']['expires_in']
+		session['v1_conn_data']['expires_at'] = db_token.expires_at
+		return redirect(url_for('oldConnect'), 302)
 	return redirect(url_for('connect'), 302)
