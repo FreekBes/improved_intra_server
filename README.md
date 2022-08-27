@@ -126,6 +126,7 @@ sudo .venv/bin/pip install -r requirements.txt
 
 # Restart the wsgi server
 cp useful/iintra-server.service /etc/systemd/system/
+sudo systemctl daemon-reload
 sudo systemctl restart iintra-server.service
 
 # Restart postgresql to prevent authentication errors (SSL error: decryption failed or bad record mac)
