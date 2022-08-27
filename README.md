@@ -2,8 +2,20 @@
 This repository contains the back-end for use with the [Improved Intra](https://github.com/FreekBes/improved_intra) browser extension.
 
 
-## Requirements
+## Install
 This guide is written with Debian 11 ("Bullseye") in mind. It should also work on Windows Subsystem for Linux.
+
+### Update & install system dependencies
+```sh
+sudo apt update && sudo apt upgrade
+sudo apt install git
+```
+
+### Clone the repository
+```sh
+git clone https://github.com/FreekBes/improved_intra_server.git /opt/improved_intra_server
+cd /opt/improved_intra_server
+```
 
 ### Install PostgreSQL
 ```sh
@@ -53,11 +65,36 @@ sudo virtualenv -p python3 .venv
 sudo .venv/bin/pip install -r requirements.txt
 ```
 
-## Starting the server
+### Configure the systemd service
 ```sh
-# Start the virtual environment
-. .venv/bin/activate
+sudo systemctl start ./useful/iintra-server.service
+sudo systemctl enable ./useful/iintra-server.service
+```
 
-# And start the server
-python run.py
+### Install and set up nginx
+```sh
+sudo apt install -y nginx
+cp ./useful/nginx.example.conf /etc/nginx/sites-available/iintra.freekb.es.conf
+ln -s /etc/nginx/sites-available/iintra.freekb.es.conf /etc/nginx/sites-enabled/iintra.freekb.es.conf
+sudo systemctl restart nginx
+```
+
+## Using a self-hosted back-end server in development
+On a user machine, modify the hosts file to point to your development server. Don't forget to remove those lines after development!
+
+### Unix
+```sh
+# Replace 127.0.0.1 with the IP address of your server if not on localhost
+sudo echo '127.0.0.1 darkintra.freekb.es' >> /etc/hosts
+sudo echo '127.0.0.1 iintra.freekb.es' >> /etc/hosts
+```
+
+### Windows
+1. Run `notepad.exe` as an administrator
+2. Open the file `C:\Windows\System32\drivers\etc\hosts`
+3. Add the following lines at the bottom of the file (replace the `127.0.0.1` with the IP address of your server if not on localhost):
+```
+# Improved Intra development server
+127.0.0.1 darkintra.freekb.es
+127.0.0.1 iintra.freekb.es
 ```
