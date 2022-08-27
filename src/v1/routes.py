@@ -4,7 +4,7 @@ import json
 import time
 from urllib.parse import urlparse
 from .. import app, db
-from ..models import ColorScheme, BannerImg, BannerPosition, Profile, Settings, User
+from ..models import ColorScheme, BannerImg, BannerPosition, Profile, Settings, User, OAuth2Token
 from ..oauth import authstart
 from .forms import OldSettings
 
@@ -13,7 +13,7 @@ logging.basicConfig(filename=app.config['LOG_FILE'], level=logging.DEBUG, format
 
 @app.route('/connect.php', methods=['GET'])
 def oldConnect():
-	if not 'login' in session or not 'v1_conn_data' in session:
+	if not 'uid' in session or not 'v1_conn_data' in session:
 		return authstart(1)
 	# if not 'v1_conn_data' in session:
 	# 	return render_template('v1connect.j2', data={'type': 'error', 'message': 'No authorization data found in session', 'auth': {'error_description': 'No authorization data found in session'}})
@@ -68,16 +68,30 @@ def oldSettings(login):
 
 @app.route('/options.php', methods=['GET'])
 def oldOptions():
-	if not 'login' in session:
+	if not 'uid' in session:
 		return redirect(url_for('oldConnect'), 302)
 	return render_template('v1options.j2')
+
+@app.route('/testkey.php', methods=['GET', 'POST'])
+def oldTestKey():
+	if not request.method == 'POST':
+		return {'type': 'error', 'message': 'Method should be POST'}, 405
+	if not 'uid' in session:
+		return {'type': 'error', 'message': 'No ongoing session, authenticate first'}, 410
+	try:
+		db_token = OAuth2Token.query.filter_by(user_id=session['uid']).first()
+		if request.form.get('access_token') != db_token.access_token:
+			return {'type': 'error', 'message': 'Access token no longer works'}, 410
+		return {'type': 'success', 'message': 'Access token still works'}, 200
+	except:
+		return {'type': 'error', 'message': 'No access token in DB, authenticate again'}, 410
 
 
 @app.route('/update.php', methods=['GET', 'POST'])
 def oldUpdate():
 	if not request.method == 'POST':
 		return {'type': 'error', 'message': 'Method should be POST'}, 405
-	if not 'login' in session:
+	if not 'uid' in session:
 		# TODO: replace with access token validation
 		return {'type': 'error', 'message': 'Unauthorized'}, 401
 	if request.form.get('sync') != 'true':
