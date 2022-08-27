@@ -25,7 +25,7 @@ def oldConnect():
 
 
 @app.route('/settings/<login>.json', methods=['GET'])
-def oldSettings(login):
+def oldSettings(login:str):
 	old_settings = get_v1_settings(login)
 	if old_settings:
 		return jsonify(old_settings), 200

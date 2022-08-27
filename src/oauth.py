@@ -9,11 +9,11 @@ import time
 logging.basicConfig(filename=app.config['LOG_FILE'], level=logging.DEBUG, format=app.config['LOG_FORMAT'])
 
 
-def update_token(name, token, refresh_token=None, access_token=None):
+def update_token(name:str, token:str, refresh_token:str=None, access_token:str=None):
 	if refresh_token:
-		item = OAuth2Token.query.filter_by(name=name, refresh_token=refresh_token).first()
+		item:OAuth2Token = OAuth2Token.query.filter_by(name=name, refresh_token=refresh_token).first()
 	elif access_token:
-		item = OAuth2Token.query.filter_by(name=name, access_token=access_token).first()
+		item:OAuth2Token = OAuth2Token.query.filter_by(name=name, access_token=access_token).first()
 	else:
 		return
 	item.access_token = token['access_token']
@@ -40,7 +40,7 @@ oauth.register(
 intra = oauth.create_client('intra')
 
 
-def authstart(v):
+def authstart(v:int):
 	session['v'] = v # Version of the back-end
 	return intra.authorize_redirect(url_for('auth', _external=True))
 

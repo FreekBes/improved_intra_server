@@ -41,7 +41,7 @@ if not database_exists(db.engine.url):
 
 # Set up tables
 print('Initializing database models...')
-from src import models
+import src.models
 db.create_all()
 db.session.commit()
 print('Database models initialized')

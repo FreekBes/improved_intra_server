@@ -1,15 +1,16 @@
 from ..models import ColorScheme, BannerImg, BannerPosition, Profile, Settings, User, OAuth2Token
 from urllib.parse import urlparse
 from .. import db
+from .forms import OldSettings
 
-def get_v1_settings(login):
+def get_v1_settings(login:str):
 	try:
-		db_user = db.session.query(User.intra_id, User.login).filter(User.login == login).one()
-		db_settings = db.session.query(Settings).filter(Settings.user_id == db_user.intra_id).one() # This query can be sped up by selecting only what is needed in the future
-		db_colors = db.session.query(ColorScheme.internal_name).filter(ColorScheme.id == db_settings.colors).one()
-		db_profile = db.session.query(Profile.banner_img, Profile.banner_pos, Profile.link_git).filter(Profile.user_id == db_user.intra_id).one()
-		db_banner_pos = db.session.query(BannerPosition.internal_name).filter(BannerPosition.id == db_profile.banner_pos).one()
-		db_banner_img = None
+		db_user:User = db.session.query(User.intra_id, User.login).filter(User.login == login).one()
+		db_settings:Settings = db.session.query(Settings).filter(Settings.user_id == db_user.intra_id).one() # This query can be sped up by selecting only what is needed in the future
+		db_colors:ColorScheme = db.session.query(ColorScheme.internal_name).filter(ColorScheme.id == db_settings.colors).one()
+		db_profile:Profile = db.session.query(Profile.banner_img, Profile.banner_pos, Profile.link_git).filter(Profile.user_id == db_user.intra_id).one()
+		db_banner_pos:BannerPosition = db.session.query(BannerPosition.internal_name).filter(BannerPosition.id == db_profile.banner_pos).one()
+		db_banner_img:BannerImg = None
 		if db_profile.banner_img:
 			db_banner_img = db.session.query(BannerImg.url).filter(BannerImg.id == db_profile.banner_img).first()
 	except:
@@ -41,3 +42,7 @@ def get_v1_settings(login):
 		'custom-banner-pos': db_banner_pos.internal_name
 	}
 	return resp
+
+
+def set_v1_settings(form:OldSettings):
+	return
