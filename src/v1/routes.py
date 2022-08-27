@@ -101,7 +101,12 @@ def oldUpdate():
 		return {'type': 'error', 'message': 'GET key \'v\' (version) is not set, but is required'}, 400
 	if request.args['v'] != '1':
 		return {'type': 'error', 'message': 'Invalid value for GET key \'v\'', 'v': request.args['v']}, 400
-	form = OldSettings()
+	form = OldSettings(request.form)
 	if form.validate():
-		return {'type': 'success', 'message': 'Settings saved', 'data': form.json()}, 201
-	return {'type': 'error', 'message': 'Invalid form'}, 400
+		return {'type': 'success', 'message': 'Settings saved', 'data': request.form}, 201
+	form_errors = dict()
+	for field_name, error_msgs in form.errors.items():
+		form_errors[field_name] = list()
+		for error_msg in error_msgs:
+			form_errors[field_name].append(error_msg)
+	return {'type': 'error', 'message': 'Invalid form', 'form_errors': form_errors}, 400
