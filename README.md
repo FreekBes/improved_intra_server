@@ -90,7 +90,7 @@ rm -f /etc/nginx/sites-enabled/default
 sudo mkdir -p /etc/nginx/ssl
 sudo openssl req -newkey rsa:2048 -x509 -days 365 -nodes \
 	-keyout /etc/nginx/ssl/server.key -out /etc/nginx/ssl/server.pem \
-	-subj "/C=NL/ST=North-Holland/L=Amsterdam/O=ImprovedIntra/OU=/CN=iintra.freekb.es"
+	-subj "/C=NL/ST=North-Holland/L=Amsterdam/O=ImprovedIntra/CN=iintra.freekb.es/"
 
 # Copy server config
 cp ./useful/nginx.example.ssl.conf /etc/nginx/sites-available/iintra.freekb.es.conf
@@ -154,3 +154,11 @@ sudo echo '127.0.0.1 iintra.freekb.es' >> /etc/hosts
 127.0.0.1 darkintra.freekb.es
 127.0.0.1 iintra.freekb.es
 ```
+
+## Ignoring the unsafe certificate error in Chromium-based browsers
+1. Visit [iintra.freekb.es](https://iintra.freekb.es/) in your Chromium-based browser (after running above steps for your OS)
+2. Select any spot in the "Your connection is not secure" page
+3. Type `thisisunsafe` on your keyboard
+4. Profit
+
+This method will also work for any XMLHttpRequests sent by code! Isn't it great?
