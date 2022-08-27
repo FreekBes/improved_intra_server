@@ -77,7 +77,7 @@ def set_v1_settings(form:OldSettings):
 		# Banner image from url
 		# URL is validated by wtforms already
 		if form.custom_banner_url.data:
-			db_banner_img_url:BannerImg = db.session.query(BannerImg).filter(BannerImg.user_id == db_user.intra_id, BannerImg.url == form.custom_banner_url.data).get()
+			db_banner_img_url:BannerImg = db.session.query(BannerImg).filter(BannerImg.user_id == db_user.intra_id, BannerImg.url == form.custom_banner_url.data).first()
 			if not db_banner_img_url:
 				w, h, s = get_banner_info(form.custom_banner_url.data)
 				if w and h and s:
@@ -86,6 +86,8 @@ def set_v1_settings(form:OldSettings):
 					db.session.flush()
 					db.session.refresh(db_banner_img)
 					db_profile.banner_img = db_banner_img.id
+		else:
+			db_profile.banner_img = None
 
 		# Banner image upload
 		if form.custom_banner_upload.data:
