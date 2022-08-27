@@ -1,7 +1,9 @@
 from ..models import ColorScheme, BannerImg, BannerPosition, Profile, Settings, User, OAuth2Token
 from urllib.parse import urlparse
 from .. import db
+from ..banners import upload_banner, get_banner_info
 from .forms import OldSettings
+from flask import request
 
 def get_v1_settings(login:str):
 	try:
@@ -65,6 +67,32 @@ def set_v1_settings(form:OldSettings):
 		db_settings.theme = 2 if form.theme.data == 'dark' else 3 if form.theme.data == 'light' else 1
 		db_settings.updated_ver = form.ext_version.data
 
+		# Update profile
+		db_profile:Profile = db.session.query(Profile).filter(Settings.user_id == db_user.intra_id).one()
+
+		# Banner position
+		db_banner_pos:BannerPosition = db.session.query(BannerPosition.id).filter(BannerPosition.internal_name == form.custom_banner_pos).one()
+		db_profile.banner_pos = db_banner_pos.id
+
+		# Banner image from url
+		# URL is validated by wtforms already
+		if form.custom_banner_url.data:
+			db_banner_img_url:BannerImg = db.session.query(BannerImg).filter(BannerImg.user_id == db_user.intra_id, BannerImg.url == form.custom_banner_url.data).get()
+			if not db_banner_img_url:
+				w, h, s = get_banner_info(form.custom_banner_url.data)
+				if w and h and s:
+					db_banner_img_url = BannerImg(db_user.intra_id, form.custom_banner_url.data, width=w, height=h, size=s)
+					db.session.insert(db_banner_img_url)
+
+		# Banner image upload
+		if form.custom_banner_upload.data:
+			banner_file, url = upload_banner(request.FILES[form.custom_banner_upload.name], form.custom_banner_upload.data, form.username.data)
+			if banner_file and url:
+				db_banner_img = BannerImg(db_user.intra_id, url)
+				db.session.insert(db_banner_img)
+				db_profile.banner_img = db_banner_img.id
+
+		db.session.merge(db_profile)
 		db.session.merge(db_settings)
 		db.session.commit()
 	except Exception as e:

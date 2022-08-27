@@ -1,8 +1,8 @@
-from sqlalchemy import Column as Col, Integer, String, Boolean, Date, DateTime, ForeignKey
+from sqlalchemy import Column as Col, Integer, Boolean, Date, DateTime, ForeignKey
 from sqlalchemy.sql import func
-from src import db
-import time
-import os
+from sqlalchemy.types import TypeDecorator
+from . import db
+from .banners import get_banner_info
 
 
 class Column(Col):
@@ -11,11 +11,22 @@ class Column(Col):
 		super().__init__(*args, **kwargs)
 
 
+class StrippedString(TypeDecorator):
+	impl = db.String
+
+	def process_bind_param(self, value, dialect):
+		# In case you have nullable string fields and pass None
+		return value.strip() if value else value
+
+	def copy(self, **kw):
+		return StrippedString(self.impl.length)
+
+
 class BannerImg(db.Model):
 	__tablename__ = 'banner_imgs'
 	id = Column(Integer, primary_key=True)
 	user_id = Column(Integer, ForeignKey('users.intra_id'), nullable=True)
-	url = Column(String(256))
+	url = Column(StrippedString(256))
 	width = Column(Integer, default=0)
 	height = Column(Integer, default=0)
 	size = Column(Integer, default=0) # File size in bytes
@@ -25,24 +36,25 @@ class BannerImg(db.Model):
 		return "<BannerImg id={}, user_id={}, url='{}', width={}, height={}, size={}, created_at='{}'>"\
 			.format(self.id, self.user_id, self.url, self.width, self.height, self.size, self.created_at)
 
-	def __init__(self, user_id, url):
+	def __init__(self, user_id, url, width=0, height=0, size=0):
 		self.user_id = user_id
 		self.url = url
-		# TODO: retrieve width, height, size
+		self.width = width
+		self.height = height
+		self.size = size
+		if not width or not height or not size:
+			self.renew_info()
 
-	def from_file(self, user_id, iintra_url, path):
-		self.user_id = user_id
-		file_name, file_ext = os.path.splitext(path)
-		self.url = iintra_url + '/banners/' + user_id + time.time() + file_ext
-		# TODO: retrieve width, height, size
+	def renew_info(self):
+		self.width, self.height, self.size = get_banner_info(self.url)
 
 
 class BannerPosition(db.Model):
 	__tablename__ = 'banner_positions'
 	id = Column(Integer, primary_key=True)
-	css_val = Column(String, unique=True)
-	internal_name = Column(String, unique=True)
-	name = Column(String, unique=True)
+	css_val = Column(StrippedString, unique=True)
+	internal_name = Column(StrippedString, unique=True)
+	name = Column(StrippedString, unique=True)
 
 	def __repr__(self):
 		return "<BannerPosition id={}, css_val='{}', internal_name='{}', name='{}'>"\
@@ -57,9 +69,9 @@ class BannerPosition(db.Model):
 class Campus(db.Model):
 	__tablename__ = 'campuses'
 	intra_id = Column(Integer, primary_key=True, autoincrement=False)
-	name = Column(String)
-	city = Column(String)
-	country = Column(String)
+	name = Column(StrippedString)
+	city = Column(StrippedString)
+	country = Column(StrippedString)
 
 	def __repr__(self):
 		return "<Campus intra_id={}, name='{}', city='{}', country='{}'>"\
@@ -75,9 +87,9 @@ class Campus(db.Model):
 class ColorScheme(db.Model):
 	__tablename__ = 'color_schemes'
 	id = Column(Integer, primary_key=True)
-	name = Column(String, unique=True)
+	name = Column(StrippedString, unique=True)
 	enabled = Column(Boolean, default=True)
-	internal_name = Column(String, unique=True)
+	internal_name = Column(StrippedString, unique=True)
 
 	def __repr__(self):
 		return "<ColorScheme id={}, internal_name='{}', name='{}', enabled={}>"\
@@ -107,10 +119,10 @@ class Evaluation(db.Model):
 class OAuth2Token(db.Model):
 	__tablename__ = 'oauth2_tokens'
 	user_id = Column(Integer, ForeignKey('users.intra_id'), primary_key=True)
-	name = Column(String(40))
-	token_type = Column(String(40))
-	access_token = Column(String(200))
-	refresh_token = Column(String(200))
+	name = Column(StrippedString(40))
+	token_type = Column(StrippedString(40))
+	access_token = Column(StrippedString(200))
+	refresh_token = Column(StrippedString(200))
 	expires_at = Column(Integer)
 
 	def __repr__(self):
@@ -131,8 +143,8 @@ class Profile(db.Model):
 	user_id = Column(Integer, ForeignKey('users.intra_id'), primary_key=True)
 	banner_img = Column(Integer, ForeignKey('banner_imgs.id'), nullable=True, default=None)
 	banner_pos = Column(Integer, ForeignKey('banner_positions.id'), default=1)
-	link_git = Column(String(256), nullable=True, default=None)
-	link_web = Column(String(256), nullable=True, default=None)
+	link_git = Column(StrippedString(256), nullable=True, default=None)
+	link_web = Column(StrippedString(256), nullable=True, default=None)
 	updated_at = Column(DateTime(timezone=False), onupdate=func.now(), default=func.now())
 
 	def __init__(self, user_id):
@@ -147,7 +159,7 @@ class Settings(db.Model):
 	__tablename__ = 'settings'
 	user_id = Column(Integer, ForeignKey('users.intra_id'), primary_key=True)
 	updated_at = Column(DateTime(timezone=False), onupdate=func.now(), default=func.now())
-	updated_ver = Column(String, default=None, nullable=True)
+	updated_ver = Column(StrippedString, default=None, nullable=True)
 	theme = Column(Integer, default=1)
 	colors = Column(Integer, ForeignKey('color_schemes.id'), default=1)
 	show_custom_profiles = Column(Boolean, default=True)
@@ -191,12 +203,12 @@ class Team(db.Model):
 class User(db.Model):
 	__tablename__ = 'users'
 	intra_id = Column(Integer, primary_key=True, autoincrement=False)
-	login = Column(String, unique=True)
+	login = Column(StrippedString, unique=True)
 	campus_id = Column(Integer, ForeignKey('campuses.intra_id'), nullable=True)
-	email = Column(String)
-	first_name = Column(String, default='')
-	last_name = Column(String, default='')
-	display_name = Column(String, default=login)
+	email = Column(StrippedString)
+	first_name = Column(StrippedString, default='')
+	last_name = Column(StrippedString, default='')
+	display_name = Column(StrippedString, default=login)
 	staff = Column(Boolean, default=False)
 	anonymize_date = Column(Date)
 	created_at = Column(DateTime, default=func.now())

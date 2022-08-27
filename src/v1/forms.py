@@ -1,6 +1,11 @@
 from flask_wtf import Form
 from wtforms import StringField, SelectField, BooleanField, HiddenField
-from wtforms.validators import DataRequired
+from wtforms.validators import DataRequired, URL as URLValidator
+from flask_wtf.file import FileField, FileAllowed
+from flask_uploads import UploadSet
+from ..banners import ALLOWED_IMG_TYPES
+
+images = UploadSet('images', ALLOWED_IMG_TYPES)
 
 # Do not update these settings, as these are the only ones that v2 of Improved Intra supports
 class OldSettings(Form):
@@ -21,7 +26,8 @@ class OldSettings(Form):
 	holygraph_more_cursuses = BooleanField('Show more cursuses in the Holy Graph', name='holygraph-morecursuses', default=False)
 	old_blackhole = BooleanField('Old Black Hole countdown', name='old-blackhole', default=False)
 	clustermap = BooleanField('Make logged in location clickable', name='clustermap', default=True)
-	custom_banner_url = StringField('Custom profile banner background', name='custom-banner-url')
+	custom_banner_url = StringField('Custom profile banner background', name='custom-banner-url', validators=[URLValidator(True, 'Invalid URL')])
+	custom_banner_upload = FileField('Upload a new custom banner', name='custom-banner-upload', validators=[FileAllowed(images, 'Only images are allowed as banners')])
 	custom_banner_pos = SelectField('Custom banner image position', name='custom-banner-pos', default='center-center', choices=[('center-top', 'Top'), ('center-center', 'Centered (default)'), ('center-bottom', 'Bottom')])
 	link_github = StringField('Your GitHub username', name='link-github')
 	codam_monit = BooleanField('Replace Black Hole with Codam\'s Monitoring Progress', name='codam-monit', default=True)
