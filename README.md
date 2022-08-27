@@ -8,7 +8,7 @@ This guide is written with Debian 11 ("Bullseye") in mind. It should also work o
 ### Update & install system dependencies
 ```sh
 sudo apt update && sudo apt upgrade
-sudo apt install git
+sudo apt install git nginx openssl
 ```
 
 ### Clone the repository
@@ -75,11 +75,37 @@ sudo systemctl start iintra-server.service
 sudo systemctl enable iintra-server.service
 ```
 
-### Install and set up nginx
+### Set up nginx as reverse-proxy
+#### With self-signed certificate
 ```sh
-sudo apt install -y nginx
+# Copy snippet
+cp ./useful/iintra.nginx.snippet.conf /etc/nginx/snippets/
+
+# Create SSL certificate for HTTPS support
+sudo mkdir -p /etc/nginx/ssl
+sudo openssl req -newkey rsa:2048 -x509 -days 365 -nodes \
+	-keyout /etc/nginx/ssl/server.key -out /etc/nginx/ssl/server.pem \
+	-subj "/C=NL/ST=North-Holland/L=Amsterdam/O=ImprovedIntra/OU=/CN=iintra.freekb.es"
+
+# Copy server config
+cp ./useful/nginx.example.ssl.conf /etc/nginx/sites-available/iintra.freekb.es.conf
+ln -s /etc/nginx/sites-available/iintra.freekb.es.conf /etc/nginx/sites-enabled/
+
+# Restart nginx
+sudo systemctl restart nginx
+```
+
+#### Without SSL support
+Useful if you want to add a certificate yourself, for example using `certbot`.
+```sh
+# Copy snippet
+cp ./useful/iintra.nginx.snippet.conf /etc/nginx/snippets/
+
+# Copy server config
 cp ./useful/nginx.example.conf /etc/nginx/sites-available/iintra.freekb.es.conf
 ln -s /etc/nginx/sites-available/iintra.freekb.es.conf /etc/nginx/sites-enabled/
+
+# Restart nginx
 sudo systemctl restart nginx
 ```
 
@@ -101,6 +127,7 @@ cp useful/iintra-server.service /etc/systemd/system/
 sudo systemctl restart ./useful/iintra-server.service
 
 # Update nginx config and restart (usually not required)
+# Do not run this step if you do not use a self-signed certificate but do use SSL/HTTPS
 cp ./useful/nginx.example.conf /etc/nginx/sites-available/iintra.freekb.es.conf
 sudo systemctl restart nginx
 ```
