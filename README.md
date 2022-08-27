@@ -58,26 +58,53 @@ sudo apt install -y python3 python3-pip python-setuptools libpq-dev python3-virt
 # Create a virtual environment
 sudo virtualenv -p python3 .venv
 
-# Start the virtual environment
+# Activate the virtual environment
 . .venv/bin/activate
 
 # Install packages
 sudo .venv/bin/pip install -r requirements.txt
 ```
 
+### Set up secrets
+Copy the `.secret.env.example` file, rename it to `.secret.env` and fill it in.
+
 ### Configure the systemd service
 ```sh
-sudo systemctl start ./useful/iintra-server.service
-sudo systemctl enable ./useful/iintra-server.service
+cp useful/iintra-server.service /etc/systemd/system/
+sudo systemctl start iintra-server.service
+sudo systemctl enable iintra-server.service
 ```
 
 ### Install and set up nginx
 ```sh
 sudo apt install -y nginx
 cp ./useful/nginx.example.conf /etc/nginx/sites-available/iintra.freekb.es.conf
-ln -s /etc/nginx/sites-available/iintra.freekb.es.conf /etc/nginx/sites-enabled/iintra.freekb.es.conf
+ln -s /etc/nginx/sites-available/iintra.freekb.es.conf /etc/nginx/sites-enabled/
 sudo systemctl restart nginx
 ```
+
+
+## Updating the server
+```sh
+# Pull latest updates
+cd /opt/improved_intra_server
+git pull
+
+# Activate the virtual environment
+. .venv/bin/activate
+
+# Install and update dependencies
+sudo .venv/bin/pip install -r requirements.txt
+
+# Restart the wsgi server
+cp useful/iintra-server.service /etc/systemd/system/
+sudo systemctl restart ./useful/iintra-server.service
+
+# Update nginx config and restart (usually not required)
+cp ./useful/nginx.example.conf /etc/nginx/sites-available/iintra.freekb.es.conf
+sudo systemctl restart nginx
+```
+
 
 ## Using a self-hosted back-end server in development
 On a user machine, modify the hosts file to point to your development server. Don't forget to remove those lines after development!
