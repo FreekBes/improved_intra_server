@@ -100,7 +100,7 @@ def set_v1_settings(form:OldSettings):
 		db_settings.updated_ver = form.ext_version.data
 
 		# Update profile
-		db_profile:Profile = db.session.query(Profile).filter(Settings.user_id == db_user.intra_id).one()
+		db_profile:Profile = db.session.query(Profile).filter(Profile.user_id == db_user.intra_id).one()
 		db_profile.link_git = parse_github_username(form.link_github.data) if form.link_github.data else None
 
 		# Banner position
