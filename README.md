@@ -14,6 +14,7 @@ sudo apt install git nginx openssl
 ### Clone the repository
 ```sh
 git clone https://github.com/FreekBes/improved_intra_server.git /opt/improved_intra_server
+sudo chown -R www-data:www-data /opt/improved_intra_server
 cd /opt/improved_intra_server
 ```
 
@@ -117,6 +118,7 @@ sudo systemctl restart nginx
 # Pull latest updates
 cd /opt/improved_intra_server
 git pull
+sudo chown -R www-data:www-data /opt/improved_intra_server
 
 # Activate the virtual environment
 . .venv/bin/activate
