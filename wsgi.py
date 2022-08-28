@@ -36,4 +36,4 @@ print('Default content initialized')
 if __name__ == '__main__':
 	# Start the web server
 	print('Running in debug mode, starting app in wsgi.py')
-	app.run(debug=True, port=config['FLASK_PORT'], host='0.0.0.0', use_reloader=True)
+	app.run(debug=True, port=5000, host='0.0.0.0', use_reloader=True)
