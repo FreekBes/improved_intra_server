@@ -69,7 +69,7 @@ def get_v1_settings(login:str):
 		'codam-monit': db_settings.codam_monit,
 		'codam-buildingtimes-public': False,
 		'codam-buildingtimes-chart': False,
-		'codam-auto-equip-coa-title': True,
+		'codam-auto-equip-coa-title': db_settings.codam_auto_equip_coa_title,
 		'timestamp': int(db_settings.updated_at.timestamp()),
 
 		'link-github': unparse_github_username(db_profile.link_git) if db_profile.link_git else '',
