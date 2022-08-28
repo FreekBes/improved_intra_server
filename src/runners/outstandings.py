@@ -10,24 +10,22 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.000Z'
 
 
 class OutstandingsRunner:
-	def __init__(self):
-		self.now = datetime.utcnow()
-
-	def get_teams(self, user:User, since:str):
-		payload = { 'range[updated_at]': '{},{}'.format(since, self.now.strftime(DATE_FORMAT)) }
+	def get_teams(self, user:User, since:str, now:str):
+		payload = { 'range[updated_at]': '{},{}'.format(since, now) }
 		projects_users = ic.pages_threaded('users/{}/projects_users'.format(user.intra_id), params=payload)
 		logging.info('Fetched {} projects_users'.format(len(projects_users)))
-		try:
-			for projects_user in projects_users:
+		for projects_user in projects_users:
+			try:
 				# Create or update all teams
 				for team in projects_user['teams']:
-					db_team = session.query(Team).filter_by(intra_id=team['id'], user_id=user.intra_id, projects_user_id=projects_user['id']).first()
+					db_team:Team = session.query(Team).filter_by(intra_id=team['id'], user_id=user.intra_id).first()
 					if not db_team:
 						db_team = Team(intra_id=team['id'], user_id=user.intra_id, projects_user_id=projects_user['id'])
 					db_team.final_mark = int(team['final_mark']) if team['final_mark'] else 0
 					db_team.current = False
 					db_team.best = False
 					session.merge(db_team)
+					session.commit()
 
 				# Set current team
 				current_team:Team = session.query(Team).filter_by(intra_id=projects_user['current_team_id']).first()
@@ -44,11 +42,33 @@ class OutstandingsRunner:
 				best_team:Team = session.query(Team).filter_by(intra_id=highest_mark_id).first()
 				if best_team:
 					best_team.best = True
-			session.flush()
-		except Exception as e:
-			logging.error('Error creating team in DB: {}'.format(str(e)))
-			session.rollback()
-		session.commit()
+				session.commit()
+			except Exception as e:
+				logging.error('Error creating team in DB: {}'.format(str(e)))
+				session.rollback()
+		session.flush()
+
+
+	def get_evaluations(self, user:User, since:str, now:str):
+		payload = { 'range[updated_at]': '{},{}'.format(since, now), 'filter[future]': 'false', 'filter[filled]': 'true' }
+		evaluations = ic.pages_threaded('users/{}/scale_teams/as_corrected'.format(user.intra_id), params=payload)
+		logging.info('Fetched {} evaluations'.format(len(evaluations)))
+		for eval in evaluations:
+			# Create or update all evaluations
+			try:
+				db_eval:Evaluation = session.query(Evaluation).filter_by(intra_id=eval['id']).first()
+				if not db_eval:
+					db_eval = Evaluation(intra_id=eval['id'], intra_team_id=eval['team']['id'], evaluator_id=eval['corrector']['id'], evaluated_at=eval['begin_at'])
+				db_eval.mark = int(eval['final_mark']) if eval['final_mark'] else 0
+				db_eval.outstanding = (eval['flag']['id'] == 9)
+				db_eval.success = eval['flag']['positive']
+				session.merge(db_eval)
+				session.commit()
+			except Exception as e:
+				logging.error('Error creating evaluation in DB: {}'.format(str(e)))
+				session.rollback()
+		session.flush()
+
 
 
 	def fetch_for_user(self, user:User):
@@ -56,11 +76,16 @@ class OutstandingsRunner:
 		last_fetch_time = 1262300400 #2010-01-01
 		if db_runner.outstandings:
 			last_fetch_time = int(db_runner.outstandings.timestamp())
-		last_fetch_dt = datetime.utcfromtimestamp(last_fetch_time)
-		last_fetch_str = last_fetch_dt.strftime(DATE_FORMAT)
+		last_fetch_str = datetime.utcfromtimestamp(last_fetch_time).strftime(DATE_FORMAT)
+		fetch_start = datetime.utcnow()
+		fetch_start_str = fetch_start.strftime(DATE_FORMAT)
 		logging.info('Fetching changes in projects_users since {}'.format(last_fetch_str))
-		self.get_teams(user, last_fetch_str)
-
+		self.get_teams(user, last_fetch_str, fetch_start_str)
+		self.get_evaluations(user, last_fetch_str, fetch_start_str)
+		db_runner:Runner = session.query(Runner).filter_by(user_id=user.intra_id).one()
+		db_runner.outstandings = fetch_start
+		session.commit()
+		session.flush()
 
 	def run(self):
 		users:list[User] = session.query(User.intra_id, User.login).all()
@@ -69,7 +94,6 @@ class OutstandingsRunner:
 		amount_users = len(users)
 		for user in users:
 			logging.info('Fetching outstandings for {} ({}) --- {} of {} users...'.format(user.login, str(user.intra_id), str(i), amount_users))
-			self.now = datetime.utcnow()
 			self.fetch_for_user(user)
 			i += 1
 

@@ -104,7 +104,7 @@ class ColorScheme(db.Model):
 class Evaluation(db.Model):
 	__tablename__ = 'evaluations'
 	intra_id = Column(Integer, primary_key=True, autoincrement=False)
-	intra_team_id = Column(Integer, ForeignKey('teams.id'))
+	intra_team_id = Column(Integer)
 	success = Column(Boolean, default=False)
 	outstanding = Column(Boolean, default=False)
 	mark = Column(Integer, default=0)
