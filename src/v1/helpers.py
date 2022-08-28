@@ -99,6 +99,11 @@ def set_v1_settings(form:OldSettings):
 		db_settings.theme = 2 if form.theme.data == 'dark' else 3 if form.theme.data == 'light' else 1
 		db_settings.updated_ver = form.ext_version.data
 
+		# Update color scheme
+		db_color_scheme:ColorScheme = db.session.query(ColorScheme.id).filter(ColorScheme.internal_name == form.colors.data).first()
+		if db_color_scheme:
+			db_settings.colors = db_color_scheme.id
+
 		# Update profile
 		db_profile:Profile = db.session.query(Profile).filter(Profile.user_id == db_user.intra_id).one()
 		db_profile.link_git = parse_github_username(form.link_github.data) if form.link_github.data else None
