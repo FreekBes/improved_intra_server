@@ -1,13 +1,9 @@
-import logging
 import time
 
-from .models.models import Campus, OAuth2Token, Profile, Settings, User
+from .models.models import Campus, OAuth2Token, Profile, Settings, User, Runner
 from authlib.integrations.flask_client import OAuth
 from flask import url_for, session, redirect
 from . import app, db
-
-
-logging.basicConfig(filename=app.config['LOG_FILE_SERVER'], level=logging.DEBUG, format=app.config['LOG_FORMAT'])
 
 
 def update_token(name:str, token:str, refresh_token:str=None, access_token:str=None):
@@ -99,6 +95,11 @@ def auth():
 	if not Profile.query.filter_by(user_id = user['id']).first():
 		db_profile = Profile(user['id'])
 		db.session.add(db_profile)
+
+	# Create runners for user if not exist
+	if not Runner.query.filter_by(user_id = user['id']).first():
+		db_runner = Runner(user['id'])
+		db.session.add(db_runner)
 
 	# Add or modify token in DB
 	db_token = OAuth2Token(user_id=user['id'], name='intra', token_type=token['token_type'], access_token=token['access_token'], refresh_token=token['refresh_token'], expires_at=int(time.time()+token['expires_in']))

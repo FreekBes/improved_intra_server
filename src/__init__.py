@@ -75,3 +75,7 @@ def add_headers(response):
 			response.headers['X-Frame-Options'] = 'allow-from'
 
 	return response
+
+# Set up runners
+from .runners.outstandings import outstandingsRunner
+outstandingsRunner.run()

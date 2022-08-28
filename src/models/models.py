@@ -155,6 +155,19 @@ class Profile(db.Model):
 			.format(self.user_id, self.banner_img, self.banner_pos, self.updated_at)
 
 
+class Runner(db.Model):
+	__tablename__ = 'runners'
+	user_id = Column(Integer, ForeignKey('users.intra_id'), primary_key=True)
+	outstandings = Column(DateTime(timezone=False), nullable=True, default=None)
+
+	def __init__(self, user_id):
+		self.user_id = user_id
+
+	def __repr__(self):
+		return "<Runner user_id={}, outstandings='{}'>"\
+			.format(self.user_id, self.updated_at)
+
+
 class Settings(db.Model):
 	__tablename__ = 'settings'
 	user_id = Column(Integer, ForeignKey('users.intra_id'), primary_key=True)
