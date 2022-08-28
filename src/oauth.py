@@ -64,6 +64,7 @@ def auth():
 			full_campus = resp.json()
 			db_campus = Campus(full_campus['id'], full_campus['name'], full_campus['city'], full_campus['country'])
 			db.session.add(db_campus)
+			db.session.flush()
 
 	# Find primary campus
 	primary_campus_id = None
@@ -85,6 +86,7 @@ def auth():
 		anonymize_date=user['anonymize_date']
 	)
 	db.session.merge(db_user) # Add if not exist, update if exist
+	db.session.flush()
 
 	# Create settings for user if not exist
 	if not Settings.query.filter_by(user_id = user['id']).first():
