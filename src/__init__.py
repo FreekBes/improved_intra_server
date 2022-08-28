@@ -63,9 +63,8 @@ def add_headers(response):
 	response.headers['X-Frame-Options'] = 'sameorigin'
 	response.headers['Vary'] = 'Origin'
 	response.headers['X-Content-Type-Options'] = 'nosniff'
-	response.headers['X-Powered-By'] = 'Werkzeug/{} Flask/{} Python/{}'.format(__werkzeug_version__, __flask_version__, platform.python_version())
+	response.headers['X-Powered-By'] = 'ImprovedIntraServer/{} Werkzeug/{} Flask/{} Python/{}'.format(__version__, __werkzeug_version__, __flask_version__, platform.python_version())
 	response.headers['X-Target-Version'] = 'ImprovedIntra/{}'.format(__target_ext_version__)
-	response.headers['Server'] = 'ImprovedIntraServer/{}'.format(__version__)
 
 	origin = request.environ.get('HTTP_ORIGIN', None)
 	if origin is not None:
