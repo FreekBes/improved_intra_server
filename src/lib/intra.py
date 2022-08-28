@@ -8,7 +8,6 @@
 # - modified logger configuration
 #
 
-import os
 import math
 import json
 import time
@@ -22,10 +21,10 @@ from copy import deepcopy
 from pygments import highlight
 from pygments.lexers.data import JsonLexer
 from pygments.formatters.terminal import TerminalFormatter
-from config import config
+from .config import config
 
 requests.packages.urllib3.disable_warnings()
-logging.basicConfig(filename=config['LOG_FILE_API'], level=logging.DEBUG, format=config['LOG_FORMAT'])
+logging.basicConfig(filename=config['LOG_FILE_SERVER'], level=logging.DEBUG, format=config['LOG_FORMAT'])
 LOG = logging.getLogger(__name__)
 
 
@@ -33,7 +32,6 @@ class IntraAPIClient(object):
 	verify_requests = False
 
 	def __init__(self, progress_bar=False):
-		base_dir = os.path.dirname(os.path.realpath(__file__))
 		self.client_id = config['BE_CLIENT_ID']
 		self.client_secret = config['BE_CLIENT_SECRET']
 		self.token_url = config['INTRA_TOKEN_URL']
@@ -151,8 +149,7 @@ class IntraAPIClient(object):
 		return total
 
 
-	def pages_threaded(self, url, headers={}, threads=20, stop_page=None,
-															thread_timeout=15, **kwargs):
+	def pages_threaded(self, url, headers={}, threads=20, stop_page=None, thread_timeout=15, **kwargs):
 		def _page_thread(url, headers, queue, **kwargs):
 			queue.put(self.get(url=url, headers=headers, **kwargs).json())
 
