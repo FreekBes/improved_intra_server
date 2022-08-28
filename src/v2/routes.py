@@ -1,9 +1,6 @@
-from flask import session
-import logging
-from .. import app
 from ..oauth import authstart
-
-logging.basicConfig(filename=app.config['LOG_FILE'], level=logging.DEBUG, format=app.config['LOG_FORMAT'])
+from flask import session
+from .. import app
 
 
 @app.route('/v2/connect', methods=['GET'])

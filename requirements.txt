@@ -21,11 +21,13 @@ oauth2==1.9.0.post1
 Pillow==9.2.0
 psycopg2==2.9.3
 pycparser==2.21
+Pygments==2.9.0
 pyparsing==3.0.9
 python-dotenv==0.20.0
 requests==2.28.1
 SQLAlchemy==1.4.40
 SQLAlchemy-Utils==0.38.3
+tqdm==4.56.0
 urllib3==1.26.11
 uWSGI==2.0.20
 Werkzeug==2.2.2

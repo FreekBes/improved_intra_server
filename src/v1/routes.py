@@ -1,15 +1,13 @@
-from flask import session, jsonify, request, redirect, url_for, render_template
-import logging
 import json
 import time
-from .. import app
-from ..models import OAuth2Token
-from ..oauth import authstart
-from .forms import OldSettings
+
+from flask import session, jsonify, request, redirect, url_for, render_template
 from .helpers import get_v1_settings, set_v1_settings
 from werkzeug.datastructures import CombinedMultiDict
-
-logging.basicConfig(filename=app.config['LOG_FILE'], level=logging.DEBUG, format=app.config['LOG_FORMAT'])
+from ..models.models import OAuth2Token
+from .forms import OldSettings
+from ..oauth import authstart
+from .. import app
 
 
 @app.route('/connect.php', methods=['GET'])

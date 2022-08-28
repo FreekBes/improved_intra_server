@@ -1,12 +1,14 @@
-import os
 import imghdr
-from time import time
-from PIL import Image
-from . import app
+import os
+
 from urllib.request import urlopen
+from PIL import Image
+from time import time
+from . import app
 
 ALLOWED_IMG_TYPES = ['jpg', 'jpeg', 'png', 'gif']
 BANNERS_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'static', 'banners')
+
 
 def upload_banner(file, file_name, username:str):
 	try:

@@ -4,23 +4,22 @@ __target_ext_version__ = '3.4.0' # Targeting Improved Intra extension version
 __author__ = 'Freek Bes'
 
 # Imports
-import os
 import platform
+import logging
+
+# Import specifics
 from werkzeug import __version__ as __werkzeug_version__
 from flask import Flask, request, __version__ as __flask_version__
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy_utils import database_exists, create_database
-from sqlalchemy.sql import func
 from urllib.parse import urlparse
-from dotenv import dotenv_values
+from .lib.config import config
 
-# Load config from .env files
-config = {
-	**dotenv_values(".shared.env", verbose=True),  # load shared development variables
-	**dotenv_values(".secret.env", verbose=True),  # load sensitive variables
-	**os.environ,  # override loaded values with environment variables
-}
+# Set up DB uri
 config['SQLALCHEMY_DATABASE_URI'] = f"postgresql+psycopg2://{config['PSQL_USER']}:{config['PSQL_PASS']}@{config['PSQL_HOST']}:{config['PSQL_PORT']}/{config['PSQL_DB']}"
+
+# Set up logging
+logging.basicConfig(filename=config['LOG_FILE_SERVER'], level=logging.DEBUG, format=config['LOG_FORMAT'])
 
 # Set up Flask
 print('Initializing Flask...')
@@ -41,16 +40,16 @@ if not database_exists(db.engine.url):
 
 # Set up tables
 print('Initializing database models...')
-import src.models
+import src.models.models
 db.create_all()
 db.session.commit()
 print('Database models initialized')
 
 # Set up default content
 print('Initializing default content...')
-from src import defaults
-defaults.populate_banner_pos(db.session)
-defaults.populate_color_schemes(db.session)
+from .models.defaults import populate_banner_pos, populate_color_schemes
+populate_banner_pos(db.session)
+populate_color_schemes(db.session)
 print('Default content initialized')
 
 # Import routes

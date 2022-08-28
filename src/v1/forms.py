@@ -1,15 +1,15 @@
-from flask_wtf import FlaskForm
-from wtforms import StringField, SelectField, BooleanField, HiddenField
 from wtforms.validators import Optional, DataRequired, URL as URLValidator
-from flask_wtf.file import FileField, FileAllowed
+from wtforms import StringField, SelectField, BooleanField, HiddenField
 from flask_uploads import UploadSet, configure_uploads
 from ..banners import ALLOWED_IMG_TYPES, BANNERS_PATH
+from flask_wtf.file import FileField, FileAllowed
+from flask_wtf import FlaskForm
 from .. import app
 
 images = UploadSet('images', ALLOWED_IMG_TYPES, default_dest=lambda app: BANNERS_PATH)
 configure_uploads(app, (images))
 
-# Do not update these settings, as these are the only ones that v2 of Improved Intra supports
+# Do not update these settings, as these are the only ones that v3 of Improved Intra supports
 class OldSettings(FlaskForm):
 	class Meta:
 		csrf = False

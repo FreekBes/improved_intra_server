@@ -1,10 +1,10 @@
-from ..models import ColorScheme, BannerImg, BannerPosition, Profile, Settings, User, OAuth2Token
-from urllib.parse import urlparse
-from .. import db
+import re
+
+from ..models.models import ColorScheme, BannerImg, BannerPosition, Profile, Settings, User
 from ..banners import upload_banner, get_banner_info
 from .forms import OldSettings
 from flask import request
-import re
+from .. import db
 
 
 def valid_github_username(username):

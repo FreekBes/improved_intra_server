@@ -1,11 +1,13 @@
-from flask import url_for, session, redirect
-from authlib.integrations.flask_client import OAuth
-from .models import Campus, OAuth2Token, Profile, Settings, User
-from . import app, db
 import logging
 import time
 
-logging.basicConfig(filename=app.config['LOG_FILE'], level=logging.DEBUG, format=app.config['LOG_FORMAT'])
+from .models.models import Campus, OAuth2Token, Profile, Settings, User
+from authlib.integrations.flask_client import OAuth
+from flask import url_for, session, redirect
+from . import app, db
+
+
+logging.basicConfig(filename=app.config['LOG_FILE_SERVER'], level=logging.DEBUG, format=app.config['LOG_FORMAT'])
 
 
 def update_token(name:str, token:str, refresh_token:str=None, access_token:str=None):

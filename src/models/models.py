@@ -1,8 +1,8 @@
 from sqlalchemy import Column as Col, Integer, Boolean, Date, DateTime, ForeignKey
 from sqlalchemy.sql import func
 from sqlalchemy.types import TypeDecorator
-from . import db
-from .banners import get_banner_info
+from ..banners import get_banner_info
+from .. import db
 
 
 class Column(Col):
