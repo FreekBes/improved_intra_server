@@ -11,7 +11,6 @@ import logging
 from werkzeug import __version__ as __werkzeug_version__
 from flask import Flask, request, __version__ as __flask_version__
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy_utils import database_exists, create_database
 from urllib.parse import urlparse
 from .lib.config import config
 
@@ -28,29 +27,6 @@ app.config.from_mapping(config)
 app.secret_key = config['SESSION_KEY']
 db = SQLAlchemy(app)
 print('Flask initialized')
-
-# Set up database
-if not database_exists(db.engine.url):
-	print('Database \'iintra\' does not exist, creating...')
-	if 'microsoft' in platform.uname()[2].lower():
-		print('You are using Microsoft\'s Windows Subsystem for Linux, which under WSL1 has problems with PostgreSQL.')
-		print('If the program hangs here, you will need to switch to WSL2 to continue.')
-	create_database(db.engine.url, encoding='utf8', template='template0')
-	print('Database created')
-
-# Set up tables
-print('Initializing database models...')
-import src.models.models
-db.create_all()
-db.session.commit()
-print('Database models initialized')
-
-# Set up default content
-print('Initializing default content...')
-from .models.defaults import populate_banner_pos, populate_color_schemes
-populate_banner_pos(db.session)
-populate_color_schemes(db.session)
-print('Default content initialized')
 
 # Import routes
 from src.v1 import routes
@@ -74,7 +50,3 @@ def add_headers(response):
 			response.headers['X-Frame-Options'] = 'allow-from'
 
 	return response
-
-# Set up runners
-# from .runners.outstandings import outstandingsRunner
-# outstandingsRunner.run()
