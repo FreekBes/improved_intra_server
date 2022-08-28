@@ -4,15 +4,13 @@ After=network.target
 
 [Service]
 Type=simple
-Restart=on-failure
-RestartSec=3
-User=root
+User=www-data
 Group=www-data
 WorkingDirectory=/opt/improved_intra_server
 Environment="PATH=/opt/improved_intra_server/.venv/bin"
-ExecStartPre=/opt/improved_intra_server/.venv/bin/pip install -r requirements.txt
+# ExecStartPre=/opt/improved_intra_server/.venv/bin/pip install -r requirements.txt
 ExecStart=/opt/improved_intra_server/.venv/bin/uwsgi --ini wsgi.ini
-ExecStartPost=/usr/bin/bash -c '/usr/bin/sleep 5 && /usr/bin/sudo /usr/bin/systemctl restart postgresql'
+# ExecStartPost=/usr/bin/bash -c '/usr/bin/sleep 5 && /usr/bin/sudo /usr/bin/systemctl restart postgresql'
 
 [Install]
 WantedBy=multi-user.target
