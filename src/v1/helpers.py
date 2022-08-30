@@ -39,7 +39,9 @@ def parse_github_username(git_user):
 
 def get_v1_settings(login:str):
 	try:
-		db_user:User = db.session.query(User.intra_id, User.login).filter(User.login == login).one()
+		db_user:User = db.session.query(User.intra_id, User.login).filter(User.login == login).first()
+		if not db_user:
+			return None
 		db_settings:Settings = db.session.query(Settings).filter(Settings.user_id == db_user.intra_id).one() # This query can be sped up by selecting only what is needed in the future
 		db_colors:ColorScheme = db.session.query(ColorScheme.internal_name).filter(ColorScheme.id == db_settings.colors).one()
 		db_profile:Profile = db.session.query(Profile.banner_img, Profile.banner_pos, Profile.link_git).filter(Profile.user_id == db_user.intra_id).one()
