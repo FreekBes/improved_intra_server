@@ -1,15 +1,12 @@
 import src.models.models
 import platform
 
-from src import app, db
-from src.lib.config import config
+from src.models.defaults import populate_banner_pos, populate_color_schemes
 from sqlalchemy_utils import database_exists, create_database
 from src.runners.outstandings import outstandingsRunner
+from src.lib.config import config
+from src import app, db
 
-from src.models.defaults import populate_banner_pos, populate_color_schemes
-
-# Sync some data using runners
-outstandingsRunner.run()
 
 # Set up database
 if not database_exists(db.engine.url):
@@ -32,6 +29,9 @@ print('Initializing default content...')
 populate_banner_pos(db.session)
 populate_color_schemes(db.session)
 print('Default content initialized')
+
+# Sync some data using runners
+outstandingsRunner.run()
 
 if __name__ == '__main__':
 	# Start the web server
