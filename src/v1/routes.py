@@ -98,6 +98,9 @@ def oldOutstandings():
 	db_user:User = User.query.filter_by(login = request.args['username']).first()
 	if not db_user:
 		return { 'type': 'success', 'message': 'No data exists for this user', 'data': [] }, 200
+	db_runner:Runner = db.session.query(Runner.outstandings).filter(Runner.user_id == db_user.intra_id).one()
+	if not db_runner or not db_runner.outstandings:
+		return { 'type': 'success', 'message': 'No data exists for this user', 'data': [] }, 200
 
 	# Set up outstandings per projects_user dict
 	outstandings = dict()
@@ -130,6 +133,5 @@ def oldOutstandings():
 		status = 200,
 		mimetype = 'application/json'
 	)
-	db_runner:Runner = db.session.query(Runner.outstandings).filter(Runner.user_id == db_user.intra_id).one()
 	resp.headers['Last-Modified'] = db_runner.outstandings.strftime('%a, %d %b %Y %H:%M:%S GMT')
 	return (resp.response, resp.status_code, resp.headers.items())
