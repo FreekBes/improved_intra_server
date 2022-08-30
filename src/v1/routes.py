@@ -46,10 +46,10 @@ def oldTestKey():
 	if not 'access_token' in request.form:
 		return { 'type': 'error', 'message': 'Missing access_token field in POST data' }, 400
 	try:
-		db_token = OAuth2Token.query.filter_by(user_id=session['uid']).first()
+		db_token:OAuth2Token = OAuth2Token.query.filter_by(user_id=session['uid']).first()
 		if not db_token:
 			return { 'type': 'error', 'message': 'No access token in DB, authenticate again' }, 404
-		if request.form.get('access_token') != db_token.access_token:
+		if str(request.form['access_token']) != str(db_token.access_token):
 			return { 'type': 'error', 'message': 'Access token no longer works' }, 403
 		return { 'type': 'success', 'message': 'Access token still works' }, 200
 	except:

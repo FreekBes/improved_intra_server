@@ -17,6 +17,9 @@ from .lib.config import config
 # Set up DB uri
 config['SQLALCHEMY_DATABASE_URI'] = f"postgresql+psycopg2://{config['PSQL_USER']}:{config['PSQL_PASS']}@{config['PSQL_HOST']}:{config['PSQL_PORT']}/{config['PSQL_DB']}"
 
+# Prevent Internal Server Error (Flask is stupid)
+config['MAX_CONTENT_LENGTH'] = int(config['MAX_CONTENT_LENGTH'])
+
 # Set up logging
 logging.basicConfig(filename=config['LOG_FILE_SERVER'], level=logging.DEBUG, format=config['LOG_FORMAT'])
 
