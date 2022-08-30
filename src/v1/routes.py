@@ -42,14 +42,14 @@ def oldTestKey():
 	if not request.method == 'POST':
 		return { 'type': 'error', 'message': 'Method should be POST' }, 405
 	if not 'uid' in session:
-		return { 'type': 'error', 'message': 'No ongoing session, authenticate first' }, 410
+		return { 'type': 'error', 'message': 'No ongoing session, authenticate first' }, 401
 	try:
 		db_token = OAuth2Token.query.filter_by(user_id=session['uid']).first()
 		if request.form.get('access_token') != db_token.access_token:
-			return { 'type': 'error', 'message': 'Access token no longer works' }, 410
+			return { 'type': 'error', 'message': 'Access token no longer works' }, 403
 		return { 'type': 'success', 'message': 'Access token still works' }, 200
 	except:
-		return { 'type': 'error', 'message': 'No access token in DB, authenticate again' }, 410
+		return { 'type': 'error', 'message': 'No access token in DB, authenticate again' }, 401
 
 
 @app.route('/delete.php')
