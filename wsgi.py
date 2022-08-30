@@ -1,7 +1,9 @@
 import src.models.models
 import platform
+import os
 
 from src.models.defaults import populate_banner_pos, populate_color_schemes
+from apscheduler.schedulers.background import BackgroundScheduler
 from sqlalchemy_utils import database_exists, create_database
 from src.runners.outstandings import outstandingsRunner
 from src.lib.config import config
@@ -31,7 +33,29 @@ populate_color_schemes(db.session)
 print('Default content initialized')
 
 # Sync some data using runners
-outstandingsRunner.run()
+if os.path.exists('runners.sqlite'):
+	os.remove('runners.sqlite')
+	print('Removed runners.sqlite DB, as we add the runners again on reboot anyways')
+runner_scheduler = BackgroundScheduler({
+	'apscheduler.jobstores.default': {
+		'type': 'sqlalchemy',
+		'url': 'sqlite:///runners.sqlite'
+	},
+	'apscheduler.job_defaults.coalesce': 'false'
+})
+runner_scheduler.start()
+runner_scheduler.add_job(
+	outstandingsRunner.run,
+	'cron',
+	month='*',
+	day='*',
+	hour='2,10,18', # Every 8 hours
+	id='outst-rnr',
+	name='outstandings-runner',
+	replace_existing=True,
+	coalesce=True,
+	misfire_grace_time=7200
+)
 
 if __name__ == '__main__':
 	# Start the web server
