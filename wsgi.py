@@ -33,14 +33,7 @@ populate_color_schemes(db.session)
 print('Default content initialized')
 
 # Sync some data using runners
-if os.path.exists('runners.sqlite'):
-	os.remove('runners.sqlite')
-	print('Removed runners.sqlite DB, as we add the runners again on reboot anyways')
 runner_scheduler = BackgroundScheduler({
-	'apscheduler.jobstores.default': {
-		'type': 'sqlalchemy',
-		'url': 'sqlite:///runners.sqlite'
-	},
 	'apscheduler.job_defaults.coalesce': 'false'
 })
 runner_scheduler.start()
