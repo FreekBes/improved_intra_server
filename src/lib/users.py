@@ -1,6 +1,6 @@
-from ..models.models import Campus, User, Settings, Profile, Runner, OAuth2Token
+from ..models.models import Campus, User, Settings, Profile, Runner
 from .. import app, db
-from intra import ic
+from .intra import ic
 
 def add_mod_user(user:dict):
 	# Add campus(es) to DB

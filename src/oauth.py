@@ -3,7 +3,7 @@ import time
 from .models.models import Campus, OAuth2Token, Profile, Settings, User, Runner
 from authlib.integrations.flask_client import OAuth
 from flask import url_for, session, redirect
-from lib.users import add_mod_user
+from .lib.users import add_mod_user
 from . import app, db
 
 
