@@ -16,11 +16,11 @@ def connect():
 def disconnect():
 	if not 'uid' in session:
 		return 'Already logged out', 200
-	session.pop('login')
-	session.pop('uid')
-	session.pop('staff')
-	session.pop('v')
-	session.pop('v1_conn_data')
+	session.pop('login', None)
+	session.pop('uid', None)
+	session.pop('staff', None)
+	session.pop('v', None)
+	session.pop('v1_conn_data', None)
 	return 'Logged out', 200
 
 
