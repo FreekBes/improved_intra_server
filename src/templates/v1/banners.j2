@@ -36,11 +36,11 @@
 			}
 		</style>
 	</head>
-	<body>
+	<body class="bg-dark">
 		<template id="banner-template">
 			<tr class="banner-row">
 				<th scope="row">0.</th>
-				<td>login</td>
+				<td><a href="https://profile.intra.42.fr/users/me">login</a></td>
 				<td>campus</td>
 				<td>domain</td>
 				<td class="img-col" ><img class="banner-img" loading="lazy" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" alt="Could not load image" onclick="window.open(this.src);" /></td>
@@ -91,11 +91,14 @@
 						if (res['type'] == 'success') {
 							for (banner of res['data']) {
 								const bannerRow = template.content.cloneNode(true);
-								bannerRow.firstElementChild.children[0].innerText = banner['id'] + '.';
-								bannerRow.firstElementChild.children[1].innerText = banner['user']['login'] + (banner['user']['staff'] ? ' (staff)' : '');
-								bannerRow.firstElementChild.children[2].innerText = banner['user']['campus'] ? banner['user']['campus'] : 'Unknown';
-								bannerRow.firstElementChild.children[3].innerText = new URL(banner['url']).hostname;
-								bannerRow.firstElementChild.children[4].firstElementChild.src = banner['url'];
+								const cols = bannerRow.firstElementChild.children;
+								cols[0].innerText = banner['id'] + '.';
+								cols[1].firstElementChild.href = 'https://profile.intra.42.fr/users/' + banner['user']['login'];
+								cols[1].firstElementChild.innerText = banner['user']['login'] + (banner['user']['staff'] ? ' (staff)' : '');
+								cols[2].innerText = banner['user']['campus'] ? banner['user']['campus'] : 'Unknown';
+								cols[3].innerText = new URL(banner['url']).hostname;
+								cols[4].firstElementChild.src = banner['url'];
+								cols[4].firstElementChild.title = banner['url'];
 								tableBody.appendChild(bannerRow);
 							}
 						}
