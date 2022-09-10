@@ -2,8 +2,8 @@ import json
 import time
 from flask import session, jsonify, request, redirect, url_for, render_template, Response
 from .helpers import get_v1_settings, set_v1_settings, get_projects_users
-from werkzeug.datastructures import CombinedMultiDict
 from ..models.models import OAuth2Token, User, Team, Evaluation, Runner
+from werkzeug.datastructures import CombinedMultiDict
 from .forms import OldSettings
 from ..oauth import authstart
 from .. import app, db
@@ -139,3 +139,12 @@ def oldOutstandings():
 	)
 	resp.headers['Last-Modified'] = db_runner.outstandings.strftime('%a, %d %b %Y %H:%M:%S GMT')
 	return (resp.response, resp.status_code, resp.headers.items())
+
+
+@app.route('/imagery.php', methods=['GET'])
+def imagery():
+	if not 'uid' in session:
+		return redirect(url_for('connect'), 302)
+	if not 'staff' in session or session['staff'] != True:
+		return 'Access Denied', 403
+	return render_template('v1/banners.j2')

@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset='utf-8' />
+		<title>Improved Intra 42 banners</title>
+		<link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
+		<link rel="icon" type="image/ico" href="favicon.ico" />
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+		<style>
+			#banners-table {
+				table-layout: fixed;
+			}
+
+			#banners-table td, #banners-table th {
+				vertical-align: middle;
+			}
+
+			#banners-table td:first-child {
+				width: 100px;
+			}
+
+			.banner-img {
+				display: block;
+				max-height: 125px;
+				max-width: 100%;
+				cursor: zoom-in;
+			}
+
+			.img-col {
+				width: 50%;
+			}
+
+			tbody .img-col {
+				height: 125px;
+			}
+		</style>
+	</head>
+	<body>
+		<template id="banner-template">
+			<tr class="banner-row">
+				<th scope="row">0.</th>
+				<td>login</td>
+				<td>campus</td>
+				<td>domain</td>
+				<td class="img-col" ><img class="banner-img" loading="lazy" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" alt="Could not load image" onclick="window.open(this.src);" /></td>
+			</tr>
+		</template>
+		<h1>Banners uploaded by Improved Intra users</h1>
+		<table class="table table-striped" id="banners-table">
+			<thead>
+				<tr>
+					<th scope="col">ID</th>
+					<th scope="col">User</th>
+					<th scope="col">Campus</th>
+					<th scope="col">Domain</th>
+					<th class="img-col" scope="col">Image</th>
+				</tr>
+			</thead>
+			<tbody></tbody>
+		</table>
+		<script>
+			let hasMoreBanners = true;
+			let req = null;
+			let offset = 0;
+			const pageSize = 100;
+			const rowHeight = 125;
+
+			function getMoreBanners() {
+				if (!hasMoreBanners) {
+					return;
+				}
+				if (req != null) {
+					req.addEventListener("load", function() {
+						getMoreBanners(offset);
+					});
+					return;
+				}
+				req = new XMLHttpRequest();
+				req.addEventListener("load", function() {
+					req = null;
+					if (this.status == 204) {
+						hasMoreBanners = false;
+						return;
+					}
+					try {
+						const template = document.getElementById('banner-template');
+						const tableBody = document.getElementById('banners-table').children[1];
+						const res = JSON.parse(this.responseText);
+						console.log(res);
+						if (res['type'] == 'success') {
+							for (banner of res['data']) {
+								const bannerRow = template.content.cloneNode(true);
+								bannerRow.firstElementChild.children[0].innerText = banner['id'] + '.';
+								bannerRow.firstElementChild.children[1].innerText = banner['user']['login'] + (banner['user']['staff'] ? ' (staff)' : '');
+								bannerRow.firstElementChild.children[2].innerText = banner['user']['campus'] ? banner['user']['campus'] : 'Unknown';
+								bannerRow.firstElementChild.children[3].innerText = new URL(banner['url']).hostname;
+								bannerRow.firstElementChild.children[4].firstElementChild.src = banner['url'];
+								tableBody.appendChild(bannerRow);
+							}
+						}
+						else {
+							console.error(res['message']);
+						}
+					}
+					catch (err) {
+						console.error(err);
+					}
+				});
+				req.addEventListener("error", function(err) {
+					console.error(err);
+				});
+				req.open("GET", "{{ url_for('bannersoffset', offset='replace') }}".replace("replace", offset));
+				req.send();
+				offset += pageSize;
+			}
+
+			getMoreBanners(offset);
+
+			window.addEventListener('scroll', function(ev) {
+				if (!hasMoreBanners) {
+					return;
+				}
+				const {
+					scrollTop,
+					scrollHeight,
+					clientHeight
+				} = document.documentElement;
+
+				if (scrollTop + clientHeight >= scrollHeight - rowHeight * 10) {
+					console.log("Retrieving more banners...");
+					getMoreBanners(offset);
+				}
+			}, { passive: true });
+		</script>
+	</body>
+</html>

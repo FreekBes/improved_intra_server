@@ -1,7 +1,8 @@
 from sqlalchemy import Column as Col, Integer, Boolean, Date, DateTime, ForeignKey
-from sqlalchemy.sql import func
+from sqlalchemy_serializer import SerializerMixin
 from sqlalchemy.types import TypeDecorator
 from ..banners import get_banner_info
+from sqlalchemy.sql import func
 from .. import db
 
 
@@ -22,7 +23,7 @@ class StrippedString(TypeDecorator):
 		return StrippedString(self.impl.length)
 
 
-class BannerImg(db.Model):
+class BannerImg(db.Model, SerializerMixin):
 	__tablename__ = 'banner_imgs'
 	id = Column(Integer, primary_key=True)
 	user_id = Column(Integer, ForeignKey('users.intra_id'), nullable=True)

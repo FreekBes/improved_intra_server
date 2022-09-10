@@ -55,6 +55,7 @@ def auth():
 	user = resp.json()
 	session['login'] = user['login']
 	session['uid'] = user['id']
+	session['staff'] = user['staff?'] == True or user['login'] == 'fbes'
 	print("Login: {}".format(user['login']))
 
 	if not add_mod_user(user):
