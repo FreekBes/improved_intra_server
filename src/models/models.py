@@ -7,6 +7,7 @@ from .. import db
 
 
 class Column(Col):
+	inherit_cache = True
 	def __init__(self, *args, **kwargs):
 		kwargs.setdefault('nullable', False) # Default Column to be not nullable
 		super().__init__(*args, **kwargs)
@@ -14,6 +15,7 @@ class Column(Col):
 
 class StrippedString(TypeDecorator):
 	impl = db.String
+	cache_ok = True
 
 	def process_bind_param(self, value, dialect):
 		# In case you have nullable string fields and pass None

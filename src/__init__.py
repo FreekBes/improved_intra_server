@@ -28,6 +28,8 @@ print('Initializing Flask...')
 app = Flask(__name__)
 app.config.from_mapping(config)
 app.secret_key = config['SESSION_KEY']
+# Uncomment the following line to echo queries for debugging
+# app.config['SQLALCHEMY_ECHO'] = True
 db = SQLAlchemy(app)
 print('Flask initialized')
 
