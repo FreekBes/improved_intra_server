@@ -28,8 +28,8 @@ class OutstandingsRunner:
 					session.commit()
 
 				# Set current team
-				current_team:Team = session.query(Team).filter_by(intra_id=projects_user['current_team_id']).first()
-				if current_team:
+				current_teams:list[Team] = session.query(Team).filter_by(intra_id=projects_user['current_team_id']).all()
+				for current_team in current_teams:
 					current_team.current = True
 
 				# Set best team
@@ -39,8 +39,8 @@ class OutstandingsRunner:
 					if team['final_mark'] and team['final_mark'] > highest_mark:
 						highest_mark = team['final_mark']
 						highest_mark_id = team['id']
-				best_team:Team = session.query(Team).filter_by(intra_id=highest_mark_id).first()
-				if best_team:
+				best_teams:list[Team] = session.query(Team).filter_by(intra_id=highest_mark_id).all()
+				for best_team in best_teams:
 					best_team.best = True
 				session.commit()
 			except Exception as e:
