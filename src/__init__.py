@@ -35,7 +35,8 @@ print('Flask initialized')
 
 # Import routes
 from src.v1 import routes as v1routes
-from src.v2 import routes as v2routes
+from src.v2.routes.banners import *
+from src.v2.routes.sessions import *
 from . import oauth
 
 # Set up headers
