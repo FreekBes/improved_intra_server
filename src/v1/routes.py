@@ -58,7 +58,7 @@ def oldTestKey():
 
 @app.route('/delete.php')
 def oldDelete():
-	return { 'type': 'error', 'message': 'The delete endpoint has been removed' }, 404
+	return { 'type': 'error', 'message': 'The delete endpoint has been removed' }, 410
 
 
 @app.route('/update.php', methods=['GET', 'POST'])
