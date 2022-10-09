@@ -34,8 +34,8 @@ db = SQLAlchemy(app)
 print('Flask initialized')
 
 # Import routes
-from src.v1 import routes
-from src.v2 import routes
+from src.v1 import routes as v1routes
+from src.v2 import routes as v2routes
 from . import oauth
 
 # Set up headers
