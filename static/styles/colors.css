@@ -1,0 +1,75 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        ::::::::            */
+/*   colors.css                                         :+:    :+:            */
+/*                                                     +:+                    */
+/*   By: fbes <fbes@student.codam.nl>                 +#+                     */
+/*                                                   +#+                      */
+/*   Created: 2022/10/09 20:45:50 by fbes          #+#    #+#                 */
+/*   Updated: 2022/10/09 21:33:32 by fbes          ########   odam.nl         */
+/*                                                                            */
+/* ************************************************************************** */
+
+:root {
+	/* colored colors */
+	--theme-color: #00babc;
+	--theme-color-dark: #02807c;
+	--theme-color-light: #00ecef;
+	--success-color: #5cb85c;
+	--warning-color: #df9539;
+	--fail-color: #d8636f;
+	--danger-color: #e26060;
+
+	/* main colors */
+	--pure-white: #000000;
+	--pure-black: #ffffff;
+	--default-color: #373c48;
+
+	/* background colors */
+	--html-background-color: #0c0c0c;
+	--body-background-color: #12141a;
+	--container-background-color: #1d2028;
+
+	/* border colors */
+	--general-border-color: #2d313c;
+
+	/* text colors */
+	--text-color: #f2f2f2;
+	--secondary-text-color: #a8aeb9;
+	--tertiary-text-color: #878c95;
+	--quaternary-text-color: #6e737c;
+	--input-text-color: #c7c7c7;
+	--button-text-color: #ffffff;
+
+	/* 42 icon */
+	--icon-42-white: url("/imgs/42-white.png");
+	--icon-42-black: url("/imgs/42-black.png");
+	--icon-42: var(--icon-42-black);
+}
+
+@media (prefers-color-scheme: light) {
+	:root {
+		/* main colors */
+		--pure-white: #ffffff;
+		--pure-black: #000000;
+		--default-color: #cccccc;
+
+		/* background colors */
+		--html-background-color: #eaeaea;
+		--body-background-color: #fafafa;
+		--container-background-color: #ffffff;
+
+		/* border colors */
+		--general-border-color: #f7f7f7;
+
+		/* text colors */
+		--text-color: #2c2c34;
+		--secondary-text-color: #41414d;
+		--tertiary-text-color: #565664;
+		--quaternary-text-color: #8a8a8a;
+		--input-text-color: #555555;
+
+		/* 42 icon */
+		--icon-42: var(--icon-42-white);
+	}
+}

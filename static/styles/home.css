@@ -1,0 +1,109 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        ::::::::            */
+/*   home.css                                           :+:    :+:            */
+/*                                                     +:+                    */
+/*   By: fbes <fbes@student.codam.nl>                 +#+                     */
+/*                                                   +#+                      */
+/*   Created: 2022/10/09 20:19:07 by fbes          #+#    #+#                 */
+/*   Updated: 2022/10/09 21:37:25 by fbes          ########   odam.nl         */
+/*                                                                            */
+/* ************************************************************************** */
+
+@import "colors.css";
+
+html {
+	background: var(--html-background-color);
+	color: var(--text-color);
+	font-family: Arial, Helvetica, sans-serif;
+	min-height: 100vh;
+	width: 100%;
+}
+
+body {
+	background: var(--body-background-color);
+	width: 100%;
+	max-width: 1000px;
+	min-width: 400px;
+	min-height: inherit;
+	margin: 0 auto;
+	padding: 16px;
+	box-sizing: border-box;
+	box-shadow: 0 0 4px rgba(0,0,0,.14), 0 4px 8px rgba(0,0,0,.28);
+}
+
+header {
+	background: var(--html-background-color);
+	margin: -16px -16px 16px -16px;
+	text-align: center;
+}
+
+header #logo {
+	font-family: 'Futura PT', sans-serif;
+	font-weight: bold;
+	font-size: 3em;
+	margin: 0.5em 0;
+	color: var(--theme-color);
+	width: 425px;
+	max-width: 90%;
+}
+
+.button {
+	display: inline-block;
+	background-color: var(--theme-color);
+	border: 0;
+	border-color: var(--theme-color);
+	cursor: pointer;
+	font-weight: bold;
+	transition: 0.075s ease-out;
+	text-decoration: none;
+	color: var(--button-text-color);
+	padding: 8px 16px;
+	border-radius: 4px;
+	user-select: none;
+}
+
+button:hover {
+	transition: 0s;
+}
+
+.button:hover,
+.button:focus {
+	background-color: var(--theme-color-light);
+	border-color: var(--theme-color-light);
+}
+
+.button.danger:hover,
+.button.danger:focus {
+	background-color: var(--danger-color);
+	border-color: var(--danger-color);
+}
+
+.button.auth {
+	padding: 12px 12px 12px 48px;
+	height: 42px;
+	box-sizing: border-box;
+	background-image: var(--icon-42-white);
+	background-size: 32px;
+	background-repeat: no-repeat;
+	background-position: 8px center;
+}
+
+.container {
+	border-radius: 4px;
+	background: var(--container-background-color);
+	padding: 16px 12px;
+}
+
+#account {
+
+}
+
+main {
+
+}
+
+h2 {
+	margin: 0 0 0.6em 0;
+	font-size: 1.4em;
+}

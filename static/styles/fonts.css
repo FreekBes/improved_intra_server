@@ -1,0 +1,20 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        ::::::::            */
+/*   fonts.css                                          :+:    :+:            */
+/*                                                     +:+                    */
+/*   By: fbes <fbes@student.codam.nl>                 +#+                     */
+/*                                                   +#+                      */
+/*   Created: 2022/03/28 17:20:47 by fbes          #+#    #+#                 */
+/*   Updated: 2022/10/09 20:39:45 by fbes          ########   odam.nl         */
+/*                                                                            */
+/* ************************************************************************** */
+
+
+/* Import Google's Material Icons */
+@font-face {
+	font-family: 'Material Icons';
+	font-style: normal;
+	font-weight: 400;
+	src: url(https://iintra.freekb.es/fonts/MaterialIcons-Regular.ttf);
+}

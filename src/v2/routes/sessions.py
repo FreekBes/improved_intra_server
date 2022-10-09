@@ -1,5 +1,5 @@
+from flask import session, redirect, url_for
 from ...oauth import authstart
-from flask import session
 from ... import app
 
 
@@ -13,13 +13,13 @@ def connect():
 @app.route('/v2/disconnect', methods=['GET'])
 def disconnect():
 	if not 'uid' in session:
-		return 'Already logged out', 200
+		return 'Already logged out. Go to <a href="/">home</a>', 200
 	session.pop('login', None)
 	session.pop('uid', None)
 	session.pop('staff', None)
 	session.pop('v', None)
 	session.pop('v1_conn_data', None)
-	return 'Logged out', 200
+	return 'Logged out. Go to <a href="/">home</a>', 200
 
 
 @app.route('/v2/ping', methods=['GET'])

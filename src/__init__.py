@@ -25,7 +25,7 @@ logging.basicConfig(filename=config['LOG_FILE_SERVER'], level=logging.DEBUG, for
 
 # Set up Flask
 print('Initializing Flask...')
-app = Flask(__name__)
+app = Flask(__name__, static_url_path='', static_folder='../static', template_folder='templates')
 app.config.from_mapping(config)
 app.secret_key = config['SESSION_KEY']
 # Uncomment the following line to echo queries for debugging
@@ -37,6 +37,8 @@ print('Flask initialized')
 from src.v1 import routes as v1routes
 from src.v2.routes.banners import *
 from src.v2.routes.sessions import *
+from src.v2.routes.options import *
+from src.v2.routes.home import *
 from . import oauth
 
 # Set up headers
