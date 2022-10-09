@@ -1,3 +1,4 @@
+import cProfile
 import json
 import time
 from flask import session, jsonify, request, redirect, url_for, render_template, Response
@@ -95,49 +96,53 @@ def oldUpdate():
 
 @app.route('/outstandings.php', methods=['GET'])
 def oldOutstandings():
-	if not 'username' in request.args:
-		return { 'type': 'error', 'message': 'GET key \'username\' is not set, but is required' }, 400
+	with cProfile.Profile() as pr:
+		if not 'username' in request.args:
+			return { 'type': 'error', 'message': 'GET key \'username\' is not set, but is required' }, 400
 
-	# Retrieve user
-	db_user:User = User.query.filter_by(login = request.args['username']).first()
-	if not db_user:
-		return { 'type': 'success', 'message': 'No data exists for this user', 'data': [] }, 200
-	db_runner:Runner = db.session.query(Runner.outstandings).filter(Runner.user_id == db_user.intra_id).one()
-	if not db_runner or not db_runner.outstandings:
-		return { 'type': 'success', 'message': 'No data exists for this user', 'data': [] }, 200
+		# Retrieve user
+		db_user:User = db.session.query(User.intra_id).filter(User.login == request.args['username']).first()
+		if not db_user:
+			return { 'type': 'success', 'message': 'No data exists for this user', 'data': [] }, 200
+		db_runner:Runner = db.session.query(Runner.outstandings).filter(Runner.user_id == db_user.intra_id).one()
+		if not db_runner or not db_runner.outstandings:
+			return { 'type': 'success', 'message': 'No data exists for this user', 'data': [] }, 200
 
-	# Set up outstandings per projects_user dict
-	outstandings = dict()
-	projects_user_ids = get_projects_users(db_user)
-	for projects_user_id in projects_user_ids:
-		pu_outstandings = dict()
-		pu_outstandings['current'] = 0
-		pu_outstandings['best'] = 0
-		pu_outstandings['all'] = list()
-		outstandings[str(projects_user_id)] = pu_outstandings
+		# Set up outstandings per projects_user dict
+		outstandings = dict()
+		projects_user_ids = get_projects_users(db_user.intra_id)
+		for projects_user_id in projects_user_ids:
+			pu_outstandings = dict()
+			pu_outstandings['current'] = 0
+			pu_outstandings['best'] = 0
+			pu_outstandings['all'] = list()
+			outstandings[str(projects_user_id)] = pu_outstandings
 
-	# Loop over all teams in the database
-	db_teams:list[Team] = db.session.query(Team).filter(Team.user_id == db_user.intra_id).order_by(Team.projects_user_id.desc(), Team.intra_id.desc()).all()
-	for db_team in db_teams:
-		team_outstandings = 0
-		db_evals:list[Evaluation] = db.session.query(Evaluation.outstanding).filter(Evaluation.intra_team_id == db_team.intra_id).all()
-		for db_eval in db_evals:
-			if db_eval.outstanding:
-				team_outstandings += 1
-		pu_outstandings = outstandings[str(db_team.projects_user_id)]
-		pu_outstandings['all'].append(team_outstandings)
-		if db_team.best:
-			pu_outstandings['best'] = team_outstandings
-		if db_team.current:
-			pu_outstandings['current'] = team_outstandings
+		# Loop over all teams in the database
+		print(db.session.query(Team).filter(Team.user_id == db_user.intra_id).order_by(Team.projects_user_id.desc(), Team.intra_id.desc()))
+		db_teams:list[Team] = db.session.query(Team).filter(Team.user_id == db_user.intra_id).order_by(Team.projects_user_id.desc(), Team.intra_id.desc()).all()
+		for db_team in db_teams:
+			team_outstandings = 0
+			#print(db.session.query(Evaluation.outstanding).filter(Evaluation.intra_team_id == db_team.intra_id))
+			db_evals:list[Evaluation] = db.session.query(Evaluation.outstanding).filter(Evaluation.intra_team_id == db_team.intra_id).all()
+			for db_eval in db_evals:
+				if db_eval.outstanding:
+					team_outstandings += 1
+			pu_outstandings = outstandings[str(db_team.projects_user_id)]
+			pu_outstandings['all'].append(team_outstandings)
+			if db_team.best:
+				pu_outstandings['best'] = team_outstandings
+			if db_team.current:
+				pu_outstandings['current'] = team_outstandings
 
-	# Create response with additional headers
-	resp = Response(
-		response = { 'type': 'success', 'message': 'Outstandings for user, per projectsUser', 'data': outstandings },
-		status = 200,
-		mimetype = 'application/json'
-	)
-	resp.headers['Last-Modified'] = db_runner.outstandings.strftime('%a, %d %b %Y %H:%M:%S GMT')
+		# Create response with additional headers
+		resp = Response(
+			response = { 'type': 'success', 'message': 'Outstandings for user, per projectsUser', 'data': outstandings },
+			status = 200,
+			mimetype = 'application/json'
+		)
+		resp.headers['Last-Modified'] = db_runner.outstandings.strftime('%a, %d %b %Y %H:%M:%S GMT')
+	#pr.print_stats(sort='cumtime')
 	return (resp.response, resp.status_code, resp.headers.items())
 
 
