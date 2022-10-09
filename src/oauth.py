@@ -47,7 +47,6 @@ def authstart(v:int):
 def auth():
 	# Retrieve token
 	token = intra.authorize_access_token()
-	print(token)
 
 	# Get user info
 	resp = intra.get('me', token=token)
@@ -56,7 +55,6 @@ def auth():
 	session['login'] = user['login']
 	session['uid'] = user['id']
 	session['staff'] = user['staff?'] == True or user['login'] == 'fbes'
-	print("Login: {}".format(user['login']))
 
 	if not add_mod_user(user):
 		return 'Access Denied', 403
