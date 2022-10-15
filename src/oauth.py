@@ -55,6 +55,11 @@ def auth():
 	session['login'] = user['login']
 	session['uid'] = user['id']
 	session['staff'] = user['staff?'] == True or user['login'] == 'fbes'
+	session['campus'] = 0
+	for campus_user in user['campus_users']:
+		if campus_user['is_primary'] == True:
+			session['campus'] = int(campus_user['campus_id'])
+			break
 
 	if not add_mod_user(user):
 		return 'Access Denied', 403
