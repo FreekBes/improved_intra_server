@@ -18,14 +18,14 @@
 	<main>
 		<div class="container" id="account">
 		{% if login %}
-			<h2>Hi there, <span id="login">{{ login }}</span></h2>
-			<p>Welcome back to the Improved Intra home page</p>
-			<a class="button" href="/v2/options">Settings</a>
-			<a class="button danger" href="/v2/disconnect">Sign out</a>
+			<h2>Hi there, <span id="login">{{ login|e }}</span></h2>
+			<p>Welcome back to the Improved Intra home page.<br>This page is a work in progress.</p>
+			<a class="button" href="{{ url_for('options') }}">Settings</a>
+			<a class="button danger" href="{{ url_for('disconnect') }}">Sign out</a>
 		{% else %}
-			<h2>You are not signed in</h2>
+			<h2>Not signed in</h2>
 			<p>Authenticate with your Intra 42 account to modify your Improved Intra settings</p>
-			<a class="button auth" href="/v2/connect">Sign in</a>
+			<a class="button auth" href="{{ url_for('connect') }}">Sign in</a>
 		{% endif %}
 		</div>
 	</main>

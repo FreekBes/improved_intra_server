@@ -82,18 +82,18 @@
 	<body>
 		{% if data.type == 'redirect' %}
 			<h1>Redirecting...</h1>
-			<p>If you are not redirected automatically, click here: <a href="{{auth_page_url}}" target="_self">{{auth_page_url}}</a></p>
+			<p>If you are not redirected automatically, click here: <a href="{{ auth_page_url|e }}" target="_self">{{ auth_page_url|e }}</a></p>
 		{% elif data.type == 'success' %}
-			<code style="display: none;" id="result">{{data_json}}</code>
+			<code style="display: none;" id="result">{{ data_json|e }}</code>
 			<h1>Authentication succesful</h1>
 			<p>Improved Intra 42 is now connected to your Intranet account.<br><span id="action">You can safely close this tab.</span><br><small id="clicker" style="display: none;">Or click <a id="redir_link" href="#" target="_self">here</a> if you are not being redirected...</small></p>
 		{% elif data.type == 'error' %}
-			<code style="display: none;" id="result">{{data_json}}</code>
+			<code style="display: none;" id="result">{{ data_json|e }}</code>
 			<h1>An error occurred</h1>
 			<p>An error occurred while authorizing with your Intranet 42 account...</p>
 			<details>
-				<summary>{{data.auth.error_description}}</summary>
-				<code>{{data_json}}</code>
+				<summary>{{ data.auth.error_description|e }}</summary>
+				<code>{{ data_json|e }}</code>
 			</details>
 		{% endif %}
 	</body>
