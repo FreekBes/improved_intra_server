@@ -6,7 +6,7 @@
 /*   By: fbes <fbes@student.codam.nl>                 +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2022/10/09 20:45:50 by fbes          #+#    #+#                 */
-/*   Updated: 2022/10/15 15:08:26 by fbes          ########   odam.nl         */
+/*   Updated: 2022/10/15 16:43:21 by fbes          ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,7 @@
 	--html-background-color: #0c0c0c;
 	--body-background-color: #12141a;
 	--container-background-color: #1d2028;
+	--active-background-color: rgba(255,255,255,0.07);
 	--hover-background-color: rgba(255,255,255,0.1);
 
 	/* border colors */

@@ -6,7 +6,7 @@
 /*   By: fbes <fbes@student.codam.nl>                 +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2022/10/15 14:52:05 by fbes          #+#    #+#                 */
-/*   Updated: 2022/10/15 16:18:52 by fbes          ########   odam.nl         */
+/*   Updated: 2022/10/15 16:48:26 by fbes          ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ html {
 }
 
 body {
-	background: var(--container-background-color);
+	background: var(--body-background-color);
 	position: relative;
 	width: 100%;
 	max-width: 1000px;
@@ -48,7 +48,7 @@ body {
 	height: 100%;
 	position: absolute;
 	overflow: hidden;
-	background: var(--body-background-color);
+	background: rgba(0,0,0,0.25);
 	box-shadow: 0 0 4px rgba(0,0,0,.14), 0 4px 8px rgba(0,0,0,.28);
 }
 
@@ -87,7 +87,7 @@ body {
 }
 
 #menu-list li.active {
-	background: var(--hover-background-color);
+	background: var(--active-background-color);
 	font-weight: bold;
 }
 
@@ -109,9 +109,129 @@ main {
 	position: absolute;
 	width: calc(100% - var(--sidebar-width));
 	height: 100%;
-	padding: 32px 24px;
+	padding: 24px 16px;
 	box-sizing: border-box;
 	overflow-x: hidden;
-	overflow-y: scroll;
+	overflow-y: auto;
 	margin-left: var(--sidebar-width);
 }
+
+
+/* options */
+.option-container {
+	display: block;
+	background: var(--container-background-color);
+	padding: 16px 12px 12px 12px;
+	border-radius: 4px;
+}
+
+.option-container h4 {
+	margin: 0;
+	font-size: 1em;
+	font-weight: bold;
+	color: var(--text-color);
+}
+
+.option-container p {
+	margin: 2px 0 0 0;
+	font-size: 0.9em;
+	color: var(--tertiary-text-color);
+}
+
+.option-container > input {
+	display: none;
+}
+
+.option-selector {
+	display: flex;
+	width: 100%;
+	margin-top: 12px;
+	overflow-x: auto;
+}
+
+.option-selector.horizontal {
+	flex-direction: row;
+	flex-wrap: nowrap;
+	align-items: stretch;
+	align-content: stretch;
+}
+
+.option {
+	display: inline-flex;
+	flex-grow: 1;
+	width: 100px;
+	padding: 9px;
+	margin: 2px;
+	cursor: pointer;
+	border-radius: 4px;
+	opacity: 0.8;
+}
+
+.option.active {
+	background: var(--active-background-color);
+	opacity: 1;
+}
+
+.option:hover {
+	background: var(--hover-background-color);
+	opacity: 1;
+}
+
+.option .option-caption span {
+	display: inline-block;
+	padding-top: 1px;
+	vertical-align: middle;
+}
+
+.option .option-caption::before {
+	display: inline-block;
+	content: "radio_button_unchecked";
+	vertical-align: middle;
+	padding-right: 3px;
+
+	/* Material Icons */
+	font-family: 'Material Icons';
+	font-weight: normal;
+	font-style: normal;
+	font-size: 24px;
+	line-height: 1;
+	letter-spacing: normal;
+	text-transform: none;
+	display: inline-block;
+	white-space: nowrap;
+	word-wrap: normal;
+	direction: ltr;
+	-webkit-font-feature-settings: 'liga';
+	font-feature-settings: 'liga';
+	-webkit-font-smoothing: antialiased;
+	/* End Material Icons */
+}
+
+.option.active .option-caption {
+	font-weight: bold;
+}
+
+.option.active .option-caption::before {
+	content: "radio_button_checked";
+}
+
+.option-selector.img-compare .option figure img {
+	opacity: 0.7;
+}
+
+.option-selector.img-compare .option.active figure img,
+.option-selector.img-compare .option:hover figure img {
+	opacity: 1;
+}
+
+.option-selector.horizontal.img-compare .option figure {
+	width: 100%;
+	margin: 0;
+}
+
+.option-selector.horizontal.img-compare .option figure img {
+	width: 100%;
+	border-radius: 2px;
+	margin-bottom: 4px;
+}
+
