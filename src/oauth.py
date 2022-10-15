@@ -38,7 +38,7 @@ oauth.register(
 intra = oauth.create_client('intra')
 
 
-def authstart(v:int):
+def authstart(v:int=2):
 	session['v'] = v # Version of the back-end
 	return intra.authorize_redirect(url_for('auth', _external=True))
 

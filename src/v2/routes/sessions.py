@@ -6,7 +6,7 @@ from ... import app
 @app.route('/v2/connect', methods=['GET'])
 def connect():
 	if not 'uid' in session:
-		return authstart(2)
+		return authstart()
 	return 'Connected V2', 200
 
 

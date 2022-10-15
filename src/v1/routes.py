@@ -12,13 +12,13 @@ from .. import app, db
 @app.route('/connect.php', methods=['GET'])
 def oldConnect():
 	if not 'uid' in session or not 'v1_conn_data' in session:
-		return authstart(1)
+		return authstart(v=1)
 	# if not 'v1_conn_data' in session:
 	# 	return render_template('v1/connect.j2', data={ 'type': 'error', 'message': 'No authorization data found in session', 'auth': { 'error_description': 'No authorization data found in session' } })
 	ret_data = { 'type': 'success', 'auth': session['v1_conn_data'], 'user': { 'login': session['login'] } }
 	ret_data['auth']['expires_in'] = int(session['v1_conn_data']['expires_at'] - time.time())
 	if ret_data['auth']['expires_in'] <= 1:
-		return authstart(1) # token expired, get a new one right away
+		return authstart(v=1) # token expired, get a new one right away
 	return render_template('v1/connect.j2', data=ret_data, data_json=json.dumps(ret_data))
 
 
