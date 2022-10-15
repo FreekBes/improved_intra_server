@@ -6,11 +6,12 @@
 /*   By: fbes <fbes@student.codam.nl>                 +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2022/10/09 20:19:07 by fbes          #+#    #+#                 */
-/*   Updated: 2022/10/09 21:37:25 by fbes          ########   odam.nl         */
+/*   Updated: 2022/10/15 15:54:19 by fbes          ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
 @import "colors.css";
+@import "fonts.css";
 
 html {
 	background: var(--html-background-color);

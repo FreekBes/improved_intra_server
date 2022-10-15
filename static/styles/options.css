@@ -6,11 +6,12 @@
 /*   By: fbes <fbes@student.codam.nl>                 +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2022/10/15 14:52:05 by fbes          #+#    #+#                 */
-/*   Updated: 2022/10/15 15:31:44 by fbes          ########   odam.nl         */
+/*   Updated: 2022/10/15 15:54:27 by fbes          ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
 @import "colors.css";
+@import "fonts.css";
 
 :root {
 	--sidebar-width: 250px;
