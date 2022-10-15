@@ -6,7 +6,7 @@
 /*   By: fbes <fbes@student.codam.nl>                 +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2022/10/15 14:52:05 by fbes          #+#    #+#                 */
-/*   Updated: 2022/10/15 16:48:26 by fbes          ########   odam.nl         */
+/*   Updated: 2022/10/15 17:02:09 by fbes          ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -122,7 +122,16 @@ main {
 	display: block;
 	background: var(--container-background-color);
 	padding: 16px 12px 12px 12px;
+	margin: 24px 0px;
 	border-radius: 4px;
+}
+
+.option-container:first-child {
+	margin-top: 0;
+}
+
+.option-container:last-child {
+	margin-bottom: 256px;
 }
 
 .option-container h4 {
@@ -146,7 +155,6 @@ main {
 	display: flex;
 	width: 100%;
 	margin-top: 12px;
-	overflow-x: auto;
 }
 
 .option-selector.horizontal {
@@ -156,15 +164,25 @@ main {
 	align-content: stretch;
 }
 
+.option-selector.vertical {
+	flex-direction: column;
+	flex-wrap: nowrap;
+	align-items: stretch;
+	align-content: stretch;
+}
+
 .option {
 	display: inline-flex;
 	flex-grow: 1;
-	width: 100px;
 	padding: 9px;
 	margin: 2px;
 	cursor: pointer;
 	border-radius: 4px;
 	opacity: 0.8;
+}
+
+.option-selector.horizontal .option {
+	width: 100px;
 }
 
 .option.active {
@@ -215,8 +233,10 @@ main {
 	content: "radio_button_checked";
 }
 
+/* image comparison options */
 .option-selector.img-compare .option figure img {
 	opacity: 0.7;
+	border-radius: 2px;
 }
 
 .option-selector.img-compare .option.active figure img,
@@ -230,8 +250,33 @@ main {
 }
 
 .option-selector.horizontal.img-compare .option figure img {
-	width: 100%;
-	border-radius: 2px;
+	width: inherit;
 	margin-bottom: 4px;
 }
 
+.option-selector.vertical.img-compare .option figure {
+	display: inline-block;
+	height: 92px;
+	margin: 0;
+}
+
+.option-selector.vertical.img-compare .option figure img {
+	display: inline-block;
+	vertical-align: top;
+	height: inherit;
+	margin-right: 4px;
+}
+
+.option-selector.vertical.img-compare .option figure figcaption {
+	display: inline-block;
+	vertical-align: top;
+	margin-top: 4px;
+}
+
+/* add vertical alignment to image and caption with vert-center class */
+.option-selector.vertical.img-compare.vert-center .option figure figcaption,
+.option-selector.vertical.img-compare.vert-center .option figure img {
+	vertical-align: middle;
+	margin-top: 0;
+	margin-bottom: 0;
+}
