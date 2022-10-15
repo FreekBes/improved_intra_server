@@ -7,9 +7,8 @@
 ]
 -%}
 {% set section = section|default('improvements') -%}
-
 <ul id="menu-list">
-{% for id, caption in menu_items %}
+{% for id, caption in menu_items -%}
 	<li{% if id == section %} class="active"{% endif %}><a href="{{ url_for('options_section', section=id) }}">{{ caption|e }}</a></li>
-{% endfor %}
+{% endfor -%}
 </ul>
