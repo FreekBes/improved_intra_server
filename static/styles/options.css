@@ -6,7 +6,7 @@
 /*   By: fbes <fbes@student.codam.nl>                 +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2022/10/15 14:52:05 by fbes          #+#    #+#                 */
-/*   Updated: 2022/10/15 17:02:09 by fbes          ########   odam.nl         */
+/*   Updated: 2022/10/15 17:09:38 by fbes          ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -206,6 +206,7 @@ main {
 	content: "radio_button_unchecked";
 	vertical-align: middle;
 	padding-right: 3px;
+	color: var(--tertiary-text-color);
 
 	/* Material Icons */
 	font-family: 'Material Icons';
@@ -231,6 +232,7 @@ main {
 
 .option.active .option-caption::before {
 	content: "radio_button_checked";
+	color: var(--theme-color);
 }
 
 /* image comparison options */
