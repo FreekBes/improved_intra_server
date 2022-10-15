@@ -1,0 +1,109 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        ::::::::            */
+/*   options.css                                        :+:    :+:            */
+/*                                                     +:+                    */
+/*   By: fbes <fbes@student.codam.nl>                 +#+                     */
+/*                                                   +#+                      */
+/*   Created: 2022/10/15 14:52:05 by fbes          #+#    #+#                 */
+/*   Updated: 2022/10/15 15:31:44 by fbes          ########   odam.nl         */
+/*                                                                            */
+/* ************************************************************************** */
+
+@import "colors.css";
+
+:root {
+	--sidebar-width: 250px;
+}
+
+
+/* root */
+html {
+	background: var(--html-background-color);
+	color: var(--text-color);
+	font-family: Arial, Helvetica, sans-serif;
+	min-height: 100vh;
+	width: 100%;
+}
+
+body {
+	background: var(--container-background-color);
+	width: 100%;
+	max-width: 1000px;
+	min-width: 400px;
+	min-height: inherit;
+	margin: 0 auto;
+	padding: 0;
+	box-sizing: border-box;
+	box-shadow: 0 0 4px rgba(0,0,0,.14), 0 4px 8px rgba(0,0,0,.28);
+}
+
+
+/* sidebar */
+#sidebar {
+	display: block;
+	width: var(--sidebar-width);
+	height: 100%;
+	position: absolute;
+	overflow: hidden;
+	background: var(--body-background-color);
+}
+
+#logo-container {
+	display: table-cell;
+	width: 100%;
+	padding: 12px 24px;
+}
+
+#logo {
+	margin-top: 6px;
+	width: 100%;
+}
+
+#sidebar hr {
+	border: 0;
+	border-bottom: solid 1px var(--general-border-color);
+	width: 90%;
+	margin: 0 5% 16px 5%;
+}
+
+
+/* menu in sidebar */
+#menu {
+
+}
+
+#menu-list {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+#menu-list li {
+
+}
+
+#menu-list li.active {
+	background: var(--hover-background-color);
+	font-weight: bold;
+}
+
+#menu-list li:hover {
+	background: var(--hover-background-color);
+}
+
+#menu-list li a {
+	display: block;
+	color: var(--text-color);
+	text-decoration: none;
+	padding: 12px 18px;
+}
+
+
+/* main content */
+main {
+	display: block;
+	position: relative;
+	height: 100%;
+	margin-left: var(--sidebar-width);
+}

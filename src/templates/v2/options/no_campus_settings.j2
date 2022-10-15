@@ -1,0 +1,9 @@
+{% extends 'v2/options/base.j2' %}
+{% set section = 'campus' %}
+{% block title %}Settings for {{ campus|e }}{% endblock %}
+{% block head %}
+	{{ super() }}
+{% endblock %}
+{% block content %}
+There are no custom settings available for the {{ campus|e }} campus.
+{% endblock %}
