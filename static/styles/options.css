@@ -6,7 +6,7 @@
 /*   By: fbes <fbes@student.codam.nl>                 +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2022/10/15 14:52:05 by fbes          #+#    #+#                 */
-/*   Updated: 2022/10/16 02:40:29 by fbes          ########   odam.nl         */
+/*   Updated: 2022/10/16 03:13:46 by fbes          ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -232,6 +232,19 @@ main {
 	display: inline-block;
 	padding-top: 1px;
 	vertical-align: middle;
+}
+
+.option .option-caption span.recommended::after {
+	content: "recommended";
+	text-transform: uppercase;
+	font-size: 0.5em;
+	color: var(--tertiary-text-color);
+	margin-left: 1ch;
+	vertical-align: super;
+}
+
+.option.active .option-caption span.recommended::after {
+	color: var(--quaternary-text-color);
 }
 
 .option .option-caption::before {
