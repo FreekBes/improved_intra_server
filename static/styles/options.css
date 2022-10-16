@@ -120,6 +120,67 @@ noscript {
 	padding: 12px 18px;
 }
 
+/* account overview in sidebar */
+#user-container {
+	position: absolute;
+	bottom: 0px;
+	width: 100%;
+	padding-bottom: 8px;
+}
+
+#user-container hr {
+	margin: 16px 5% 8px 5%;
+}
+
+#user-container #user-image {
+	display: inline-block;
+	width: 42px;
+	height: 42px;
+	border-radius: 21px;
+	margin-left: 18px;
+	vertical-align: middle;
+}
+
+#user-container #user-login {
+	display: inline-block;
+	vertical-align: middle;
+	margin-left: 8px;
+	color: var(--secondary-text-color);
+}
+
+#user-container #user-logout-btn {
+	display: block;
+	float: right;
+	width: 32px;
+	height: 32px;
+	line-height: 32px;
+	margin: 5px 17px 5px 5px;
+	color: var(--quaternary-text-color);
+	text-decoration: none;
+	text-align: center;
+	cursor: pointer;
+	user-select: none;
+
+	/* Material Icons */
+	font-family: 'Material Icons';
+	font-weight: normal;
+	font-style: normal;
+	font-size: 18px;
+	letter-spacing: normal;
+	text-transform: none;
+	white-space: nowrap;
+	word-wrap: normal;
+	direction: ltr;
+	-webkit-font-feature-settings: 'liga';
+	font-feature-settings: 'liga';
+	-webkit-font-smoothing: antialiased;
+	/* End Material Icons */
+}
+
+#user-container #user-logout-btn:hover {
+	color: var(--danger-color);
+}
+
 
 /* main content */
 main {

@@ -32,7 +32,7 @@ def options_section(section:str):
 	if section == 'campus':
 		campus:Campus = Campus.query.filter_by(intra_id=int(session['campus'])).first()
 		if not campus:
-			return render_template('v2/options/no_campus_settings.j2', campus='Unknown')
+			return render_no_campus_settings()
 		dist_key = str(campus.intra_id)
 
 	# Fetch table rows based on the fetch_dist_key
@@ -60,7 +60,7 @@ def options_section(section:str):
 	user_settings:tuple = (settings, color_scheme, profile, banner_img, banner_pos)
 	if section == 'campus':
 		return render_campus_settings(dist_key, campus, user_settings)
-	return render_template(f"v2/options/{section}.j2", user_settings=user_settings)
+	return render_template(f"v2/options/{section}.j2", user_settings=user_settings, user_login=session['login'], user_image=session['image'])
 
 
 @app.route('/v2/options/<section>/save', methods=['POST'])
@@ -71,5 +71,8 @@ def options_section_save(section:str):
 # Campus-specific settings
 def render_campus_settings(dist_key:str, campus:Campus, user_settings:tuple[Settings, ColorScheme, Profile, BannerImg, BannerPosition]):
 	if campus.intra_id == 14: # Codam, Amsterdam
-		return render_template('v2/options/codam.j2', user_settings=user_settings)
-	return render_template('v2/options/no_campus_settings.j2', campus=campus.name)
+		return render_template('v2/options/codam.j2', user_settings=user_settings, user_login=session['login'], user_image=session['image'])
+	return render_no_campus_settings()
+
+def render_no_campus_settings():
+	return render_template('v2/options/no_campus_settings.j2', campus='Unknown', user_login=session['login'], user_image=session['image'])

@@ -22,6 +22,12 @@
 		<nav id="menu">
 			{% include 'v2/options/menu.j2' %}
 		</nav>
+		<div id="user-container">
+			<hr />
+			<img id="user-image" src="{{ user_image|e }}" />
+			<span id="user-login">{{ user_login|e }}</span>
+			<a id="user-logout-btn" href="{{ url_for('disconnect') }}" title="Sign out of Improved Intra">logout</a>
+		</div>
 	</section>
 	<noscript>To modify your settings for Improved Intra 42, you need to enable JavaScript.</noscript>
 	<main>
