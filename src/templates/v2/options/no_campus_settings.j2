@@ -11,5 +11,8 @@ const mod_user_settings = JSON.parse(JSON.stringify(user_settings));
 </script>
 {% endblock %}
 {% block content %}
-There are no custom settings available for the {{ campus|e }} campus.
+<div class="text-container" id="no_custom_settings">
+	<h4>Settings for {{ campus|e }}</h4>
+	<p>There are no custom settings available for the {{ campus|e }} campus at this time.</p>
+</div>
 {% endblock %}
