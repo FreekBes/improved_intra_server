@@ -6,7 +6,7 @@
 /*   By: fbes <fbes@student.codam.nl>                 +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2022/10/16 02:22:25 by fbes          #+#    #+#                 */
-/*   Updated: 2022/10/16 19:51:04 by fbes          ########   odam.nl         */
+/*   Updated: 2022/10/16 20:17:17 by fbes          ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,6 +45,7 @@ function showUnsavedChangesWarning() {
 	return 'You have unsaved changes! Are you sure you want to leave this page? The save button is in the top left corner.';
 }
 
+// populate option containers and the available choices (attach event listeners, set selected values, etc)
 const optionContainers = document.querySelectorAll('.option-container');
 for (const optionContainer of optionContainers) {
 	try {
@@ -121,6 +122,7 @@ for (const optionContainer of optionContainers) {
 	}
 }
 
+// save button event listener
 document.getElementById('save-btn').addEventListener('click', function(ev) {
 	console.log('Saving user settings:', mod_user_settings);
 
@@ -158,3 +160,14 @@ document.getElementById('save-btn').addEventListener('click', function(ev) {
 	});
 	saveReq.send();
 });
+
+// add margin to last option container when scrollbar is present
+function addWhitespaceOnScrollbar() {
+	const main = document.querySelector('main');
+	document.querySelector('.option-container:last-child').style.marginBottom = '0';
+	if (main.scrollHeight > main.clientHeight) {
+		document.querySelector('.option-container:last-child').style.marginBottom = '256px';
+	}
+}
+window.addEventListener('resize', addWhitespaceOnScrollbar);
+addWhitespaceOnScrollbar();
