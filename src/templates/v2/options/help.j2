@@ -3,6 +3,7 @@
 {% block title %}Help{% endblock %}
 {% block head %}
 	{{ super() }}
+	<script src="https://cdn.jsdelivr.net/npm/bowser@latest" type="application/javascript"></script>
 {% endblock %}
 {% block user_settings %}
 <script>
@@ -11,5 +12,39 @@ const mod_user_settings = JSON.parse(JSON.stringify(user_settings));
 </script>
 {% endblock %}
 {% block content %}
-Coming soon
+
+<div class="text-container" id="bug_report">
+	<h4>Report a bug or give feedback</h4>
+	<p>Did you experience some kind of odd behavior or find a bug? Or do you want to provide some feedback to the developers of Improved Intra? You can do so using <a href="https://github.com/FreekBes/improved_intra/issues?q=" target="_blank">GitHub Issues</a> in the Improved Intra repository.</p>
+</div>
+
+<div class="text-container" id="developing">
+	<h4>Fix a bug or add a feature</h4>
+	<p>Do you want to help improve 42's Intranet? If you would like to add a feature or fix a bug yourself, you can do so by cloning the <a href="https://github.com/FreekBes/improved_intra" target="_blank">Improved Intra repository on GitHub</a> and creating a pull request once you're done.</p>
+	<p>Additionally, there is a <a href="https://github.com/FreekBes/improved_intra_server" target="_blank">second repository</a> just for the back-end of the extension.</p>
+</div>
+
+<div class="text-container" id="version">
+	<h4>Version info</h4>
+	<ul>
+		<li>Current server version: <b id="server-version">{{ version[0]|e }}</b></li>
+		<li>Server target version: <b id="server-version">{{ version[1]|e }}</b></li>
+		<li>Extension version: <i id="ext-version">unknown or Improved Intra is not installed/enabled</i></li>
+		<li>Browser: <i id="browser-info">unknown</i></li>
+		<li>OS: <i id="os-info">unknown</i></li>
+		<li><a href="https://github.com/FreekBes/improved_intra_server/releases" target="_blank">Server version history</a></li>
+		<li><a href="https://github.com/FreekBes/improved_intra/releases" target="_blank">Extension version history</a></li>
+	</ul>
+</div>
+
+<script>
+const bowserInfo = bowser.parse(window.navigator.userAgent);
+if (bowserInfo['browser']) {
+	document.getElementById('browser-info').innerText = bowserInfo['browser']['name'] + ' ' + bowserInfo['browser']['version'];
+}
+if (bowserInfo['os']) {
+	document.getElementById('os-info').innerText = bowserInfo['os']['name'] + ' ' + bowserInfo['os']['version'];
+}
+</script>
+
 {% endblock %}

@@ -1,7 +1,7 @@
 from src.models.models import BannerImg, BannerPosition, Campus, ColorScheme, Profile, Settings
 from flask import render_template, session, redirect, url_for
+from ... import app, __version__, __target_ext_version__
 from ...oauth import authstart
-from ... import app
 
 FETCH_DISTRIBUTION = {
 	'improvements': [ 'settings' ],
@@ -10,6 +10,8 @@ FETCH_DISTRIBUTION = {
 	'14': [ 'settings' ], # Codam campus, Amsterdam
 	'help': []
 }
+
+VERSION_INFO:tuple[str, str] = (__version__, __target_ext_version__)
 
 
 @app.route('/v2/options')
@@ -63,7 +65,7 @@ def options_section(section:str):
 	possible_options:tuple = (color_schemes, banner_positions)
 	if section == 'campus':
 		return render_campus_settings(dist_key, campus, user_settings, possible_options)
-	return render_template(f"v2/options/{section}.j2", user_settings=user_settings, possible_options=possible_options, user_login=session['login'], user_image=session['image'])
+	return render_template(f"v2/options/{section}.j2", user_settings=user_settings, possible_options=possible_options, user_login=session['login'], user_image=session['image'], version=VERSION_INFO)
 
 
 @app.route('/v2/options/<section>/save', methods=['POST'])
@@ -74,8 +76,8 @@ def options_section_save(section:str):
 # Campus-specific settings
 def render_campus_settings(dist_key:str, campus:Campus, user_settings:tuple[Settings, Profile, BannerImg], possible_options:tuple[list[ColorScheme], list[BannerPosition]]=None):
 	if campus.intra_id == 14: # Codam, Amsterdam
-		return render_template('v2/options/codam.j2', user_settings=user_settings, possible_options=possible_options, user_login=session['login'], user_image=session['image'])
+		return render_template('v2/options/codam.j2', user_settings=user_settings, possible_options=possible_options, user_login=session['login'], user_image=session['image'], version=VERSION_INFO)
 	return render_no_campus_settings()
 
 def render_no_campus_settings():
-	return render_template('v2/options/no_campus_settings.j2', campus='Unknown', user_login=session['login'], user_image=session['image'])
+	return render_template('v2/options/no_campus_settings.j2', campus='Unknown', user_login=session['login'], user_image=session['image'], version=VERSION_INFO)

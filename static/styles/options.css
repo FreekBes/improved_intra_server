@@ -256,7 +256,8 @@ main {
 
 
 /* options */
-.option-container {
+.option-container,
+.text-container {
 	display: block;
 	position: relative;
 	background: var(--container-background-color);
@@ -265,21 +266,43 @@ main {
 	border-radius: 4px;
 }
 
-.option-container:first-child {
+.option-container:first-child,
+.text-container:first-child {
 	margin-top: 0;
 }
 
-.option-container h4 {
+.option-container h4,
+.text-container h4 {
 	margin: 0;
 	font-size: 1em;
 	font-weight: bold;
 	color: var(--text-color);
 }
 
-.option-container p {
+.option-container p,
+.text-container p,
+.text-container ul {
 	margin: 2px 0 0 0;
 	font-size: 0.9em;
 	color: var(--tertiary-text-color);
+}
+
+.text-container p,
+.text-container ul {
+	color: var(--secondary-text-color);
+	margin: 8px 0 0 0;
+}
+
+.text-container p a,
+.text-container ul a {
+	color: var(--theme-color);
+}
+
+.text-container p a:hover,
+.text-container p a:focus,
+.text-container ul a:hover,
+.text-container ul a:focus {
+	color: var(--theme-color-light);
 }
 
 .option-container .option-link {

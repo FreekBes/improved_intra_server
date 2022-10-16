@@ -6,7 +6,7 @@
 /*   By: fbes <fbes@student.codam.nl>                 +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2022/10/16 02:22:25 by fbes          #+#    #+#                 */
-/*   Updated: 2022/10/16 20:17:17 by fbes          ########   odam.nl         */
+/*   Updated: 2022/10/16 20:21:09 by fbes          ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -164,10 +164,16 @@ document.getElementById('save-btn').addEventListener('click', function(ev) {
 // add margin to last option container when scrollbar is present
 function addWhitespaceOnScrollbar() {
 	const main = document.querySelector('main');
-	document.querySelector('.option-container:last-child').style.marginBottom = '0';
-	if (main.scrollHeight > main.clientHeight) {
-		document.querySelector('.option-container:last-child').style.marginBottom = '256px';
+	const lastOptionContainer = document.querySelector('.option-container:last-child');
+	if (!lastOptionContainer) {
+		return false;
 	}
+	lastOptionContainer.style.marginBottom = '0';
+	if (main.scrollHeight > main.clientHeight) {
+		lastOptionContainer.style.marginBottom = '256px';
+		return true;
+	}
+	return false;
 }
 window.addEventListener('resize', addWhitespaceOnScrollbar);
 addWhitespaceOnScrollbar();
