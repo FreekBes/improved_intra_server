@@ -19,7 +19,7 @@ const mod_user_settings = JSON.parse(JSON.stringify(user_settings));
 
 <div class="text-container">
 	<h4>Customize your profile</h4>
-	<p>With the Improved Intra browser extension, you can customize your profile on 42's Intra to your liking! These customizations are visible to everyone with the extension installed, so to over 2000 students.</p>
+	<p>With the Improved Intra browser extension, you can customize your profile on 42's Intra to your liking! <b>These customizations are visible to everyone with the extension installed.</b></p>
 </div>
 
 <div class="option-container picture cover" id="banner_img">
@@ -32,7 +32,7 @@ const mod_user_settings = JSON.parse(JSON.stringify(user_settings));
 
 <div class="option-container choice" id="banner_pos">
 	<h4>Banner position</h4>
-	<p>The width of the banner on Intra changes all the time. Choose here how to position your picture so that its best parts are always visible.</p>
+	<p>Choose how your custom banner image is displayed on Intra on smaller screens</p>
 	<div class="option-selector horizontal img-compare vert-center">
 		{% for banner_pos in possible_options[1] -%}
 			<div class="option" data-value="{{ banner_pos['id']|e }}" data-internalname="{{ banner_pos['internal_name']|e }}">
@@ -47,13 +47,13 @@ const mod_user_settings = JSON.parse(JSON.stringify(user_settings));
 
 <div class="option-container input" id="link_git">
 	<h4>Link to Git profile</h4>
-	<p>A link to your profile on GitHub, GitLab, or another git website for on your Intra profile.<br><i><small>Only pre-selected domains are allowed here.</small></i></p>
+	<p>A link to your profile on GitHub, GitLab, or another git website</p>
 	<input class="input-field" type="text" placeholder="https://github.com/username" />
 </div>
 
 <div class="option-container input" id="link_web">
 	<h4>Personal website</h4>
-	<p>A link to display on your Intra profile, that links to your portfolio or another personal website.</p>
+	<p>A link to your portfolio or another personal website</p>
 	<input class="input-field" type="text" placeholder="https://example.com/" />
 </div>
 
