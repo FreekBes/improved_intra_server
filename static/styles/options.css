@@ -115,15 +115,6 @@ noscript {
 	padding: 8px;
 }
 
-#save-btn:hover,
-#save-btn:focus {
-	background-color: var(--theme-color-light);
-}
-
-#save-btn:active {
-	background-color: var(--theme-color-dark);
-}
-
 /* display a nice shiny animation when the save button appears to draw attention to it */
 #save-container.show #save-btn {
 	background-color: var(--theme-color);
@@ -144,6 +135,15 @@ noscript {
 	to {
 		background-position: 110px;
 	}
+}
+
+#save-btn:hover,
+#save-btn:focus {
+	background: var(--theme-color-light) !important;
+}
+
+#save-btn:active {
+	background: var(--theme-color-dark) !important;
 }
 
 
