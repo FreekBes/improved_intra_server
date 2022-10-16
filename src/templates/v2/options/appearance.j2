@@ -47,7 +47,7 @@ const mod_user_settings = JSON.parse(JSON.stringify(user_settings));
 		{% for color_scheme in possible_options[0] -%}
 			<div class="option{{ ' disabled' if color_scheme['disabled'] }}" data-value="{{ color_scheme['id']|e }}" data-internalname="{{ color_scheme['internal_name']|e }}">
 				<figure>
-					<img src="{{ url_for('static', filename='imgs/options/colors/'+color_scheme['internal_name']+'.svg') }}" alt="Preview" onerror="this.src = '{{ url_for('static', filename='imgs/options/placeholder.png') }}'" />
+					<img src="{{ url_for('static', filename='imgs/options/colors/'+color_scheme['internal_name']+'.svg') }}" alt="Preview" onerror="this.src='{{ url_for('static', filename='imgs/options/placeholder.png') }}'" />
 					<figcaption class="option-caption"><span>{{ color_scheme['name']|e }}{{ ' (unavailable)' if color_scheme['disabled'] }}</span></figcaption>
 				</figure>
 			</div>

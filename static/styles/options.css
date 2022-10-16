@@ -516,3 +516,21 @@ main {
 	min-height: 72px;
 	padding: 8px 12px 8px 12px;
 }
+
+/* picture option */
+.option-container.picture .picture-preview {
+	display: block;
+	width: 100%;
+	max-height: 256px;
+	object-fit: scale-down;
+	margin: 12px 0 8px 0;
+	border-radius: 3px;
+}
+
+.option-container.picture.cover .picture-preview {
+	object-fit: cover;
+}
+
+.option-container.picture .picture-picker {
+	margin-top: 8px;
+}

@@ -6,7 +6,7 @@
 /*   By: fbes <fbes@student.codam.nl>                 +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2022/10/16 02:22:25 by fbes          #+#    #+#                 */
-/*   Updated: 2022/10/16 20:21:09 by fbes          ########   odam.nl         */
+/*   Updated: 2022/10/16 21:28:44 by fbes          ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,7 +95,7 @@ for (const optionContainer of optionContainers) {
 			input.addEventListener('input', function(ev) {
 				// retrieve slug and value to set from the clicked choice
 				const optionContainer = ev.currentTarget.closest('.option-container');
-				const slug = optionContainer.getAttribute('data-slug');
+				const slug = optionContainer.id;
 				const val = ev.currentTarget.value.trim();
 
 				// actually set value in modified user settings
@@ -107,6 +107,47 @@ for (const optionContainer of optionContainers) {
 
 			// set current value on load
 			input.value = user_settings[slug];
+		}
+
+		// if the option container is structured like an image selector, add event listeners to the file input
+		if (optionContainer.classList.contains("picture")) {
+			const input = optionContainer.querySelector('.picture-picker');
+
+			// add event listener for file selection change
+			input.addEventListener('change', function(ev) {
+				const optionContainer = ev.currentTarget.closest('.option-container');
+				const slug = optionContainer.id;
+				const currentPic = optionContainer.querySelector('.current-picture');
+				const futurePic = optionContainer.querySelector('.future-picture');
+
+				if (ev.currentTarget.files.length > 0) {
+					const file = ev.currentTarget.files[0];
+
+					const reader = new FileReader();
+					reader.onload = function(ev) {
+						futurePic.src = ev.target.result;
+						currentPic.style.display = "none";
+						futurePic.style.display = "block";
+						mod_user_settings[slug] = 'new_upload-' + Math.random().toString(); // update modified user settings so that save button appears
+						checkShowSaveButton();
+					};
+					reader.onerror = function(err) {
+						console.error('Error reading file:', err);
+						alert('Error reading file: ' + err);
+						currentPic.style.display = "block";
+						futurePic.style.display = "none";
+						mod_user_settings[slug] = user_settings[slug];
+						checkShowSaveButton();
+					};
+					reader.readAsDataURL(file);
+				}
+				else {
+					currentPic.style.display = "block";
+					futurePic.style.display = "none";
+					mod_user_settings[slug] = user_settings[slug];
+					checkShowSaveButton();
+				}
+			});
 		}
 
 		// add a link to each option container to the top right corner of the element, for easy sharing with other students

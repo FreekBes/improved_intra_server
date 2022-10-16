@@ -6,10 +6,55 @@
 {% endblock %}
 {% block user_settings %}
 <script>
-const user_settings = {};
+const user_settings = {
+	'banner_img': '{{ user_settings[1]['banner_img'] }}',
+	'banner_pos': '{{ user_settings[1]['banner_pos'] }}',
+	'link_git': '{{ user_settings[1]['link_git'] if user_settings[1]['link_git'] else '' }}',
+	'link_web': '{{ user_settings[1]['link_web'] if user_settings[1]['link_web'] else '' }}',
+};
 const mod_user_settings = JSON.parse(JSON.stringify(user_settings));
 </script>
 {% endblock %}
 {% block content %}
-Coming soon
+
+<div class="text-container">
+	<h4>Customize your profile</h4>
+	<p>With the Improved Intra browser extension, you can customize your profile on 42's Intra to your liking! These customizations are visible to everyone with the extension installed, so to over 2000 students.</p>
+</div>
+
+<div class="option-container picture cover" id="banner_img">
+	<h4>Custom profile banner</h4>
+	<p>A custom banner image that will be shown on your profile, instead of your coalition's banner</p>
+	<img class="picture-preview current-picture" src="{{ user_settings[2]['url']|e if user_settings[2] else url_for('static', filename='imgs/options/placeholder.png') }}" alt="Failed to load your custom banner" title="Your current custom banner" />
+	<img class="picture-preview future-picture" style="display: none;" src="{{ url_for('static', filename='imgs/options/placeholder.png') }}" alt="Failed to load selected image" title="Click the save button in the top left to upload this banner" />
+	<input class="picture-picker" type="file" id="custom-banner-upload" name="custom-banner-upload" accept="image/*" />
+</div>
+
+<div class="option-container choice" id="banner_pos">
+	<h4>Banner position</h4>
+	<p>The width of the banner on Intra changes all the time. Choose here how to position your picture so that its best parts are always visible.</p>
+	<div class="option-selector horizontal img-compare vert-center">
+		{% for banner_pos in possible_options[1] -%}
+			<div class="option" data-value="{{ banner_pos['id']|e }}" data-internalname="{{ banner_pos['internal_name']|e }}">
+				<figure>
+					<img src="{{ url_for('static', filename='imgs/options/banner_pos/'+banner_pos['internal_name']+'.svg') }}" alt="Preview" onerror="this.src='{{ url_for('static', filename='imgs/options/placeholder.png') }}'" />
+					<figcaption class="option-caption"><span>{{ banner_pos['name']|e }}</span></figcaption>
+				</figure>
+			</div>
+		{% endfor -%}
+	</div>
+</div>
+
+<div class="option-container input" id="link_git">
+	<h4>Link to Git profile</h4>
+	<p>A link to your profile on GitHub, GitLab, or another git website for on your Intra profile.<br><i><small>Only pre-selected domains are allowed here.</small></i></p>
+	<input class="input-field" type="text" placeholder="https://github.com/username" />
+</div>
+
+<div class="option-container input" id="link_web">
+	<h4>Personal website</h4>
+	<p>A link to display on your Intra profile, that links to your portfolio or another personal website.</p>
+	<input class="input-field" type="text" placeholder="https://example.com/" />
+</div>
+
 {% endblock %}
