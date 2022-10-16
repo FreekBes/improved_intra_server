@@ -25,7 +25,7 @@ const mod_user_settings = JSON.parse(JSON.stringify(user_settings));
 <div class="option-container picture cover" id="banner_img">
 	<h4>Custom profile banner</h4>
 	<p>A custom banner image that will be shown on your profile, instead of your coalition's banner</p>
-	<img class="picture-preview current-picture" src="{{ user_settings[2]['url']|e if user_settings[2] else url_for('static', filename='imgs/options/placeholder.png') }}" alt="Failed to load your custom banner" title="Your current custom banner" />
+	<img class="picture-preview current-picture"{{ ' style="display: none"' if not user_settings[2] }} src="{{ user_settings[2]['url']|e if user_settings[2] else url_for('static', filename='imgs/options/placeholder.png') }}" alt="Failed to load your custom banner" title="Your current custom banner" />
 	<img class="picture-preview future-picture" style="display: none;" src="{{ url_for('static', filename='imgs/options/placeholder.png') }}" alt="Failed to load selected image" title="Click the save button in the top left to upload this banner" />
 	<input class="picture-picker" type="file" id="custom-banner-upload" name="custom-banner-upload" accept="image/*" />
 </div>

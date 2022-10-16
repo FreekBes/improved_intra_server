@@ -6,7 +6,7 @@
 /*   By: fbes <fbes@student.codam.nl>                 +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2022/10/16 02:22:25 by fbes          #+#    #+#                 */
-/*   Updated: 2022/10/16 21:28:44 by fbes          ########   odam.nl         */
+/*   Updated: 2022/10/16 23:29:44 by fbes          ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -134,16 +134,20 @@ for (const optionContainer of optionContainers) {
 					reader.onerror = function(err) {
 						console.error('Error reading file:', err);
 						alert('Error reading file: ' + err);
-						currentPic.style.display = "block";
 						futurePic.style.display = "none";
+						if (currentPic.src.indexOf('/placeholder.png') == -1) {
+							currentPic.style.display = "block";
+						}
 						mod_user_settings[slug] = user_settings[slug];
 						checkShowSaveButton();
 					};
 					reader.readAsDataURL(file);
 				}
 				else {
-					currentPic.style.display = "block";
 					futurePic.style.display = "none";
+					if (currentPic.src.indexOf('/placeholder.png') == -1) {
+						currentPic.style.display = "block";
+					}
 					mod_user_settings[slug] = user_settings[slug];
 					checkShowSaveButton();
 				}
