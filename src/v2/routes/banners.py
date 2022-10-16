@@ -1,6 +1,6 @@
 from ...models.models import BannerImg, User, Campus
 from flask import session
-from ... import app
+from ... import app, db
 
 @app.route('/v2/banners/<offset>', methods=['GET'])
 def bannersoffset(offset):
