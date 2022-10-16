@@ -6,7 +6,7 @@
 /*   By: fbes <fbes@student.codam.nl>                 +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2022/10/16 02:22:25 by fbes          #+#    #+#                 */
-/*   Updated: 2022/10/16 03:05:10 by fbes          ########   odam.nl         */
+/*   Updated: 2022/10/16 03:30:40 by fbes          ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,9 +26,9 @@ for (const optionContainer of optionContainers) {
 					// retrieve slug and value to set from the clicked choice
 					const optionContainer = ev.currentTarget.closest('.option-container');
 					const slug = optionContainer.id;
-					console.log('Clicked on options choice for ', slug);
+					console.log('Clicked on options choice for:', slug);
 					const val = ev.currentTarget.getAttribute('data-value');
-					console.log('Value to be set: ', val);
+					console.log('Value to be set:', val);
 
 					// actually set value
 					user_settings[slug] = val;
