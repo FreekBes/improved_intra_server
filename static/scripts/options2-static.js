@@ -6,7 +6,7 @@
 /*   By: fbes <fbes@student.codam.nl>                 +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2022/10/16 02:22:25 by fbes          #+#    #+#                 */
-/*   Updated: 2022/10/16 17:30:05 by fbes          ########   odam.nl         */
+/*   Updated: 2022/10/16 17:49:06 by fbes          ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -123,24 +123,35 @@ document.getElementById('save-btn').addEventListener('click', function(ev) {
 
 	// send modified user settings to server
 	const saveReq = new XMLHttpRequest();
+	saveReq.open('POST', window.location.pathname + '/save');
 	saveReq.addEventListener('load', function() {
 		console.log('Save request response:', this.responseText);
-		const response = JSON.parse(this.responseText);
-		if (response.status === 'success') {
-			// overwrite user settings
-			user_settings = JSON.parse(JSON.stringify(mod_user_settings));
+		try {
+			const response = JSON.parse(this.responseText);
+			if (response.status === 'success') {
+				// overwrite local user settings
+				user_settings = JSON.parse(JSON.stringify(mod_user_settings));
 
-			// send modified user settings to extension
-			const iSettingsChangedEvent = new Event('iSettingsChanged', { detail: { old_settings: user_settings, new_settings: mod_user_settings } } );
-			document.dispatchEvent(iSettingsChangedEvent);
+				// send modified user settings to extension
+				const iSettingsChangedEvent = new Event('iSettingsChanged', { detail: { old_settings: user_settings, new_settings: mod_user_settings } } );
+				document.dispatchEvent(iSettingsChangedEvent);
 
-			// update UI
-			hideSaveButton();
+				// update UI
+				hideSaveButton();
+			}
+			else {
+				console.error('Error while saving user settings:', response.message);
+				alert('Error while saving user settings: ' + response.message);
+			}
+		}
+		catch (err) {
+			console.error('Error while saving user settings:', err);
+			alert('Error while saving user settings: ' + err);
 		}
 	});
 	saveReq.addEventListener('error', function(err) {
-		console.error(err);
-		alert('Error while saving user settings!');
+		console.error('Error while saving user settings:', err);
+		alert('Error while saving user settings: ' + err);
 	});
-	saveReq.open('POST', window.location.pathname + '/save');
+	saveReq.send();
 });
