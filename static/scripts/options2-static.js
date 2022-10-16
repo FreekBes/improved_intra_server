@@ -6,14 +6,14 @@
 /*   By: fbes <fbes@student.codam.nl>                 +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2022/10/16 02:22:25 by fbes          #+#    #+#                 */
-/*   Updated: 2022/10/16 02:23:17 by fbes          ########   odam.nl         */
+/*   Updated: 2022/10/16 02:33:27 by fbes          ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
 const optionContainers = document.querySelectorAll('.option-container');
 for (const optionContainer of optionContainers) {
 	const options = optionContainer.querySelectorAll('.option-selector .option');
-	const slug = optionContainer.getAttribute('data-slug');
+	const slug = optionContainer.id;
 
 	// if the option container is structured in a choice-like manner, add event listeners to the options
 	if (optionContainer.classList.contains("choice")) {
@@ -22,7 +22,7 @@ for (const optionContainer of optionContainers) {
 			option.addEventListener('click', function(ev) {
 				// retrieve slug and value to set from the clicked choice
 				const optionContainer = ev.currentTarget.closest('.option-container');
-				const slug = optionContainer.getAttribute('data-slug');
+				const slug = optionContainer.id;
 				console.log('Clicked on options choice for ', slug);
 				const val = ev.currentTarget.getAttribute('data-value');
 				console.log('Value to be set: ', val);

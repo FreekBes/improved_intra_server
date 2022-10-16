@@ -23,7 +23,7 @@ const user_settings = {
 {% endblock %}
 {% block content %}
 
-<div class="option-container choice" data-slug="show_custom_profiles">
+<div class="option-container choice" id="show_custom_profiles">
 	<h4>Customized profiles</h4>
 	<p>Show customized profiles, such as custom banner imagery</p>
 	<div class="option-selector horizontal img-compare">
@@ -42,7 +42,7 @@ const user_settings = {
 	</div>
 </div>
 
-<div class="option-container choice" data-slug="clustermap">
+<div class="option-container choice" id="clustermap">
 	<h4>Make logged in location clickable</h4>
 	<p>When a user is available, clicking on their location will open the cluster map and (if supported) highlight their location</p>
 	<div class="option-selector horizontal img-compare">
@@ -61,7 +61,7 @@ const user_settings = {
 	</div>
 </div>
 
-<div class="option-container" data-slug="outstandings">
+<div class="option-container" id="outstandings">
 	<h4>Show outstanding flags</h4>
 	<p>Display stars next to project grades for the amount of outstanding flags received</p>
 	<div class="option-selector horizontal img-compare">
@@ -80,7 +80,7 @@ const user_settings = {
 	</div>
 </div>
 
-<div class="option-container choice" data-slug="hide_broadcasts">
+<div class="option-container choice" id="hide_broadcasts">
 	<h4>Hide broadcasts button</h4>
 	<p>Hide the blue megaphone floating button on the dashboard</p>
 	<div class="option-selector vertical img-compare">
@@ -99,7 +99,7 @@ const user_settings = {
 	</div>
 </div>
 
-<div class="option-container choice" data-slug="holygraph_more_cursuses">
+<div class="option-container choice" id="holygraph_more_cursuses">
 	<h4>Show more cursuses in the Holy Graph</h4>
 	<p>Allow selection of additional cursuses in the Holy Graph viewer</p>
 	<div class="option-selector vertical img-compare vert-center">
@@ -118,7 +118,7 @@ const user_settings = {
 	</div>
 </div>
 
-<div class="option-container" data-slug="logsum_month">
+<div class="option-container" id="logsum_month">
 	<h4>Show monthly logtimes</h4>
 	<p>Display every month's total logtime above each month in the logtime chart</p>
 	<div class="option-selector horizontal img-compare">
@@ -137,7 +137,7 @@ const user_settings = {
 	</div>
 </div>
 
-<div class="option-container" data-slug="logsum_weekly">
+<div class="option-container" id="logsum_weekly">
 	<h4>Show weekly logtimes</h4>
 	<p>When hovering over a day in the logtimes chart, show the user's cumulative hours per week</p>
 	<div class="option-selector horizontal img-compare">
@@ -156,7 +156,7 @@ const user_settings = {
 	</div>
 </div>
 
-<div class="option-container" data-slug="old_blackhole">
+<div class="option-container" id="old_blackhole">
 	<h4>Old Black Hole countdown</h4>
 	<p>Use the old Black Hole countdown in profile banners</p>
 	<div class="option-selector horizontal img-compare">
@@ -175,7 +175,7 @@ const user_settings = {
 	</div>
 </div>
 
-<div class="option-container" data-slug="hide_goals">
+<div class="option-container" id="hide_goals">
 	<h4>Hide Black Hole absorption</h4>
 	<p>Hide the entire Black Hole container on all profile banners (overrides option above)</p>
 	<div class="option-selector horizontal img-compare">
@@ -194,13 +194,13 @@ const user_settings = {
 	</div>
 </div>
 
-<div class="option-container input" data-slug="test_input">
+<div class="option-container input" id="test_input">
 	<h4>Input test</h4>
 	<p>Input test, single line</p>
 	<input class="input-field" type="text" placeholder="This is a test" />
 </div>
 
-<div class="option-container input" data-slug="test_textbox">
+<div class="option-container input" id="test_textbox">
 	<h4>Input test</h4>
 	<p>Input test, textarea</p>
 	<textarea class="input-field" placeholder="This is a test"></textarea>
