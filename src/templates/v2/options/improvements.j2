@@ -4,18 +4,32 @@
 {% block head %}
 	{{ super() }}
 {% endblock %}
+{% block user_settings %}
+<script>
+const user_settings = {
+	'show_custom_profiles': {{ 'true' if user_settings[0]['show_custom_profiles'] else 'false' }},
+	'clustermap': {{ 'true' if user_settings[0]['clustermap'] else 'false' }},
+	'outstandings': {{ 'true' if user_settings[0]['outstandings'] else 'false' }},
+	'hide_broadcasts': {{ 'true' if user_settings[0]['hide_broadcasts'] else 'false' }},
+	'holygraph_more_cursuses': {{ 'true' if user_settings[0]['holygraph_more_cursuses'] else 'false' }},
+	'test_input': 'ABC123',
+	'test_textbox': 'QWERTY\nAA\nBB\nCC',
+};
+</script>
+{% endblock %}
 {% block content %}
-<div class="option-container">
+
+<div class="option-container choice" data-slug="show_custom_profiles">
 	<h4>Customized profiles</h4>
 	<p>Show customized profiles, such as custom banner imagery</p>
 	<div class="option-selector horizontal img-compare">
-		<div class="option active">
+		<div class="option" data-value="true">
 			<figure>
 				<img src="{{ url_for('static', filename='imgs/options/placeholder.png') }}" alt="Preview" />
 				<figcaption class="option-caption"><span>Enabled</span></figcaption>
 			</figure>
 		</div>
-		<div class="option">
+		<div class="option" data-value="false">
 			<figure>
 				<img src="{{ url_for('static', filename='imgs/options/placeholder.png') }}" alt="Preview" />
 				<figcaption class="option-caption"><span>Disabled</span></figcaption>
@@ -23,17 +37,56 @@
 		</div>
 	</div>
 </div>
-<div class="option-container">
-	<h4>Customized profiles</h4>
-	<p>Show customized profiles, such as custom banner imagery</p>
+
+<div class="option-container choice" data-slug="clustermap">
+	<h4>Make logged in location clickable</h4>
+	<p>When a user is available, clicking on their location will open the cluster map and (if supported) highlight their location</p>
+	<div class="option-selector horizontal img-compare">
+		<div class="option" data-value="true">
+			<figure>
+				<img src="{{ url_for('static', filename='imgs/options/placeholder.png') }}" alt="Preview" />
+				<figcaption class="option-caption"><span>Enabled</span></figcaption>
+			</figure>
+		</div>
+		<div class="option" data-value="false">
+			<figure>
+				<img src="{{ url_for('static', filename='imgs/options/placeholder.png') }}" alt="Preview" />
+				<figcaption class="option-caption"><span>Disabled</span></figcaption>
+			</figure>
+		</div>
+	</div>
+</div>
+
+<div class="option-container" data-slug="outstandings">
+	<h4>Show outstanding flags</h4>
+	<p>Display stars next to project grades for the amount of outstanding flags received</p>
+	<div class="option-selector horizontal img-compare">
+		<div class="option" data-value="true">
+			<figure>
+				<img src="{{ url_for('static', filename='imgs/options/placeholder.png') }}" alt="Preview" />
+				<figcaption class="option-caption"><span>Enabled</span></figcaption>
+			</figure>
+		</div>
+		<div class="option" data-value="false">
+			<figure>
+				<img src="{{ url_for('static', filename='imgs/options/placeholder.png') }}" alt="Preview" />
+				<figcaption class="option-caption"><span>Disabled</span></figcaption>
+			</figure>
+		</div>
+	</div>
+</div>
+
+<div class="option-container choice" data-slug="hide_broadcasts">
+	<h4>Hide broadcasts button</h4>
+	<p>Hide the blue megaphone floating button on the dashboard</p>
 	<div class="option-selector vertical img-compare">
-		<div class="option active">
+		<div class="option" data-value="true">
 			<figure>
 				<img src="{{ url_for('static', filename='imgs/options/placeholder.png') }}" alt="Preview" />
 				<figcaption class="option-caption"><span>Enabled</span></figcaption>
 			</figure>
 		</div>
-		<div class="option">
+		<div class="option" data-value="false">
 			<figure>
 				<img src="{{ url_for('static', filename='imgs/options/placeholder.png') }}" alt="Preview" />
 				<figcaption class="option-caption"><span>Disabled</span></figcaption>
@@ -41,17 +94,18 @@
 		</div>
 	</div>
 </div>
-<div class="option-container">
-	<h4>Customized profiles</h4>
-	<p>Show customized profiles, such as custom banner imagery</p>
+
+<div class="option-container choice" data-slug="holygraph_more_cursuses">
+	<h4>Show more cursuses in the Holy Graph</h4>
+	<p>Allow selection of additional cursuses in the Holy Graph viewer</p>
 	<div class="option-selector vertical img-compare vert-center">
-		<div class="option active">
+		<div class="option" data-value="true">
 			<figure>
 				<img src="{{ url_for('static', filename='imgs/options/placeholder.png') }}" alt="Preview" />
 				<figcaption class="option-caption"><span>Enabled<br>Second line</span></figcaption>
 			</figure>
 		</div>
-		<div class="option">
+		<div class="option" data-value="false">
 			<figure>
 				<img src="{{ url_for('static', filename='imgs/options/placeholder.png') }}" alt="Preview" />
 				<figcaption class="option-caption"><span>Disabled<br>Second line</span></figcaption>
@@ -59,14 +113,17 @@
 		</div>
 	</div>
 </div>
-<div class="option-container">
+
+<div class="option-container input" data-slug="test_input">
 	<h4>Input test</h4>
 	<p>Input test, single line</p>
-	<input type="text" placeholder="This is a test" />
+	<input class="input-field" type="text" placeholder="This is a test" />
 </div>
-<div class="option-container">
+
+<div class="option-container input" data-slug="test_textbox">
 	<h4>Input test</h4>
 	<p>Input test, textarea</p>
-	<textarea placeholder="This is a test"></textarea>
+	<textarea class="input-field" placeholder="This is a test"></textarea>
 </div>
+
 {% endblock %}

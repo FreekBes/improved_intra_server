@@ -6,7 +6,7 @@
 /*   By: fbes <fbes@student.codam.nl>                 +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2022/10/15 14:52:05 by fbes          #+#    #+#                 */
-/*   Updated: 2022/10/15 17:25:04 by fbes          ########   odam.nl         */
+/*   Updated: 2022/10/16 01:06:03 by fbes          ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,6 +76,9 @@ noscript {
 #logo {
 	margin-top: 6px;
 	width: 100%;
+	font-family: 'Futura PT', sans-serif;
+	font-weight: bold;
+	color: var(--theme-color);
 }
 
 #sidebar hr {
@@ -270,21 +273,23 @@ main {
 
 .option-selector.vertical.img-compare .option figure {
 	display: inline-block;
-	height: 92px;
 	margin: 0;
 }
 
 .option-selector.vertical.img-compare .option figure img {
 	display: inline-block;
 	vertical-align: top;
-	height: inherit;
+	height: 92px;
 	margin-right: 4px;
+}
+
+.option-selector.vertical.img-compare .option figure img + figcaption {
+	margin-top: 4px; /* only active when there is an img tag in the figure */
 }
 
 .option-selector.vertical.img-compare .option figure figcaption {
 	display: inline-block;
 	vertical-align: top;
-	margin-top: 4px;
 }
 
 /* add vertical alignment to image and caption with vert-center class */
