@@ -401,6 +401,18 @@ main {
 	color: var(--theme-color);
 }
 
+.option.disabled {
+	cursor: not-allowed;
+	background-color: transparent !important;
+	opacity: 0.5 !important;
+	color: var(--quaternary-text-color) !important;
+}
+
+.option.disabled.active {
+	background-color: var(--warning-color) !important;
+	color: #000 !important;
+}
+
 /* image comparison options */
 .option-selector.img-compare .option figure img {
 	opacity: 0.7;
@@ -410,6 +422,10 @@ main {
 .option-selector.img-compare .option.active figure img,
 .option-selector.img-compare .option:hover figure img {
 	opacity: 1;
+}
+
+.option-selector.img-compare .option.disabled figure img {
+	opacity: 0.7 !important;
 }
 
 .option-selector.horizontal.img-compare .option figure {

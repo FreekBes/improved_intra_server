@@ -6,10 +6,53 @@
 {% endblock %}
 {% block user_settings %}
 <script>
-const user_settings = {};
+const user_settings = {
+	'theme': '{{ user_settings[0]['theme'] }}',
+	'colors': '{{ user_settings[0]['colors'] }}'
+};
 const mod_user_settings = JSON.parse(JSON.stringify(user_settings));
 </script>
 {% endblock %}
 {% block content %}
-Coming soon
+
+<div class="option-container choice" id="theme">
+	<h4>Theme</h4>
+	<p>Base theme to use for Intra</p>
+	<div class="option-selector horizontal img-compare">
+		<div class="option" data-value="1">
+			<figure>
+				<img src="{{ url_for('static', filename='imgs/options/placeholder.png') }}" alt="Preview" />
+				<figcaption class="option-caption"><span>Follow system</span></figcaption>
+			</figure>
+		</div>
+		<div class="option" data-value="2">
+			<figure>
+				<img src="{{ url_for('static', filename='imgs/options/placeholder.png') }}" alt="Preview" />
+				<figcaption class="option-caption"><span>Dark mode</span></figcaption>
+			</figure>
+		</div>
+		<div class="option" data-value="3">
+			<figure>
+				<img src="{{ url_for('static', filename='imgs/options/placeholder.png') }}" alt="Preview" />
+				<figcaption class="option-caption"><span>Light mode</span></figcaption>
+			</figure>
+		</div>
+	</div>
+</div>
+
+<div class="option-container choice" id="colors">
+	<h4>Color scheme</h4>
+	<p>Color scheme to apply on top of the base theme</p>
+	<div class="option-selector vertical img-compare vert-center">
+		{% for color_scheme in possible_options[0] -%}
+			<div class="option{{ ' disabled' if color_scheme['disabled'] }}" data-value="{{ color_scheme['id']|e }}" data-internalname="{{ color_scheme['internal_name']|e }}">
+				<figure>
+					<img src="{{ url_for('static', filename='imgs/options/colors/'+color_scheme['internal_name']+'.svg') }}" alt="Preview" onerror="this.src = '{{ url_for('static', filename='imgs/options/placeholder.png') }}'" />
+					<figcaption class="option-caption"><span>{{ color_scheme['name']|e }}{{ ' (unavailable)' if color_scheme['disabled'] }}</span></figcaption>
+				</figure>
+			</div>
+		{% endfor -%}
+	</div>
+</div>
+
 {% endblock %}

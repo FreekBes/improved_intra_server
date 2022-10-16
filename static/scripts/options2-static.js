@@ -6,7 +6,7 @@
 /*   By: fbes <fbes@student.codam.nl>                 +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2022/10/16 02:22:25 by fbes          #+#    #+#                 */
-/*   Updated: 2022/10/16 17:49:06 by fbes          ########   odam.nl         */
+/*   Updated: 2022/10/16 19:51:04 by fbes          ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,6 +57,9 @@ for (const optionContainer of optionContainers) {
 		if (optionContainer.classList.contains("choice")) {
 			// add event listener for each option
 			for (const option of options) {
+				if (option.classList.contains('disabled')) {
+					continue;
+				}
 				option.addEventListener('click', function(ev) {
 					// retrieve slug and value to set from the clicked choice
 					const optionContainer = ev.currentTarget.closest('.option-container');
