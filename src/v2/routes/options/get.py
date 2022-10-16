@@ -1,7 +1,7 @@
 from src.models.models import BannerImg, BannerPosition, Campus, ColorScheme, Profile, Settings
 from flask import render_template, session, redirect, url_for
-from ... import app, __version__, __target_ext_version__
-from ...oauth import authstart
+from .... import app, __version__, __target_ext_version__
+from ....oauth import authstart
 
 FETCH_DISTRIBUTION = {
 	'improvements': [ 'settings' ],
@@ -66,11 +66,6 @@ def options_section(section:str):
 	if section == 'campus':
 		return render_campus_settings(dist_key, campus, user_settings, possible_options)
 	return render_template(f"v2/options/{section}.j2", user_settings=user_settings, possible_options=possible_options, user_login=session['login'], user_image=session['image'], version=VERSION_INFO)
-
-
-@app.route('/v2/options/<section>/save', methods=['POST'])
-def options_section_save(section:str):
-	return 'Not implemented', 501
 
 
 # Campus-specific settings

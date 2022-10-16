@@ -37,7 +37,8 @@ print('Flask initialized')
 from src.v1 import routes as v1routes
 from src.v2.routes.banners import *
 from src.v2.routes.sessions import *
-from src.v2.routes.options import *
+from src.v2.routes.options.get import *
+from src.v2.routes.options.set import *
 from src.v2.routes.home import *
 from . import oauth
 
