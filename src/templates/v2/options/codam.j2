@@ -6,10 +6,51 @@
 {% endblock %}
 {% block user_settings %}
 <script>
-const user_settings = {};
+const user_settings = {
+	'codam_monit': '{{ 'true' if user_settings[0]['codam_monit'] else 'false' }}',
+	'codam_auto_equip_coa_title': '{{ 'true' if user_settings[0]['codam_auto_equip_coa_title'] else 'false' }}',
+};
 const mod_user_settings = JSON.parse(JSON.stringify(user_settings));
 </script>
 {% endblock %}
 {% block content %}
-Coming soon
+
+<div class="option-container choice" id="codam_monit">
+	<h4>Replace Black Hole with Codam's Monitoring Progress</h4>
+	<p>Show a user's progress towards Codam's Monitoring System in profile banners</p>
+	<div class="option-selector horizontal img-compare">
+		<div class="option" data-value="true">
+			<figure>
+				<img src="{{ url_for('static', filename='imgs/options/placeholder.png') }}" alt="Preview" />
+				<figcaption class="option-caption recommended"><span>Enabled</span></figcaption>
+			</figure>
+		</div>
+		<div class="option" data-value="false">
+			<figure>
+				<img src="{{ url_for('static', filename='imgs/options/placeholder.png') }}" alt="Preview" />
+				<figcaption class="option-caption"><span>Disabled</span></figcaption>
+			</figure>
+		</div>
+	</div>
+</div>
+
+<div class="option-container choice" id="codam_auto_equip_coa_title">
+	<h4>Auto-equip coalition titles</h4>
+	<p>Automatically equip your coalition rank's Intra title when one is available</p>
+	<div class="option-selector horizontal img-compare">
+		<div class="option" data-value="true">
+			<figure>
+				<img src="{{ url_for('static', filename='imgs/options/placeholder.png') }}" alt="Preview" />
+				<figcaption class="option-caption"><span>Enabled</span></figcaption>
+			</figure>
+		</div>
+		<div class="option" data-value="false">
+			<figure>
+				<img src="{{ url_for('static', filename='imgs/options/placeholder.png') }}" alt="Preview" />
+				<figcaption class="option-caption"><span>Disabled</span></figcaption>
+			</figure>
+		</div>
+	</div>
+</div>
+
 {% endblock %}
