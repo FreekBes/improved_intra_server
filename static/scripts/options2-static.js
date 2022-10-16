@@ -6,7 +6,7 @@
 /*   By: fbes <fbes@student.codam.nl>                 +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2022/10/16 02:22:25 by fbes          #+#    #+#                 */
-/*   Updated: 2022/10/16 02:33:27 by fbes          ########   odam.nl         */
+/*   Updated: 2022/10/16 02:41:53 by fbes          ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,4 +62,12 @@ for (const optionContainer of optionContainers) {
 		// set current value
 		input.value = user_settings[slug];
 	}
+
+	// add a link to each option container to the top right corner of the element, for easy sharing with other students
+	const link = document.createElement('a');
+	link.classList.add('option-link');
+	link.href = '#' + slug;
+	link.innerText = '#';
+	link.setAttribute('title', 'Link to this option');
+	optionContainer.appendChild(link);
 }
