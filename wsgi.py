@@ -36,7 +36,6 @@ print('Default content initialized')
 runner_scheduler = BackgroundScheduler({
 	'apscheduler.job_defaults.coalesce': 'false'
 })
-runner_scheduler.start()
 runner_scheduler.add_job(
 	outstandingsRunner.run,
 	'cron',
@@ -54,3 +53,6 @@ if __name__ == '__main__':
 	# Start the web server
 	print('Running in debug mode, starting app in wsgi.py')
 	app.run(debug=True, port=5000, host='0.0.0.0', use_reloader=True)
+else:
+	# Only start the runner in production
+	runner_scheduler.start()
