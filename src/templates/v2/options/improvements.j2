@@ -12,6 +12,10 @@ const user_settings = {
 	'outstandings': {{ 'true' if user_settings[0]['outstandings'] else 'false' }},
 	'hide_broadcasts': {{ 'true' if user_settings[0]['hide_broadcasts'] else 'false' }},
 	'holygraph_more_cursuses': {{ 'true' if user_settings[0]['holygraph_more_cursuses'] else 'false' }},
+	'logsum_month': {{ 'true' if user_settings[0]['logsum_month'] else 'false' }},
+	'logsum_week': {{ 'true' if user_settings[0]['logsum_week'] else 'false' }},
+	'old_blackhole': {{ 'true' if user_settings[0]['old_blackhole'] else 'false' }},
+	'hide_goals': {{ 'true' if user_settings[0]['hide_goals'] else 'false' }},
 	'test_input': 'ABC123',
 	'test_textbox': 'QWERTY\nAA\nBB\nCC',
 };
@@ -109,6 +113,82 @@ const user_settings = {
 			<figure>
 				<img src="{{ url_for('static', filename='imgs/options/placeholder.png') }}" alt="Preview" />
 				<figcaption class="option-caption"><span>Disabled<br>Second line</span></figcaption>
+			</figure>
+		</div>
+	</div>
+</div>
+
+<div class="option-container" data-slug="logsum_month">
+	<h4>Show monthly logtimes</h4>
+	<p>Display every month's total logtime above each month in the logtime chart</p>
+	<div class="option-selector horizontal img-compare">
+		<div class="option" data-value="true">
+			<figure>
+				<img src="{{ url_for('static', filename='imgs/options/placeholder.png') }}" alt="Preview" />
+				<figcaption class="option-caption"><span>Enabled</span></figcaption>
+			</figure>
+		</div>
+		<div class="option" data-value="false">
+			<figure>
+				<img src="{{ url_for('static', filename='imgs/options/placeholder.png') }}" alt="Preview" />
+				<figcaption class="option-caption"><span>Disabled</span></figcaption>
+			</figure>
+		</div>
+	</div>
+</div>
+
+<div class="option-container" data-slug="logsum_weekly">
+	<h4>Show weekly logtimes</h4>
+	<p>When hovering over a day in the logtimes chart, show the user's cumulative hours per week</p>
+	<div class="option-selector horizontal img-compare">
+		<div class="option" data-value="true">
+			<figure>
+				<img src="{{ url_for('static', filename='imgs/options/placeholder.png') }}" alt="Preview" />
+				<figcaption class="option-caption"><span>Enabled</span></figcaption>
+			</figure>
+		</div>
+		<div class="option" data-value="false">
+			<figure>
+				<img src="{{ url_for('static', filename='imgs/options/placeholder.png') }}" alt="Preview" />
+				<figcaption class="option-caption"><span>Disabled</span></figcaption>
+			</figure>
+		</div>
+	</div>
+</div>
+
+<div class="option-container" data-slug="old_blackhole">
+	<h4>Old Black Hole countdown</h4>
+	<p>Use the old Black Hole countdown in profile banners</p>
+	<div class="option-selector horizontal img-compare">
+		<div class="option" data-value="true">
+			<figure>
+				<img src="{{ url_for('static', filename='imgs/options/placeholder.png') }}" alt="Preview" />
+				<figcaption class="option-caption"><span>Enabled</span></figcaption>
+			</figure>
+		</div>
+		<div class="option" data-value="false">
+			<figure>
+				<img src="{{ url_for('static', filename='imgs/options/placeholder.png') }}" alt="Preview" />
+				<figcaption class="option-caption"><span>Disabled</span></figcaption>
+			</figure>
+		</div>
+	</div>
+</div>
+
+<div class="option-container" data-slug="hide_goals">
+	<h4>Hide Black Hole absorption</h4>
+	<p>Hide the entire Black Hole container on all profile banners (overrides option above)</p>
+	<div class="option-selector horizontal img-compare">
+		<div class="option" data-value="true">
+			<figure>
+				<img src="{{ url_for('static', filename='imgs/options/placeholder.png') }}" alt="Preview" />
+				<figcaption class="option-caption"><span>Enabled</span></figcaption>
+			</figure>
+		</div>
+		<div class="option" data-value="false">
+			<figure>
+				<img src="{{ url_for('static', filename='imgs/options/placeholder.png') }}" alt="Preview" />
+				<figcaption class="option-caption"><span>Disabled</span></figcaption>
 			</figure>
 		</div>
 	</div>
