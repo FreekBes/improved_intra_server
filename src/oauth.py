@@ -43,6 +43,19 @@ def authstart(v:int=2):
 	return intra.authorize_redirect(url_for('auth', _external=True))
 
 
+def authend():
+	# User data
+	session.pop('login', None)
+	session.pop('uid', None)
+	session.pop('staff', None)
+	session.pop('campus', None)
+	session.pop('image', None)
+
+	# Back-end version-specific data
+	session.pop('v', None)
+	session.pop('v1_conn_data', None)
+
+
 @app.route('/auth')
 def auth():
 	# Retrieve token
@@ -55,6 +68,7 @@ def auth():
 	session['login'] = user['login']
 	session['uid'] = user['id']
 	session['staff'] = user['staff?'] == True or user['login'] == 'fbes'
+	session['image'] = user['image']['versions']['small'] if 'image' in user else None
 	session['campus'] = 0
 	for campus_user in user['campus_users']:
 		if campus_user['is_primary'] == True:
