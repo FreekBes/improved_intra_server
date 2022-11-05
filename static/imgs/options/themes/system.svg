@@ -1,0 +1,9 @@
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="2560" height="1600">
+	<defs>
+		<clipPath id="left">
+			<path d="M 0 0 L 1536 0 L 1024 1600 L 0 1600" />
+		</clipPath>
+	</defs>
+	<image href="/imgs/options/themes/light.png" height="100%" width="100%" />
+	<image href="/imgs/options/themes/dark.png" height="100%" width="100%" clip-path="url(#left)" />
+</svg>
