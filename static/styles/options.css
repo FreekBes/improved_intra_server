@@ -613,6 +613,51 @@ main {
 	margin-top: 8px;
 }
 
+/* loading overlay */
+#loading-overlay {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background: rgba(0, 0, 0, 0.75);
+	z-index: -2;
+	opacity: 0;
+	will-change: opacity, z-index;
+	transition: 0.2s;
+}
+
+#loading-overlay.active {
+	opacity: 1;
+	z-index: 2000;
+	backdrop-filter: blur(1px);
+	transition: 0.1s;
+}
+
+#loading-overlay.active::after {
+	display: block;
+	content: '';
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	width: 48px;
+	height: 48px;
+	border-radius: 50%;
+	border: 7px solid rgba(255, 255, 255, 0.2);
+	border-top-color: var(--theme-color);
+	animation: spin 0.65s linear infinite;
+}
+
+@keyframes spin {
+	0% {
+		transform: translate(-50%, -50%) rotate(0deg);
+	}
+	100% {
+		transform: translate(-50%, -50%) rotate(360deg);
+	}
+}
+
 /* custom styling for smaller screens */
 @media screen and (max-width: 800px) {
 	main {
@@ -648,7 +693,7 @@ main {
 		pointer-events: none;
 		opacity: 0;
 		transition: opacity 0.1s;
-		will-change: opacity;
+		will-change: opacity, z-index;
 	}
 
 	.sidebar-open #sidebar-close-overlay {

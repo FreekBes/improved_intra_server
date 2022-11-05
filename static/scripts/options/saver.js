@@ -6,7 +6,7 @@
 /*   By: fbes <fbes@student.codam.nl>                 +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2022/10/16 02:22:25 by fbes          #+#    #+#                 */
-/*   Updated: 2022/11/05 17:25:54 by fbes          ########   odam.nl         */
+/*   Updated: 2022/11/05 20:09:33 by fbes          ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,11 +48,15 @@ function showUnsavedChangesWarning() {
 function genericSaveError(err) {
 	console.error('Error while saving user settings:', err);
 	alert('Error while saving user settings: ' + err);
+	loadingOverlay.hide();
 }
 
 // save button event listener
 document.getElementById('save-btn').addEventListener('click', function(ev) {
 	console.log('Saving user settings:', mod_user_settings);
+
+	// show loading screen
+	loadingOverlay.show();
 
 	// remove all previous form errors
 	const formErrors = document.querySelectorAll('.form-error');
@@ -95,9 +99,9 @@ document.getElementById('save-btn').addEventListener('click', function(ev) {
 
 				// update UI
 				hideSaveButton();
+				loadingOverlay.hide();
 			}
 			else {
-				genericSaveError(response.message);
 				if ('form_errors' in response) {
 					for (const [key, value] of Object.entries(response.form_errors)) {
 						const optionContainer = document.querySelector('.option-container#'+key) || document.querySelector("input[name='" + key + "']").closest('.option-container');
@@ -132,6 +136,7 @@ document.getElementById('save-btn').addEventListener('click', function(ev) {
 						}
 					}
 				}
+				genericSaveError(response.message);
 			}
 		}
 		catch (err) {

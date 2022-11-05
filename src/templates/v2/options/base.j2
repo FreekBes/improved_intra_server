@@ -13,7 +13,7 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	{% endblock -%}
 </head>
-<body>
+<body onload="loadingOverlay.hide();">
 	<section id="sidebar">
 		<div id="logo-container">
 			<img id="logo" src="{{ url_for('static', filename='imgs/logo-wide.png') }}" alt="IMPROVED INTRA 42"/>
@@ -51,6 +51,19 @@
 	{% block user_settings required %}
 	{# needs to be a script tag with a definition of the user_settings variable (object)#}
 	{% endblock %}
+
+	<!-- loading screen -->
+	<div id="loading-overlay"></div>
+	<script>
+	const loadingOverlay = {
+		show: function() {
+			document.getElementById('loading-overlay').classList.add('active');
+		},
+		hide: function() {
+			document.getElementById('loading-overlay').classList.remove('active');
+		}
+	};
+	</script>
 
 	<!-- scripts to load and modify the options defined above -->
 	<script src="{{ url_for('static', filename='scripts/options/saver.js') }}"></script>
