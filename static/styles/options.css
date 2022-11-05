@@ -12,6 +12,7 @@
 
 @import "colors.css";
 @import "fonts.css";
+@import "animations.css";
 
 :root {
 	--sidebar-width: 250px;
@@ -162,20 +163,20 @@ noscript {
 
 }
 
-#menu-list li.active {
-	background: var(--active-background-color);
-	font-weight: bold;
-}
-
-#menu-list li:hover {
-	background: var(--hover-background-color);
-}
-
 #menu-list li a {
 	display: block;
 	color: var(--text-color);
 	text-decoration: none;
 	padding: 12px 18px;
+}
+
+#menu-list li.active a {
+	background: var(--active-background-color);
+	font-weight: bold;
+}
+
+#menu-list li a:hover {
+	background: var(--hover-background-color);
 }
 
 

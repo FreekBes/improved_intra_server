@@ -1,0 +1,32 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        ::::::::            */
+/*   animations.css                                     :+:    :+:            */
+/*                                                     +:+                    */
+/*   By: fbes <fbes@student.codam.nl>                 +#+                     */
+/*                                                   +#+                      */
+/*   Created: 2022/11/05 17:35:03 by fbes          #+#    #+#                 */
+/*   Updated: 2022/11/05 17:44:47 by fbes          ########   odam.nl         */
+/*                                                                            */
+/* ************************************************************************** */
+
+/* This CSS file is used for all sorts of animations on the Improved Intra website */
+
+/* transition timing for hover end */
+a,
+button,
+input,
+#menu-list li,
+.option {
+	transition: 0.075s ease-out !important;
+}
+
+/* transition timing for hover start */
+a:hover,
+button:hover,
+input:hover,
+input:focus,
+#menu-list li:hover,
+.option:hover {
+	transition: 0s ease-in !important;
+}
