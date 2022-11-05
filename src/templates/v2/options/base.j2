@@ -37,6 +37,11 @@
 	<main>
 		{% block content %}
 		{% endblock %}
+		<div class="option-container input" id="ext_version" style="display: none;">
+			<h4>Extension version</h4>
+			<p>The version of the Improved Intra extension currently installed</p>
+			<input class="input-field" type="text" placeholder="Do not fill this field, it is filled in by the extension" value="unknown" id="ext_version_input" readonly />
+		</div>
 	</main>
 	{% block user_settings required %}
 	{# needs to be a script tag with a definition of the user_settings variable (object)#}

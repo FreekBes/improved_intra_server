@@ -6,7 +6,7 @@
 /*   By: fbes <fbes@student.codam.nl>                 +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2022/11/05 14:08:09 by fbes          #+#    #+#                 */
-/*   Updated: 2022/11/05 14:09:00 by fbes          ########   odam.nl         */
+/*   Updated: 2022/11/05 15:19:15 by fbes          ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,14 @@ for (const optionContainer of optionContainers) {
 	try {
 		const options = optionContainer.querySelectorAll('.option-selector .option');
 		const slug = optionContainer.id;
+
+		// check if the slug exists as a key in the user_settings object
+		if (!(slug in user_settings)) {
+			if (slug != 'ext_version') {
+				console.warn("The slug '" + slug + "' does not exist in the user_settings object");
+			}
+			continue;
+		}
 
 		console.log('Found option container with slug "' + slug + '", user value is:', user_settings[slug]);
 

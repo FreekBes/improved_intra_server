@@ -261,14 +261,20 @@ main {
 	display: block;
 	position: relative;
 	background: var(--container-background-color);
-	padding: 16px 12px 12px 12px;
+	background-clip: border-box;
+	padding: 15px 11px 11px 11px;
 	margin: 24px 0px;
+	border: solid 1px transparent;
 	border-radius: 4px;
 }
 
 .option-container:first-child,
 .text-container:first-child {
 	margin-top: 0;
+}
+
+.option-container.has-error {
+	border-color: var(--danger-color);
 }
 
 .option-container h4,
@@ -303,6 +309,11 @@ main {
 .text-container ul a:hover,
 .text-container ul a:focus {
 	color: var(--theme-color-light);
+}
+
+.option-container .form-error {
+	color: var(--danger-color);
+	font-size: small;
 }
 
 .option-container .option-link {

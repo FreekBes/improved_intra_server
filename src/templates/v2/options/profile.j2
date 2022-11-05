@@ -7,7 +7,7 @@
 {% block user_settings %}
 <script>
 const user_settings = {
-	'banner_img': '{{ user_settings[1]['banner_img'] }}',
+	'banner_img': '{{ user_settings[1]['banner_img'] if user_settings[1]['banner_img'] else '' }}',
 	'banner_pos': '{{ user_settings[1]['banner_pos'] }}',
 	'link_git': '{{ user_settings[1]['link_git'] if user_settings[1]['link_git'] else '' }}',
 	'link_web': '{{ user_settings[1]['link_web'] if user_settings[1]['link_web'] else '' }}',
@@ -26,8 +26,8 @@ const mod_user_settings = JSON.parse(JSON.stringify(user_settings));
 	<h4>Custom profile banner</h4>
 	<p>A custom banner image that will be shown on your profile, instead of your coalition's banner</p>
 	<img class="picture-preview current-picture"{{ ' style="display: none"' if not user_settings[2] }} src="{{ user_settings[2]['url']|e if user_settings[2] else url_for('static', filename='imgs/options/placeholder.png') }}" alt="Failed to load your custom banner" title="Your current custom banner" />
-	<img class="picture-preview future-picture" style="display: none;" src="{{ url_for('static', filename='imgs/options/placeholder.png') }}" alt="Failed to load selected image" title="Click the save button in the top left to upload this banner" />
-	<input class="picture-picker" type="file" id="custom-banner-upload" name="custom-banner-upload" accept="image/*" />
+	<img class="picture-preview future-picture" style="display: none;" src="{{ url_for('static', filename='imgs/options/placeholder.png') }}" alt="Failed to load selected file for preview" title="Click the save button in the top left to upload this banner" />
+	<input class="picture-picker" type="file" id="custom_banner_upload" name="custom_banner_upload" accept="image/*" />
 </div>
 
 <div class="option-container choice" id="banner_pos">
