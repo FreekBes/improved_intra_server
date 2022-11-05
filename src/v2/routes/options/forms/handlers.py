@@ -107,8 +107,9 @@ def set_v2_settings(form, user_id:int):
 		for setting_key in TABLE_DISTRIBUTION['settings']:
 			if setting_key in form and form[setting_key].raw_data:
 				setting_value = handle(form, user_id, TABLE_DISTRIBUTION['settings'][setting_key], form[setting_key].data)
-				setattr(db_settings, setting_key, setting_value)
-				updated_settings[setting_key] = setting_value
+				if getattr(db_settings, setting_key) != setting_value:
+					setattr(db_settings, setting_key, setting_value)
+					updated_settings[setting_key] = setting_value
 
 		# Update the extension version for the user in the database
 		if 'ext_version' in form and form['ext_version'].raw_data and form['ext_version'] != 'unknown':
@@ -119,8 +120,9 @@ def set_v2_settings(form, user_id:int):
 		for setting_key in TABLE_DISTRIBUTION['profiles']:
 			if setting_key in form and form[setting_key].raw_data:
 				setting_value = handle(form, user_id, TABLE_DISTRIBUTION['profiles'][setting_key], form[setting_key].data)
-				setattr(db_profile, setting_key, setting_value)
-				updated_settings[setting_key] = setting_value
+				if getattr(db_profile, setting_key) != setting_value:
+					setattr(db_profile, setting_key, setting_value)
+					updated_settings[setting_key] = setting_value
 
 		db.session.merge(db_settings)
 		db.session.merge(db_profile)
