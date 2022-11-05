@@ -6,7 +6,7 @@
 /*   By: fbes <fbes@student.codam.nl>                 +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2022/10/09 20:45:50 by fbes          #+#    #+#                 */
-/*   Updated: 2022/10/15 17:16:10 by fbes          ########   odam.nl         */
+/*   Updated: 2022/11/05 17:55:45 by fbes          ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,6 +49,11 @@
 	--icon-42-white: url("/imgs/42-white.png");
 	--icon-42-black: url("/imgs/42-black.png");
 	--icon-42: var(--icon-42-black);
+
+	/* scrollbars */
+	--scrollbar-thumb-color: #202227;
+	--scrollbar-thumb-color-hover: #2d2f34;
+	--scrollbar-thumb-color-active: #393b40;
 }
 
 @media (prefers-color-scheme: light) {
@@ -75,5 +80,11 @@
 
 		/* 42 icon */
 		--icon-42: var(--icon-42-white);
+
+		/* scrollbars */
+		--scrollbar-background-color: #fafafa;
+		--scrollbar-thumb-color: #c1c1c1;
+		--scrollbar-thumb-color-hover: #b1b1b1;
+		--scrollbar-thumb-color-active: #a1a1a1;
 	}
 }

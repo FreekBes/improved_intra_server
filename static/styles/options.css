@@ -13,6 +13,7 @@
 @import "colors.css";
 @import "fonts.css";
 @import "animations.css";
+@import "scrollbars.css";
 
 :root {
 	--sidebar-width: 250px;
