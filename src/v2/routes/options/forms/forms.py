@@ -32,8 +32,8 @@ class AppearanceForm(ImprovedIntraForm):
 
 
 class CodamForm(ImprovedIntraForm):
-	codam_monit = SelectField('Replace Black Hole with Codam\'s Monitoring Progress', name='codam-monit', choices=[('true', 'Enabled'), ('false', 'Disabled')])
-	codam_auto_equip_coa_title = SelectField('Auto-equip coalition titles', name='codam-auto-equip-coa-title', choices=[('true', 'Enabled'), ('false', 'Disabled')])
+	codam_monit = SelectField('Replace Black Hole with Codam\'s Monitoring Progress', name='codam_monit', choices=[('true', 'Enabled'), ('false', 'Disabled')])
+	codam_auto_equip_coa_title = SelectField('Auto-equip coalition titles', name='codam_auto_equip_coa_title', choices=[('true', 'Enabled'), ('false', 'Disabled')])
 
 
 class ImprovementsForm(ImprovedIntraForm):
