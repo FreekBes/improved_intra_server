@@ -42,7 +42,8 @@
 	{# needs to be a script tag with a definition of the user_settings variable (object)#}
 	{% endblock %}
 
-	<!-- script to modify the options defined above -->
-	<script src="{{ url_for('static', filename='scripts/options2-static.js') }}"></script>
+	<!-- scripts to load and modify the options defined above -->
+	<script src="{{ url_for('static', filename='scripts/options/saver.js') }}"></script>
+	<script src="{{ url_for('static', filename='scripts/options/loader.js') }}"></script>
 </body>
 </html>
