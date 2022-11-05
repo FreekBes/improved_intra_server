@@ -91,4 +91,4 @@ def auth():
 		del session['v1_conn_data']['expires_in']
 		session['v1_conn_data']['expires_at'] = db_token.expires_at
 		return redirect(url_for('oldConnect'), 302)
-	return redirect(url_for('home'), 302)
+	return redirect(url_for('connect'), 302)
