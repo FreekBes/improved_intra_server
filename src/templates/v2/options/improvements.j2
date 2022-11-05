@@ -26,7 +26,7 @@ const mod_user_settings = JSON.parse(JSON.stringify(user_settings));
 
 <div class="option-container choice" id="show_custom_profiles">
 	<h4>Customized profiles</h4>
-	<p>Show customized profiles, such as custom banner imagery</p>
+	<p>Enable customized user profiles, such as custom banner imagery and links to social media</p>
 	<div class="option-selector horizontal img-compare">
 		<div class="option" data-value="true">
 			<figure>
@@ -45,7 +45,7 @@ const mod_user_settings = JSON.parse(JSON.stringify(user_settings));
 
 <div class="option-container choice" id="clustermap">
 	<h4>Make logged in location clickable</h4>
-	<p>When a user is available, clicking on their location will open the cluster map and (if supported) highlight their location</p>
+	<p>When a user is available, clicking on their location will open the cluster map and highlight their location<br><small>(if supported by your campus)</small></p>
 	<div class="option-selector horizontal img-compare">
 		<div class="option" data-value="true">
 			<figure>
@@ -69,32 +69,32 @@ const mod_user_settings = JSON.parse(JSON.stringify(user_settings));
 		<div class="option" data-value="true">
 			<figure>
 				<img src="{{ url_for('static', filename='imgs/options/outstandings/enabled.png') }}" alt="Preview" />
-				<figcaption class="option-caption recommended"><span>Enabled</span></figcaption>
+				<figcaption class="option-caption recommended"><span>Show outstanding flags</span></figcaption>
 			</figure>
 		</div>
 		<div class="option" data-value="false">
 			<figure>
 				<img src="{{ url_for('static', filename='imgs/options/outstandings/disabled.png') }}" alt="Preview" />
-				<figcaption class="option-caption"><span>Disabled</span></figcaption>
+				<figcaption class="option-caption"><span>Do not show outstanding flags</span></figcaption>
 			</figure>
 		</div>
 	</div>
 </div>
 
 <div class="option-container choice" id="hide_broadcasts">
-	<h4>Hide broadcasts button</h4>
+	<h4>Broadcasts button</h4>
 	<p>Hide the blue megaphone floating button on the dashboard</p>
-	<div class="option-selector vertical img-compare">
+	<div class="option-selector vertical img-compare vert-center">
 		<div class="option" data-value="true">
 			<figure>
 				<img src="{{ url_for('static', filename='imgs/options/hide_broadcasts/enabled.png') }}" alt="Preview" />
-				<figcaption class="option-caption"><span>Enabled</span></figcaption>
+				<figcaption class="option-caption"><span>Hide broadcasts button</span></figcaption>
 			</figure>
 		</div>
 		<div class="option" data-value="false">
 			<figure>
 				<img src="{{ url_for('static', filename='imgs/options/hide_broadcasts/disabled.png') }}" alt="Preview" />
-				<figcaption class="option-caption"><span>Disabled</span></figcaption>
+				<figcaption class="option-caption"><span>Show broadcasts button</span></figcaption>
 			</figure>
 		</div>
 	</div>
@@ -103,108 +103,96 @@ const mod_user_settings = JSON.parse(JSON.stringify(user_settings));
 <div class="option-container choice" id="holygraph_more_cursuses">
 	<h4>Show more cursuses in the Holy Graph</h4>
 	<p>Allow selection of additional cursuses in the Holy Graph viewer</p>
-	<div class="option-selector vertical img-compare">
+	<div class="option-selector vertical img-compare vert-center">
 		<div class="option" data-value="true">
 			<figure>
 				<img src="{{ url_for('static', filename='imgs/options/holygraph_more_cursuses/enabled.png') }}" alt="Preview" />
-				<figcaption class="option-caption"><span>Enabled</span></figcaption>
+				<figcaption class="option-caption"><span>Show additional cursuses</span></figcaption>
 			</figure>
 		</div>
 		<div class="option" data-value="false">
 			<figure>
 				<img src="{{ url_for('static', filename='imgs/options/holygraph_more_cursuses/disabled.png') }}" alt="Preview" />
-				<figcaption class="option-caption"><span>Disabled</span></figcaption>
+				<figcaption class="option-caption"><span>Show only the cursuses I attend</span></figcaption>
 			</figure>
 		</div>
 	</div>
 </div>
 
 <div class="option-container choice" id="logsum_month">
-	<h4>Show monthly logtimes</h4>
+	<h4>Total monthly logtimes</h4>
 	<p>Display every month's total logtime above each month in the logtime chart</p>
 	<div class="option-selector horizontal img-compare">
 		<div class="option" data-value="true">
 			<figure>
 				<img src="{{ url_for('static', filename='imgs/options/logsums/month-enabled.png') }}" alt="Preview" />
-				<figcaption class="option-caption"><span>Enabled</span></figcaption>
+				<figcaption class="option-caption"><span>Show monthly logtimes</span></figcaption>
 			</figure>
 		</div>
 		<div class="option" data-value="false">
 			<figure>
 				<img src="{{ url_for('static', filename='imgs/options/logsums/month-disabled.png') }}" alt="Preview" />
-				<figcaption class="option-caption"><span>Disabled</span></figcaption>
+				<figcaption class="option-caption"><span>Do not show monthly logtimes</span></figcaption>
 			</figure>
 		</div>
 	</div>
 </div>
 
 <div class="option-container choice" id="logsum_week">
-	<h4>Show weekly logtimes</h4>
+	<h4>Cumulative weekly logtimes</h4>
 	<p>When hovering over a day in the logtimes chart, show the user's weekly cumulative hours up to that day</p>
 	<div class="option-selector horizontal img-compare">
 		<div class="option" data-value="true">
 			<figure>
 				<img src="{{ url_for('static', filename='imgs/options/logsums/week-enabled.png') }}" alt="Preview" />
-				<figcaption class="option-caption"><span>Enabled</span></figcaption>
+				<figcaption class="option-caption"><span>Show weekly logtimes</span></figcaption>
 			</figure>
 		</div>
 		<div class="option" data-value="false">
 			<figure>
 				<img src="{{ url_for('static', filename='imgs/options/logsums/week-disabled.png') }}" alt="Preview" />
-				<figcaption class="option-caption"><span>Disabled</span></figcaption>
+				<figcaption class="option-caption"><span>Do not show weekly logtimes</span></figcaption>
 			</figure>
 		</div>
 	</div>
 </div>
 
 <div class="option-container choice" id="old_blackhole">
-	<h4>Old Black Hole countdown</h4>
-	<p>Use the old Black Hole countdown in profile banners</p>
+	<h4>Black Hole style</h4>
+	<p>Choose which style of Black Hole you prefer to see on profiles</p>
 	<div class="option-selector horizontal img-compare">
 		<div class="option" data-value="true">
 			<figure>
 				<img src="{{ url_for('static', filename='imgs/options/blackhole/old.png') }}" alt="Preview" />
-				<figcaption class="option-caption"><span>Enabled</span></figcaption>
+				<figcaption class="option-caption"><span>Use old Black Hole (countdown)</span></figcaption>
 			</figure>
 		</div>
 		<div class="option" data-value="false">
 			<figure>
 				<img src="{{ url_for('static', filename='imgs/options/blackhole/modern.png') }}" alt="Preview" />
-				<figcaption class="option-caption"><span>Disabled</span></figcaption>
+				<figcaption class="option-caption"><span>Use modern Black Hole (date)</span></figcaption>
 			</figure>
 		</div>
 	</div>
 </div>
 
 <div class="option-container choice" id="hide_goals">
-	<h4>Hide Black Hole absorption</h4>
-	<p>Hide the entire Black Hole container on all profile banners (overrides option above)</p>
+	<h4>Hide Black Hole</h4>
+	<p>Hide the entire Black Hole container on all profiles and the dashboard (overrides option above)</p>
 	<div class="option-selector horizontal img-compare">
 		<div class="option" data-value="true">
 			<figure>
 				<img src="{{ url_for('static', filename='imgs/options/blackhole/hidden.png') }}" alt="Preview" />
-				<figcaption class="option-caption"><span>Enabled</span></figcaption>
+				<figcaption class="option-caption"><span>Hide Black Hole</span></figcaption>
 			</figure>
 		</div>
 		<div class="option" data-value="false">
 			<figure>
 				<img src="{{ url_for('static', filename='imgs/options/blackhole/shown.png') }}" alt="Preview" />
-				<figcaption class="option-caption"><span>Disabled</span></figcaption>
+				<figcaption class="option-caption"><span>Show Black Hole</span></figcaption>
 			</figure>
 		</div>
 	</div>
-</div>
-
-<div class="option-container input" id="test_input">
-	<h4>Input test</h4>
-	<p>Input test, single line</p>
-	<input class="input-field" type="text" placeholder="This is a test" />
-</div>
-
-<div class="option-container input" id="test_textbox">
-	<h4>Input test</h4>
-	<p>Input test, textarea</p>
-	<textarea class="input-field" placeholder="This is a test"></textarea>
 </div>
 
 {% endblock %}

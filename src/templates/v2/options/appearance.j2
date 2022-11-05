@@ -16,8 +16,8 @@ const mod_user_settings = JSON.parse(JSON.stringify(user_settings));
 {% block content %}
 
 <div class="option-container choice" id="theme">
-	<h4>Theme</h4>
-	<p>Base theme to use for Intra</p>
+	<h4>Base theme</h4>
+	<p>Choose what you prefer: dark mode, light mode, or make the Intra follow your system settings</p>
 	<div class="option-selector horizontal img-compare">
 		<div class="option" data-value="1">
 			<figure>
@@ -42,7 +42,7 @@ const mod_user_settings = JSON.parse(JSON.stringify(user_settings));
 
 <div class="option-container choice" id="colors">
 	<h4>Color scheme</h4>
-	<p>Color scheme to apply on top of the base theme</p>
+	<p>Choose a color scheme to apply on top of the selected base theme</p>
 	<div class="option-selector vertical img-compare vert-center">
 		{% for color_scheme in possible_options[0] -%}
 			<div class="option{{ ' disabled' if color_scheme['disabled'] }}" data-value="{{ color_scheme['id']|e }}" data-internalname="{{ color_scheme['internal_name']|e }}">
