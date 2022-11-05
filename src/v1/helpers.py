@@ -144,6 +144,7 @@ def set_v1_settings(form:OldSettings):
 		db.session.commit()
 	except Exception as e:
 		print("An exception occurred while setting v1 settings: {}".format(str(e)))
+		db.session.rollback()
 		return False
 	return True
 

@@ -6,7 +6,7 @@
 {% endblock %}
 {% block user_settings %}
 <script>
-const user_settings = {
+let user_settings = {
 	'codam_monit': '{{ 'true' if user_settings[0]['codam_monit'] else 'false' }}',
 	'codam_auto_equip_coa_title': '{{ 'true' if user_settings[0]['codam_auto_equip_coa_title'] else 'false' }}',
 };

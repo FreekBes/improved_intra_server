@@ -6,7 +6,7 @@
 /*   By: fbes <fbes@student.codam.nl>                 +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2022/10/16 02:22:25 by fbes          #+#    #+#                 */
-/*   Updated: 2022/11/05 20:09:33 by fbes          ########   odam.nl         */
+/*   Updated: 2022/11/05 21:22:01 by fbes          ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,16 +89,30 @@ document.getElementById('save-btn').addEventListener('click', function(ev) {
 		try {
 			const response = JSON.parse(this.responseText);
 			console.log('Save request response:', response);
-			if (response.status === 'success') {
-				// overwrite local user settings
+
+			if (response.type === 'success') {
+				// fix new_uploads in user_settings
+				for (const setting_key in mod_user_settings) {
+					if (mod_user_settings[setting_key].startsWith('new_upload-')) {
+						console.log('Fixing new_upload for ' + setting_key + ' in mod_user_settings (was ' + mod_user_settings[setting_key] + ', now ' + response['updated_settings'][setting_key] + ')');
+						mod_user_settings[setting_key] = response['updated_settings'][setting_key].toString();
+					}
+				}
+
+				// overwrite local user settings (in this webpage)
 				user_settings = JSON.parse(JSON.stringify(mod_user_settings));
 
-				// send modified user settings to extension
-				const iSettingsChangedEvent = new Event('iSettingsChanged', { detail: { old_settings: user_settings, new_settings: mod_user_settings } } );
-				document.dispatchEvent(iSettingsChangedEvent);
+				// send modified user settings to extension (in the format of this webpage)
+				const iSettingsChangedPFEvent = new Event('iSettingsChangedPageFormat', { detail: { old_settings: user_settings, new_settings: mod_user_settings } } );
+				document.dispatchEvent(iSettingsChangedPFEvent);
+
+				// send modified user settings to extension (in the format of the server)
+				const iSettingsChangedSFEvent = new Event('iSettingsChangedServerFormat', { detail: { updated_settings: response['updated_settings'] } } );
+				document.dispatchEvent(iSettingsChangedSFEvent);
 
 				// update UI
 				hideSaveButton();
+				populateOptions();
 				loadingOverlay.hide();
 			}
 			else {

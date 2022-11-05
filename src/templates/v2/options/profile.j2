@@ -6,7 +6,7 @@
 {% endblock %}
 {% block user_settings %}
 <script>
-const user_settings = {
+let user_settings = {
 	'banner_img': '{{ user_settings[1]['banner_img'] if user_settings[1]['banner_img'] else '' }}',
 	'banner_pos': '{{ user_settings[1]['banner_pos'] }}',
 	'link_git': '{{ user_settings[1]['link_git'] if user_settings[1]['link_git'] else '' }}',

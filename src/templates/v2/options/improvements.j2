@@ -6,7 +6,7 @@
 {% endblock %}
 {% block user_settings %}
 <script>
-const user_settings = {
+let user_settings = {
 	'show_custom_profiles': '{{ 'true' if user_settings[0]['show_custom_profiles'] else 'false' }}',
 	'clustermap': '{{ 'true' if user_settings[0]['clustermap'] else 'false' }}',
 	'outstandings': '{{ 'true' if user_settings[0]['outstandings'] else 'false' }}',

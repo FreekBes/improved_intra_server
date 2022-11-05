@@ -1,36 +1,8 @@
-from ....models.models import Campus
 from werkzeug.datastructures import CombinedMultiDict
+from .forms.handlers import set_v2_settings
 from flask import session, request
 from .forms.forms import *
-from .... import app, db
-
-
-# Table distribution
-# This dictionary specifies which user setting is saved in which table
-# and how the POST body request value should be translated to a database value
-TABLE_DISTRIBUTION = {
-	'settings': {
-		'theme': 'theme',
-		'colors': 'colors',
-		'show_custom_profiles': 'boolean',
-		'hide_broadcasts': 'boolean',
-		'logsum_month': 'boolean',
-		'logsum_week': 'boolean',
-		'outstandings': 'boolean',
-		'hide_goals': 'boolean',
-		'holygraph_more_cursuses': 'boolean',
-		'old_blackhole': 'boolean',
-		'clustermap': 'boolean',
-		'codam_monit': 'boolean',
-		'codam_auto_equip_coa_title': 'boolean',
-	},
-	'profiles': {
-		'banner_img': 'banner_img',
-		'banner_pos': 'banner_pos',
-		'link_git': 'url_git',
-		'link_web': 'url_all'
-	}
-}
+from .... import app
 
 
 def get_wtform(section:str):
@@ -64,11 +36,11 @@ def options_section_save(section:str):
 
 	# Validate and save form
 	if form.validate():
-		return { 'type': 'error', 'message': 'Not implemented' }, 501
-		# if set_v1_settings(form):
-		# 	return { 'type': 'success', 'message': 'Settings saved', 'data': get_v1_settings(form.username.data) }, 201
-		# else:
-		# 	return { 'type': 'error', 'message': 'Could not save settings', 'data': get_v1_settings(form.username.data) }, 500
+		(saved, message, updated_settings) = set_v2_settings(form, int(session['uid']))
+		if saved:
+			return { 'type': 'success', 'message': message, 'updated_settings': updated_settings }, 200
+		else:
+			return { 'type': 'error', 'message': 'Could not save settings due to a server error', 'details': message }, 500
 
 	# Gather form errors if not validated
 	form_errors = dict()
