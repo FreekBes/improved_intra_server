@@ -125,13 +125,13 @@ const mod_user_settings = JSON.parse(JSON.stringify(user_settings));
 	<div class="option-selector horizontal img-compare">
 		<div class="option" data-value="true">
 			<figure>
-				<img src="{{ url_for('static', filename='imgs/options/placeholder.png') }}" alt="Preview" />
+				<img src="{{ url_for('static', filename='imgs/options/logsums/month-enabled.png') }}" alt="Preview" />
 				<figcaption class="option-caption"><span>Enabled</span></figcaption>
 			</figure>
 		</div>
 		<div class="option" data-value="false">
 			<figure>
-				<img src="{{ url_for('static', filename='imgs/options/placeholder.png') }}" alt="Preview" />
+				<img src="{{ url_for('static', filename='imgs/options/logsums/month-disabled.png') }}" alt="Preview" />
 				<figcaption class="option-caption"><span>Disabled</span></figcaption>
 			</figure>
 		</div>
@@ -140,17 +140,17 @@ const mod_user_settings = JSON.parse(JSON.stringify(user_settings));
 
 <div class="option-container choice" id="logsum_week">
 	<h4>Show weekly logtimes</h4>
-	<p>When hovering over a day in the logtimes chart, show the user's cumulative hours per week</p>
+	<p>When hovering over a day in the logtimes chart, show the user's weekly cumulative hours up to that day</p>
 	<div class="option-selector horizontal img-compare">
 		<div class="option" data-value="true">
 			<figure>
-				<img src="{{ url_for('static', filename='imgs/options/placeholder.png') }}" alt="Preview" />
+				<img src="{{ url_for('static', filename='imgs/options/logsums/week-enabled.png') }}" alt="Preview" />
 				<figcaption class="option-caption"><span>Enabled</span></figcaption>
 			</figure>
 		</div>
 		<div class="option" data-value="false">
 			<figure>
-				<img src="{{ url_for('static', filename='imgs/options/placeholder.png') }}" alt="Preview" />
+				<img src="{{ url_for('static', filename='imgs/options/logsums/week-disabled.png') }}" alt="Preview" />
 				<figcaption class="option-caption"><span>Disabled</span></figcaption>
 			</figure>
 		</div>
