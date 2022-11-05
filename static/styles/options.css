@@ -511,17 +511,21 @@ main {
 }
 
 /* image comparison options */
-.option-selector.img-compare .option figure img {
+.option-selector.img-compare .option figure img,
+.option-selector.img-compare .option figure embed {
 	opacity: 0.7;
 	border-radius: 2px;
 }
 
 .option-selector.img-compare .option.active figure img,
-.option-selector.img-compare .option:hover figure img {
+.option-selector.img-compare .option:hover figure img,
+.option-selector.img-compare .option.active figure embed,
+.option-selector.img-compare .option:hover figure embed {
 	opacity: 1;
 }
 
-.option-selector.img-compare .option.disabled figure img {
+.option-selector.img-compare .option.disabled figure img,
+.option-selector.img-compare .option.disabled figure embed {
 	opacity: 0.7 !important;
 }
 
@@ -530,7 +534,8 @@ main {
 	margin: 0;
 }
 
-.option-selector.horizontal.img-compare .option figure img {
+.option-selector.horizontal.img-compare .option figure img,
+.option-selector.horizontal.img-compare .option figure embed {
 	width: inherit;
 	margin-bottom: 4px;
 }
@@ -540,14 +545,16 @@ main {
 	margin: 0;
 }
 
-.option-selector.vertical.img-compare .option figure img {
+.option-selector.vertical.img-compare .option figure img,
+.option-selector.vertical.img-compare .option figure embed {
 	display: inline-block;
 	vertical-align: top;
 	height: 92px;
 	margin-right: 4px;
 }
 
-.option-selector.vertical.img-compare .option figure img + figcaption {
+.option-selector.vertical.img-compare .option figure img + figcaption,
+.option-selector.vertical.img-compare .option figure embed + figcaption {
 	margin-top: 4px; /* only active when there is an img tag in the figure */
 }
 
@@ -558,7 +565,8 @@ main {
 
 /* add vertical alignment to image and caption with vert-center class */
 .option-selector.vertical.img-compare.vert-center .option figure figcaption,
-.option-selector.vertical.img-compare.vert-center .option figure img {
+.option-selector.vertical.img-compare.vert-center .option figure img,
+.option-selector.vertical.img-compare.vert-center .option figure embed {
 	vertical-align: middle;
 	margin-top: 0;
 	margin-bottom: 0;
