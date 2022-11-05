@@ -33,6 +33,11 @@
 			<a id="user-logout-btn" href="{{ url_for('disconnect') }}" title="Sign out of Improved Intra">logout</a>
 		</div>
 	</section>
+	<section id="topbar">
+		<img id="logo-mobile" src="{{ url_for('static', filename='imgs/logo-wide.png') }}" alt="IMPROVED INTRA 42"/>
+		<button id="sidebar-toggle-btn" title="Toggle sidebar">menu</button>
+	</section>
+	<div id="sidebar-close-overlay"></div>
 	<noscript>To modify your settings for Improved Intra 42, you need to enable JavaScript.</noscript>
 	<main>
 		{% block content %}
@@ -50,5 +55,15 @@
 	<!-- scripts to load and modify the options defined above -->
 	<script src="{{ url_for('static', filename='scripts/options/saver.js') }}"></script>
 	<script src="{{ url_for('static', filename='scripts/options/loader.js') }}"></script>
+
+	<!-- add sidebar toggling script for mobile -->
+	<script>
+	const sidebarToggles = [...document.querySelectorAll('#sidebar-toggle-btn, #sidebar-close-overlay')];
+	sidebarToggles.forEach(function(el) {
+		el.addEventListener('click', function(ev) {
+			document.body.classList.toggle('sidebar-open');
+		});
+	});
+	</script>
 </body>
 </html>

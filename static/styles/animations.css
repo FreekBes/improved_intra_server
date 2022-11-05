@@ -6,7 +6,7 @@
 /*   By: fbes <fbes@student.codam.nl>                 +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2022/11/05 17:35:03 by fbes          #+#    #+#                 */
-/*   Updated: 2022/11/05 17:44:47 by fbes          ########   odam.nl         */
+/*   Updated: 2022/11/05 18:14:15 by fbes          ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@ input,
 #menu-list li,
 .option {
 	transition: 0.075s ease-out !important;
+	transition-property: background-color, color, border-color, box-shadow, opacity !important;
 }
 
 /* transition timing for hover start */
@@ -29,4 +30,5 @@ input:focus,
 #menu-list li:hover,
 .option:hover {
 	transition: 0s ease-in !important;
+	transition-property: background-color, color, border-color, box-shadow, opacity !important;
 }
