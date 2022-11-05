@@ -6,7 +6,7 @@
 /*   By: fbes <fbes@student.codam.nl>                 +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2022/10/16 02:22:25 by fbes          #+#    #+#                 */
-/*   Updated: 2022/11/05 21:22:01 by fbes          ########   odam.nl         */
+/*   Updated: 2022/11/05 23:30:24 by fbes          ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -114,6 +114,11 @@ document.getElementById('save-btn').addEventListener('click', function(ev) {
 				hideSaveButton();
 				populateOptions();
 				loadingOverlay.hide();
+
+				// remove all files from file inputs
+				for (const fileInput of fileInputs) {
+					fileInput.value = '';
+				}
 			}
 			else {
 				if ('form_errors' in response) {
