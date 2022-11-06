@@ -9,7 +9,7 @@
 let user_settings = {
 	'banner_img': '{{ user_settings[1]['banner_img'] if user_settings[1]['banner_img'] else '' }}',
 	'banner_pos': '{{ user_settings[1]['banner_pos'] }}',
-	'link_git': '{{ user_settings[1]['link_git'] if user_settings[1]['link_git'] else '' }}',
+	'link_git': '{{ git_to_url(user_settings[1]['link_git'] if user_settings[1]['link_git'] else '') }}',
 	'link_web': '{{ user_settings[1]['link_web'] if user_settings[1]['link_web'] else '' }}',
 };
 const mod_user_settings = JSON.parse(JSON.stringify(user_settings));

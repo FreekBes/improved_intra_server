@@ -41,7 +41,7 @@ from src.v2.routes.options.get import *
 from src.v2.routes.options.set import *
 from src.v2.routes.options.json import *
 from src.v2.routes.home import *
-from . import oauth
+from . import oauth, utilities
 
 # Set up headers
 @app.after_request

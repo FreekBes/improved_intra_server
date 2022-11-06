@@ -2,7 +2,9 @@ import traceback
 import re
 
 from .....models.models import BannerImg, Profile, Settings, User
+from .....v1.helpers import valid_github_username
 from .....banners import upload_banner
+from urllib.parse import urlparse
 from flask import request
 from ..... import db
 
@@ -28,7 +30,7 @@ TABLE_DISTRIBUTION = {
 	'profiles': {
 		'banner_img': 'banner_img',
 		'banner_pos': 'id',
-		'link_git': 'url',
+		'link_git': 'git',
 		'link_web': 'url'
 	}
 }
@@ -62,6 +64,23 @@ def handle_url(value:str):
 	return value
 
 
+def handle_git(value:str):
+	try:
+		value = handle_url(value)
+		parsed_url = urlparse(value)
+		username = parsed_url.path.strip('/').split('/')[0]
+		if not valid_github_username(username):
+			return None
+		if parsed_url.netloc == 'github.com':
+			return 'github.com@' + username
+		elif parsed_url.netloc == 'gitlab.com':
+			return 'gitlab.com@' + username
+		elif parsed_url.netloc == 'codeberg.org':
+			return 'codeberg.org@' + username
+	except:
+		return None
+
+
 def handle_banner_img(form, user_id:int, value:str):
 	if value.startswith('new_upload-'):
 		# User wants to upload a new banner to use for their profile
@@ -92,6 +111,8 @@ def handle(form, user_id:int, type:str, value:str):
 		return handle_string(value)
 	elif type == 'url':
 		return handle_url(value)
+	elif type == 'git':
+		return handle_git(value)
 	elif type == 'banner_img':
 		return handle_banner_img(form, user_id, value)
 	else:
