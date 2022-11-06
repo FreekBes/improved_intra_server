@@ -39,7 +39,7 @@ class BannerImg(db.Model, SerializerMixin):
 		return "<BannerImg id={}, user_id={}, url='{}', width={}, height={}, size={}, created_at='{}'>"\
 			.format(self.id, self.user_id, self.url, self.width, self.height, self.size, self.created_at)
 
-	def __init__(self, user_id, url, width=0, height=0, size=0):
+	def __init__(self, user_id:int, url:str, width:int=0, height:int=0, size:int=0):
 		self.user_id = user_id
 		self.url = url
 		self.width = width
@@ -63,7 +63,7 @@ class BannerPosition(db.Model):
 		return "<BannerPosition id={}, css_val='{}', internal_name='{}', name='{}'>"\
 			.format(self.id, self.css_val, self.internal_name, self.name)
 
-	def __init__(self, css_val, internal_name, name):
+	def __init__(self, css_val:str, internal_name:str, name:str):
 		self.css_val = css_val
 		self.internal_name = internal_name
 		self.name = name
@@ -80,7 +80,7 @@ class Campus(db.Model):
 		return "<Campus intra_id={}, name='{}', city='{}', country='{}'>"\
 			.format(self.intra_id, self.name, self.city, self.country)
 
-	def __init__(self, intra_id, name, city, country):
+	def __init__(self, intra_id:int, name:str, city:str, country:str):
 		self.intra_id = intra_id
 		self.name = name
 		self.city = city
@@ -98,7 +98,7 @@ class ColorScheme(db.Model):
 		return "<ColorScheme id={}, internal_name='{}', name='{}', enabled={}>"\
 			.format(self.id, self.internal_name, self.name, str(self.enabled))
 
-	def __init__(self, internal_name, name):
+	def __init__(self, internal_name:str, name:str):
 		self.name = name
 		self.internal_name = internal_name
 		self.enabled = True
@@ -163,7 +163,7 @@ class Runner(db.Model):
 	user_id = Column(Integer, ForeignKey('users.intra_id'), primary_key=True)
 	outstandings = Column(DateTime(timezone=False), nullable=True, default=None)
 
-	def __init__(self, user_id):
+	def __init__(self, user_id:int):
 		self.user_id = user_id
 
 	def __repr__(self):
@@ -190,7 +190,7 @@ class Settings(db.Model):
 	codam_monit = Column(Boolean, default=True)
 	codam_auto_equip_coa_title = Column(Boolean, default=False)
 
-	def __init__(self, user_id):
+	def __init__(self, user_id:int):
 		self.user_id = user_id
 
 	def __repr__(self):
@@ -214,6 +214,23 @@ class Team(db.Model):
 	def __repr__(self):
 		return "<Team id={}, intra_id={}, user_id={}, projects_user_id={}, current={}, best={}, final_mark={}>"\
 			.format(self.id, self.intra_id, self.user_id, self.projects_user_id, str(self.current), str(self.best), self.final_mark)
+
+
+class Theme():
+	# Not a table or row, just a class to hold the themes
+	def __init__(self, id:int, name:str, internal_name:str):
+		self.id = id
+		self.name = name
+		self.internal_name = internal_name
+
+	def __repr__(self):
+		return "<Theme id={}, name='{}', internal_name='{}'>"\
+			.format(self.id, self.name, self.internal_name)
+
+	def to_dict(self):
+		return self.__dict__
+
+THEMES = [Theme(1, 'Default', 'default'), Theme(2, 'Dark', 'dark'), Theme(3, 'Light', 'light')]
 
 
 class User(db.Model):
