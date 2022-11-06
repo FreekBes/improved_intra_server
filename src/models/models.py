@@ -230,7 +230,7 @@ class Theme():
 	def to_dict(self):
 		return self.__dict__
 
-THEMES = [Theme(1, 'Default', 'default'), Theme(2, 'Dark', 'dark'), Theme(3, 'Light', 'light')]
+THEMES = [Theme(1, 'Follow system', 'system'), Theme(2, 'Dark Mode', 'dark'), Theme(3, 'Light Mode', 'light')]
 
 
 class User(db.Model):

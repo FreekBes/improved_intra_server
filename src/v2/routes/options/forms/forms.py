@@ -1,8 +1,8 @@
 from wtforms import StringField, SelectField, HiddenField
 from .....banners import ALLOWED_IMG_TYPES, BANNERS_PATH
 from flask_uploads import UploadSet, configure_uploads
+from .....models.models import ColorScheme, THEMES
 from flask_wtf.file import FileField, FileAllowed
-from .....models.models import ColorScheme
 from wtforms.validators import Optional
 from flask_wtf import FlaskForm
 from .validators import *
@@ -19,11 +19,15 @@ class ImprovedIntraForm(FlaskForm):
 
 
 class AppearanceForm(ImprovedIntraForm):
-	theme = SelectField('Theme', name='theme', choices=[('1', 'Follow system'), ('2', 'Dark Mode'), ('3', 'Light Mode')])
+	theme = SelectField('Theme', name='theme', choices=[])
 	colors = SelectField('Color scheme', name='colors', choices=[])
 
 	def __init__(self, *args, **kwargs):
 		super(ImprovedIntraForm, self).__init__(*args, **kwargs)
+
+		# Get all themes and set them as a choice
+		for theme in THEMES:
+			self.theme.choices.append((str(theme.id), theme.name))
 
 		# Get all enabled color schemes from the database and set them as a choice
 		db_color_schemes:list[ColorScheme] = db.session.query(ColorScheme.id, ColorScheme.name).filter(ColorScheme.enabled == True).all()
