@@ -81,7 +81,19 @@ def my_options_json():
 		# Fetch settings
 		settings_dict = fetch_settings(session['uid'])
 
+		# Fetch user because why not
+		user:User = db.session.query(User).filter(User.intra_id == session['uid']).first()
+		user_dict = {
+			'login': user.login,
+			'intra_id': user.intra_id,
+			'first_name': user.first_name,
+			'last_name': user.last_name,
+			'display_name': user.display_name,
+			'staff': user.staff,
+			'campus': db.session.query(Campus).filter(Campus.intra_id == user.campus_id).first()
+		}
+
 		# Return both
-		return { 'type': 'success', 'message': 'Custom options fetched', 'data': { 'profile': profile_dict, 'settings': settings_dict } }, 200
+		return { 'type': 'success', 'message': 'Custom options fetched', 'data': { 'profile': profile_dict, 'settings': settings_dict, 'user': user_dict } }, 200
 	except Exception as e:
 		return { 'type': 'error', 'message': str(e), 'data': {} }, 500
