@@ -90,7 +90,7 @@ def my_options_json():
 			'last_name': user.last_name,
 			'display_name': user.display_name,
 			'staff': user.staff,
-			'campus': db.session.query(Campus).filter(Campus.intra_id == user.campus_id).first()
+			'campus': row_to_dict(db.session.query(Campus).filter(Campus.intra_id == user.campus_id).first())
 		}
 
 		# Return both
