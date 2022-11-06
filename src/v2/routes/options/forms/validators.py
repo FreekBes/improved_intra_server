@@ -40,6 +40,8 @@ def validate_web_url(form, field):
 		raise ValidationError('Invalid URL scheme. Only HTTP and HTTPS are allowed.')
 	if parsed_url.netloc in [ '', 'localhost', '::1', '127.0.0.1', '::1', '0.0.0.0' ]:
 		raise ValidationError('Very funny! But no.')
+	if ' ' in field.data:
+		raise ValidationError('URLs cannot contain spaces.')
 	return parsed_url
 
 
