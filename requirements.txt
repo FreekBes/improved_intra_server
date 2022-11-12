@@ -33,6 +33,7 @@ six==1.16.0
 SQLAlchemy==1.4.40
 SQLAlchemy-serializer==1.4.1
 SQLAlchemy-Utils==0.38.3
+tokenlib==2.0.0
 tqdm==4.56.0
 tzdata==2022.2
 tzlocal==4.2
