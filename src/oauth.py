@@ -4,6 +4,7 @@ from .models.models import Campus, OAuth2Token, Profile, Settings, User, Runner
 from authlib.integrations.flask_client import OAuth
 from flask import url_for, session, redirect
 from .lib.users import add_mod_user
+from functools import wraps
 from . import app, db
 
 
@@ -92,3 +93,30 @@ def auth():
 		session['v1_conn_data']['expires_at'] = db_token.expires_at
 		return redirect(url_for('oldConnect'), 302)
 	return redirect(url_for('connect'), 302)
+
+
+def fail_on_noauth_json(f):
+	@wraps(f)
+	def decorated_function(*args, **kwargs):
+		if 'uid' not in session:
+			return { 'type': 'error', 'message': 'Not logged in', 'data': {} }, 401
+		return f(*args, **kwargs)
+	return decorated_function
+
+
+def fail_on_noauth(f):
+	@wraps(f)
+	def decorated_function(*args, **kwargs):
+		if 'uid' not in session:
+			return 'Not logged in', 401
+		return f(*args, **kwargs)
+	return decorated_function
+
+
+def auth_on_noauth(f):
+	@wraps(f)
+	def decorated_function(*args, **kwargs):
+		if 'uid' not in session:
+			return authstart(v=2)
+		return f(*args, **kwargs)
+	return decorated_function

@@ -1,3 +1,5 @@
+import uuid
+
 from sqlalchemy import Column as Col, Integer, Boolean, Date, DateTime, ForeignKey
 from sqlalchemy_serializer import SerializerMixin
 from sqlalchemy.types import TypeDecorator
@@ -249,3 +251,22 @@ class User(db.Model):
 	def __repr__(self):
 		return "<User intra_id={}, login='{}', campus_id={}, staff={}, email='{}', first_name='{}', last_name='{}', created_at='{}'"\
 			.format(self.intra_id, self.login, self.campus_id, str(self.staff), self.email, self.first_name, self.last_name, self.created_at)
+
+
+class UserToken(db.Model):
+	__tablename__ = 'user_tokens'
+	token = Column(StrippedString(32), primary_key=True)
+	user_id = Column(Integer, ForeignKey('users.intra_id'))
+	created_at = Column(DateTime(timezone=False), default=func.now())
+	last_used_at = Column(DateTime(timezone=False), default=func.now())
+
+	def __init__(self, user_id:int):
+		self.user_id = user_id
+		self.token = uuid.uuid4().hex
+
+	def update_last_used(self):
+		self.last_used_at = func.now()
+
+	def __repr__(self):
+		return "<UserToken token='{}', user_id={}, created_at='{}', last_used_at='{}'>"\
+			.format(self.token, self.user_id, self.created_at, self.last_used_at)

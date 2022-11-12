@@ -1,3 +1,4 @@
+from ...lib.tokens import create_ext_token, parse_ext_token
 from flask import session, redirect, url_for, request
 from ...oauth import authstart, authend
 from ... import app
@@ -52,3 +53,10 @@ def ping():
 	if not 'uid' in session:
 		return 'No active session', 404
 	return 'Pong', 200
+
+
+@app.route('/v2/ext_token', methods=['GET'])
+def ext_token():
+	if not 'uid' in session:
+		return 'No active session', 404
+	ext_token = create_ext_token(session['uid'])

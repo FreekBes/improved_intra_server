@@ -1,4 +1,4 @@
-from ..models.models import Campus, User, Settings, Profile, Runner
+from ..models.models import Campus, User, Settings, Profile, Runner, UserToken
 from .. import app, db
 from .intra import ic
 
@@ -36,6 +36,11 @@ def add_mod_user(user:dict):
 	)
 	db.session.merge(db_user) # Add if not exist, update if exist
 	db.session.flush()
+
+	# Create user token for user if not exist
+	if not UserToken.query.filter_by(user_id=db_user.id).first():
+		db_token = UserToken(db_user.id)
+		db.session.add(db_token)
 
 	# Create settings for user if not exist
 	if not Settings.query.filter_by(user_id = user['id']).first():
