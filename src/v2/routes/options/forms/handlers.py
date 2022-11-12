@@ -79,6 +79,8 @@ def handle_git(value:str):
 			return 'bitbucket.org@' + username
 		elif parsed_url.netloc == 'codeberg.org':
 			return 'codeberg.org@' + username
+		elif parsed_url.netloc == 'sr.ht':
+			return 'sr.ht@' + username
 	except:
 		return None
 

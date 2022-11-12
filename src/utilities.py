@@ -15,6 +15,8 @@ def utility_processor():
 			return 'https://bitbucket.org/' + git_split[1]
 		elif git_split[0] == 'codeberg.org':
 			return 'https://codeberg.org/' + git_split[1]
+		elif git_split[0] == 'sr.ht':
+			return 'https://sr.ht/' + git_split[1]
 		else:
 			return ''
 
