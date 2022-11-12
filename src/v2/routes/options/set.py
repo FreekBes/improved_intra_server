@@ -1,4 +1,5 @@
 from werkzeug.datastructures import CombinedMultiDict
+from ....decorators import auth_required_json
 from .forms.handlers import set_v2_settings
 from flask import session, request
 from .forms.forms import *
@@ -20,10 +21,8 @@ def get_wtform(section:str):
 
 
 @app.route('/v2/options/<section>/save', methods=['POST'])
+@auth_required_json
 def options_section_save(section:str):
-	if not 'uid' in session:
-		return { 'type': 'error', 'message': 'Unauthorized' }, 401
-
 	# Get the correct form to use for this section
 	form = get_wtform(section)
 
