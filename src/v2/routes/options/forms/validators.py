@@ -48,7 +48,7 @@ def validate_web_url(form, field):
 def validate_git_url(form, field):
 	# Validate the git URL like the general web URL, but also check for whitelisted domains
 	parsed_url = validate_web_url(form, field)
-	allowed_hostnames = [ 'github.com', 'gitlab.com', 'codeberg.org' ]
+	allowed_hostnames = [ 'github.com', 'gitlab.com', 'bitbucket.org', 'codeberg.org' ]
 	if not parsed_url.hostname in allowed_hostnames:
 		raise ValidationError('This domain is not whitelisted as a git service.')
 
