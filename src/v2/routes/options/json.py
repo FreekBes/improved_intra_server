@@ -1,13 +1,7 @@
 from src.models.models import User, BannerImg, BannerPosition, Campus, ColorScheme, Profile, Settings, Theme, THEMES
-from flask import render_template, session, redirect, url_for, request
+from src.models.helpers import row_to_dict
+from flask import session
 from .... import app, db
-
-
-def row_to_dict(row):
-	d = {}
-	for column in row.__table__.columns:
-		d[column.name] = getattr(row, column.name)
-	return d
 
 
 def fetch_profile(user_id:int):
