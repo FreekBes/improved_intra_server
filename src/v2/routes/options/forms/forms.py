@@ -1,12 +1,12 @@
 from wtforms import StringField, SelectField, HiddenField
-from .....banners import ALLOWED_IMG_TYPES, BANNERS_PATH
+from src.banners import ALLOWED_IMG_TYPES, BANNERS_PATH
 from flask_uploads import UploadSet, configure_uploads
-from .....models.models import ColorScheme, THEMES
+from src.v2.routes.options.forms.validators import *
+from src.models.models import ColorScheme, THEMES
 from flask_wtf.file import FileField, FileAllowed
 from wtforms.validators import Optional
 from flask_wtf import FlaskForm
-from .validators import *
-from ..... import app, db
+from src import app, db
 
 images = UploadSet('images', ALLOWED_IMG_TYPES, default_dest=lambda app: BANNERS_PATH)
 configure_uploads(app, (images))

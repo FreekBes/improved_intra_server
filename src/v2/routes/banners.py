@@ -1,7 +1,7 @@
-from ...decorators import auth_required_json, staff_acc_required_json
-from ...models.models import BannerImg, User, Campus
+from src.lib.auth.decorators import auth_required_json, staff_acc_required_json
+from src.models.models import BannerImg, User, Campus
 from flask import session
-from ... import app, db
+from src import app, db
 
 @app.route('/v2/banners/<offset>', methods=['GET'])
 @auth_required_json

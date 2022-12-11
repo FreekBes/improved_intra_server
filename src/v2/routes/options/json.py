@@ -1,8 +1,8 @@
 from src.models.models import User, BannerImg, BannerPosition, Campus, ColorScheme, Profile, Settings, Theme, THEMES
-from ....decorators import auth_required_json
+from src.lib.auth.decorators import auth_required_json
 from src.models.helpers import row_to_dict
 from flask import session
-from .... import app, db
+from src import app, db
 
 
 def fetch_profile(user_id:int):

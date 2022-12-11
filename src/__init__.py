@@ -12,7 +12,8 @@ from werkzeug import __version__ as __werkzeug_version__
 from flask import Flask, request, __version__ as __flask_version__
 from flask_sqlalchemy import SQLAlchemy
 from urllib.parse import urlparse
-from .lib.config import config
+
+from src.lib.config import config
 
 # Set up DB uri
 config['SQLALCHEMY_DATABASE_URI'] = f"postgresql+psycopg2://{config['PSQL_USER']}:{config['PSQL_PASS']}@{config['PSQL_HOST']}:{config['PSQL_PORT']}/{config['PSQL_DB']}"
@@ -41,7 +42,8 @@ from src.v2.routes.options.get import *
 from src.v2.routes.options.set import *
 from src.v2.routes.options.json import *
 from src.v2.routes.home import *
-from . import oauth, utilities
+from src.lib import utilities
+from src.lib.auth import oauth
 
 # Set up headers
 @app.after_request

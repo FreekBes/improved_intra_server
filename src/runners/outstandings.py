@@ -1,10 +1,10 @@
 import logging
 
-from ..models.models import User, Runner, Team, Evaluation
+from src.models.models import User, Runner, Team, Evaluation
 from sqlalchemy.sql import func
+from src.lib.db import session
 from datetime import datetime
-from ..lib.db import session
-from ..lib.intra import ic
+from src.lib.intra import ic
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.000Z'
 

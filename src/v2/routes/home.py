@@ -1,6 +1,6 @@
-from ...oauth import authstart
+from src.lib.auth.oauth import authstart
 from flask import render_template, session
-from ... import app
+from src import app
 
 
 @app.route('/')

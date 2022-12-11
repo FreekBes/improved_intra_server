@@ -1,11 +1,11 @@
 import time
 
-from .models.models import Campus, OAuth2Token, Profile, Settings, User, Runner
+from src.models.models import Campus, OAuth2Token, Profile, Settings, User, Runner
 from authlib.integrations.flask_client import OAuth
 from flask import url_for, session, redirect
-from .lib.users import add_mod_user
+from src.lib.auth.users import add_mod_user
 from functools import wraps
-from . import app, db
+from src import app, db
 
 
 def update_token(name:str, token:str, refresh_token:str=None, access_token:str=None):
@@ -57,6 +57,14 @@ def authend():
 	session.pop('v1_conn_data', None)
 
 
+def set_session_data(user:User):
+	session['login'] = user.login
+	session['uid'] = user.intra_id
+	session['staff'] = user.staff
+	session['campus'] = user.campus_id
+	session['image'] = 'https://picsum.photos/200/200' # TODO: get user image from Intra
+
+
 @app.route('/auth')
 def auth():
 	# Retrieve token
@@ -66,16 +74,8 @@ def auth():
 	resp = intra.get('me', token=token)
 	resp.raise_for_status()
 	user = resp.json()
-	session['login'] = user['login']
-	session['uid'] = user['id']
-	session['staff'] = user['staff?'] == True or user['login'] == 'fbes'
-	session['image'] = user['image']['versions']['small'] if 'image' in user else None
-	session['campus'] = 0
-	for campus_user in user['campus_users']:
-		if campus_user['is_primary'] == True:
-			session['campus'] = int(campus_user['campus_id'])
-			break
 
+	# Update user info in DB
 	if not add_mod_user(user):
 		return 'Access Denied', 403
 
@@ -85,6 +85,11 @@ def auth():
 
 	# Commit all DB changes
 	db.session.commit()
+
+	# Set session data
+	db_user:User = User.query.filter_by(intra_id=user['id']).first()
+	if db_user:
+		set_session_data(db_user)
 
 	# Redirect after auth
 	if 'v' in session and session['v'] == 1:

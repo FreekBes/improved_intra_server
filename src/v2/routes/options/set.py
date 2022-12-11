@@ -1,9 +1,9 @@
+from src.v2.routes.options.forms.handlers import set_v2_settings
+from src.lib.auth.decorators import auth_required_json
 from werkzeug.datastructures import CombinedMultiDict
-from ....decorators import auth_required_json
-from .forms.handlers import set_v2_settings
+from src.v2.routes.options.forms.forms import *
 from flask import session, request
-from .forms.forms import *
-from .... import app
+from src import app
 
 
 def get_wtform(section:str):

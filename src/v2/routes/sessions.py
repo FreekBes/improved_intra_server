@@ -1,9 +1,9 @@
-from ...lib.tokens import create_ext_token, parse_ext_token
+from src.lib.auth.tokens import create_ext_token, parse_ext_token
 from flask import session, redirect, url_for, request
-from ...decorators import auth_required
-from ...oauth import authstart, authend
+from src.lib.auth.decorators import auth_required
+from src.lib.auth.oauth import authstart, authend
 from functools import wraps
-from ... import app
+from src import app
 
 
 def continue_init(f):

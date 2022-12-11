@@ -1,7 +1,7 @@
-from .....models.models import ColorScheme, BannerPosition, BannerImg
+from src.models.models import ColorScheme, BannerPosition, BannerImg
 from wtforms.validators import ValidationError
 from urllib.parse import urlparse
-from ..... import db
+from src import db
 
 
 # Unused

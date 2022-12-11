@@ -1,4 +1,4 @@
-from . import app
+from src import app
 
 # Context processor for Jinja2 templates
 @app.context_processor

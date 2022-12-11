@@ -1,10 +1,10 @@
 from wtforms.validators import Optional, DataRequired, URL as URLValidator
 from wtforms import StringField, SelectField, BooleanField, HiddenField
+from src.banners import ALLOWED_IMG_TYPES, BANNERS_PATH
 from flask_uploads import UploadSet, configure_uploads
-from ..banners import ALLOWED_IMG_TYPES, BANNERS_PATH
 from flask_wtf.file import FileField, FileAllowed
 from flask_wtf import FlaskForm
-from .. import app
+from src import app
 
 images = UploadSet('images', ALLOWED_IMG_TYPES, default_dest=lambda app: BANNERS_PATH)
 configure_uploads(app, (images))

@@ -1,12 +1,12 @@
 import traceback
 import re
 
-from .....models.models import BannerImg, Profile, Settings, User
-from .....v1.helpers import valid_github_username
-from .....banners import upload_banner
+from src.models.models import BannerImg, Profile, Settings, User
+from src.v1.helpers import valid_github_username
+from src.banners import upload_banner
 from urllib.parse import urlparse
 from flask import request
-from ..... import db
+from src import db
 
 # Table distribution
 # This dictionary specifies which user setting is saved in which table

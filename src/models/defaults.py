@@ -1,4 +1,4 @@
-from .models import BannerPosition, ColorScheme
+from src.models.models import BannerPosition, ColorScheme
 
 
 def populate_banner_pos(db_session):

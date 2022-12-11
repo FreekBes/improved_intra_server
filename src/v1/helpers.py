@@ -1,10 +1,10 @@
 import re
 
-from ..models.models import ColorScheme, BannerImg, BannerPosition, Profile, Settings, User, Team
-from ..banners import upload_banner, get_banner_info
-from .forms import OldSettings
+from src.models.models import ColorScheme, BannerImg, BannerPosition, Profile, Settings, User, Team
+from src.banners import upload_banner, get_banner_info
+from src.v1.forms import OldSettings
 from flask import request
-from .. import db
+from src import db
 
 
 def valid_github_username(username):

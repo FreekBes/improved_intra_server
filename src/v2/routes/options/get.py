@@ -1,8 +1,8 @@
 from src.models.models import BannerImg, BannerPosition, Campus, ColorScheme, Profile, Settings
 from flask import render_template, session, redirect, url_for, request
-from .... import app, __version__, __target_ext_version__
-from ....decorators import auth_required_redirect
-from ....oauth import authstart
+from src.lib.auth.decorators import auth_required_redirect
+from src import app, __version__, __target_ext_version__
+from src.lib.auth.oauth import authstart
 
 FETCH_DISTRIBUTION = {
 	'improvements': [ 'settings' ],

@@ -4,7 +4,7 @@ import os
 from urllib.request import urlopen
 from PIL import Image
 from time import time
-from . import app
+from src import app
 
 ALLOWED_IMG_TYPES = ['jpg', 'jpeg', 'png', 'gif']
 BANNERS_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'static', 'banners')

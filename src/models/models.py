@@ -3,9 +3,9 @@ import uuid
 from sqlalchemy import Column as Col, Integer, Boolean, Date, DateTime, ForeignKey
 from sqlalchemy_serializer import SerializerMixin
 from sqlalchemy.types import TypeDecorator
-from ..banners import get_banner_info
+from src.banners import get_banner_info
 from sqlalchemy.sql import func
-from .. import db
+from src import db
 
 
 class Column(Col):
@@ -266,6 +266,10 @@ class UserToken(db.Model):
 
 	def update_last_used(self):
 		self.last_used_at = func.now()
+
+	def deactivate(self):
+		db.session.delete(self)
+		db.session.commit()
 
 	def __repr__(self):
 		return "<UserToken token='{}', user_id={}, created_at='{}', last_used_at='{}'>"\

@@ -1,12 +1,13 @@
 import json
 import time
+
 from flask import session, jsonify, request, redirect, url_for, render_template, Response
-from .helpers import get_v1_settings, set_v1_settings, get_projects_users
-from ..models.models import OAuth2Token, User, Team, Evaluation, Runner
+from src.v1.helpers import get_v1_settings, set_v1_settings, get_projects_users
+from src.models.models import OAuth2Token, User, Team, Evaluation, Runner
 from werkzeug.datastructures import CombinedMultiDict
-from .forms import OldSettings
-from ..oauth import authstart
-from .. import app, db
+from src.lib.auth.oauth import authstart
+from src.v1.forms import OldSettings
+from src import app, db
 
 
 @app.route('/connect.php', methods=['GET'])

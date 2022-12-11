@@ -21,7 +21,7 @@ from copy import deepcopy
 from pygments import highlight
 from pygments.lexers.data import JsonLexer
 from pygments.formatters.terminal import TerminalFormatter
-from .config import config
+from src.lib.config import config
 
 requests.packages.urllib3.disable_warnings()
 logging.basicConfig(filename=config['LOG_FILE_SERVER'], level=logging.DEBUG, format=config['LOG_FORMAT'])

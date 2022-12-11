@@ -1,6 +1,6 @@
-from ..models.models import Campus, User, Settings, Profile, Runner, UserToken
-from .. import app, db
-from .intra import ic
+from src.models.models import Campus, User, Settings, Profile, Runner, UserToken
+from src.lib.intra import ic
+from src import app, db
 
 def add_mod_user(user:dict):
 	# Add campus(es) to DB
@@ -38,8 +38,8 @@ def add_mod_user(user:dict):
 	db.session.flush()
 
 	# Create user token for user if not exist
-	if not UserToken.query.filter_by(user_id=db_user.id).first():
-		db_token = UserToken(db_user.id)
+	if not UserToken.query.filter_by(user_id = user['id']).first():
+		db_token = UserToken(user['id'])
 		db.session.add(db_token)
 
 	# Create settings for user if not exist
