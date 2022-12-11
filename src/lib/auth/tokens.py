@@ -2,8 +2,7 @@ import tokenlib
 
 from src.lib.auth.oauth import set_session_data
 from src.models.models import User, UserToken
-from flask import request, session
-from functools import wraps
+from flask import request
 from src import app
 
 token_manager = tokenlib.TokenManager(app.config['TOKEN_SECRET'], app.config['TOKEN_EXPIRATION'])
@@ -38,18 +37,3 @@ def auth_with_ext_token():
 		return True
 	except Exception as e:
 		return False
-
-
-# def auth_session_with_ext_token(f):
-# 	@wraps(f)
-# 	def decorated_function(*args, **kwargs):
-# 		if not 'Authorization' in request.headers:
-# 			return { 'type': 'error', 'message': 'Bad request (missing Authorization header)', 'data': {} }, 400
-# 		try:
-# 			# Remove bearer from Authorization header
-# 			ext_token = request.headers['Authorization'].split(' ')[1]
-# 			user:User = parse_ext_token(ext_token)
-# 			set_session_data(user)
-# 		except Exception as e:
-# 			return { 'type': 'error', 'message': 'Access denied (authorization key denied)', 'data': {} }, 403
-# 	return decorated_function

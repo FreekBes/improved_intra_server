@@ -1,6 +1,6 @@
 from src.lib.auth.tokens import create_ext_token, parse_ext_token
 from flask import session, redirect, url_for, request
-from src.lib.auth.decorators import auth_required
+from src.lib.auth.decorators import auth_required_json
 from src.lib.auth.oauth import authstart, authend
 from functools import wraps
 from src import app
@@ -62,7 +62,7 @@ def ping():
 
 
 @app.route('/v2/ext_token', methods=['GET'])
+@auth_required_json
 def ext_token():
-	if not 'uid' in session:
-		return 'No active session', 404
 	ext_token = create_ext_token(session['uid'])
+	return { 'type': 'success', 'message': 'ext_token generated', 'data': ext_token }, 200
