@@ -4,6 +4,7 @@ from src.models.models import Campus, OAuth2Token, Profile, Settings, User, Runn
 from authlib.integrations.flask_client import OAuth
 from flask import url_for, session, redirect
 from src.lib.auth.users import add_mod_user
+from src.lib.intra import ic
 from functools import wraps
 from src import app, db
 
@@ -63,7 +64,18 @@ def set_session_data(user:User):
 	session['uid'] = user.intra_id
 	session['staff'] = user.staff
 	session['campus'] = user.campus_id
-	session['image'] = 'https://picsum.photos/200/200' # TODO: get user image from Intra
+
+	# Fetch current image from Intra
+	try:
+		resp = ic.get('users?filter[login]={}'.format(user.login))
+		if resp.status_code != 200:
+			return
+		user_json = resp.json()
+		if (len(user_json) > 0):
+			session['image'] = user_json[0]['image']['versions']['medium']
+	except:
+		pass
+
 
 
 @app.route('/auth')
