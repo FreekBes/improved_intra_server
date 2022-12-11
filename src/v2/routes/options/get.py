@@ -1,6 +1,7 @@
 from src.models.models import BannerImg, BannerPosition, Campus, ColorScheme, Profile, Settings
 from flask import render_template, session, redirect, url_for, request
 from .... import app, __version__, __target_ext_version__
+from ....decorators import auth_required_redirect
 from ....oauth import authstart
 
 FETCH_DISTRIBUTION = {
@@ -15,19 +16,14 @@ VERSION_INFO:tuple[str, str] = (__version__, __target_ext_version__)
 
 
 @app.route('/v2/options')
+@auth_required_redirect
 def options():
-	if not 'uid' in session:
-		session['continue'] = url_for('options')
-		return authstart()
 	return redirect(url_for('options_section', section='improvements'))
 
 
 @app.route('/v2/options/<section>')
+@auth_required_redirect
 def options_section(section:str):
-	if not 'uid' in session:
-		session['continue'] = request.url
-		return authstart()
-
 	# Set default FETCH_DISTRIBUTION key (defaults to session slug)
 	dist_key:str = section
 

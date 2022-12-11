@@ -618,7 +618,45 @@ main {
 }
 
 .option-container.picture .picture-picker {
+	display: inline-block;
 	margin-top: 8px;
+	width: 100%;
+	height: 40px;
+	vertical-align: top;
+}
+
+.option-container.picture .picture-picker:has(+ .picture-reset.show) {
+	width: 80%;
+	border-top-right-radius: 0px;
+	border-bottom-right-radius: 0px;
+}
+
+.option-container .picture-reset {
+	display: none;
+	margin-top: 8px;
+	width: 20%;
+	height: 40px;
+	padding: 0px;
+	border: solid 1px transparent;
+	border-left-color: var(--container-background-color);
+	border-radius: 3px;
+	border-top-left-radius: 0px;
+	border-bottom-left-radius: 0px;
+	background-color: var(--input-background-color);
+	color: var(--tertiary-text-color);
+	cursor: pointer;
+	vertical-align: top;
+}
+
+.option-container .picture-reset.show {
+	display: inline-block;
+}
+
+.option-container .picture-reset:hover,
+.option-container .picture-reset:focus {
+	background-color: var(--danger-color);
+	border-left-color: transparent;
+	color: #fff;
 }
 
 /* loading overlay */

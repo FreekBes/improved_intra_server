@@ -27,7 +27,7 @@ const mod_user_settings = JSON.parse(JSON.stringify(user_settings));
 	<p>A custom banner image that will be shown on your profile, instead of your coalition's banner</p>
 	<img class="picture-preview current-picture"{{ ' style="display: none"' if not user_settings[2] }} src="{{ user_settings[2]['url']|e if user_settings[2] else url_for('static', filename='imgs/options/placeholder.png') }}" alt="Failed to load your custom banner" title="Your current custom banner" />
 	<img class="picture-preview future-picture" style="display: none;" src="{{ url_for('static', filename='imgs/options/placeholder.png') }}" alt="Failed to load selected file for preview" title="Click the save button in the top left to upload this banner" />
-	<input class="picture-picker" type="file" id="custom_banner_upload" name="custom_banner_upload" accept="image/*" />
+	<input class="picture-picker" type="file" id="custom_banner_upload" name="custom_banner_upload" accept="image/*" /><button class="picture-reset{{ ' show' if user_settings[2] }}" type="button" id="custom_banner_reset" name="custom_banner_reset" title="Revert to the default banner">Unset</button>
 </div>
 
 <div class="option-container choice" id="banner_pos">

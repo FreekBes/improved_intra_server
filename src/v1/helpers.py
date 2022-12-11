@@ -20,8 +20,12 @@ def unparse_github_username(git_link):
 				return 'github@' + split_git[1]
 			elif split_git[0] == 'gitlab.com':
 				return 'gitlab@' + split_git[1]
+			elif split_git[0] == 'bitbucket.org':
+				return 'bitbucket.org@' + split_git[1]
 			elif split_git[0] == 'codeberg.org':
 				return 'codeberg.org@' + split_git[1]
+			elif split_git[0] == 'sr.ht':
+				return 'sr.ht@' + split_git[1]
 	return ''
 
 

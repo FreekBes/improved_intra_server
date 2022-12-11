@@ -1,13 +1,19 @@
 from ...lib.tokens import create_ext_token, parse_ext_token
 from flask import session, redirect, url_for, request
+from ...decorators import auth_required
 from ...oauth import authstart, authend
+from functools import wraps
 from ... import app
 
 
-def continue_init():
-	query_params = request.args.to_dict()
-	if 'continue' in query_params:
-		session['continue'] = query_params['continue']
+def continue_init(f):
+	@wraps(f)
+	def decorated_function(*args, **kwargs):
+		query_params = request.args.to_dict()
+		if 'continue' in query_params:
+			session['continue'] = query_params['continue']
+		return f(*args, **kwargs)
+	return decorated_function
 
 
 def continue_active():
@@ -23,8 +29,8 @@ def continue_now():
 
 
 @app.route('/v2/connect', methods=['GET'])
+@continue_init
 def connect():
-	continue_init()
 	if not 'uid' in session:
 		return authstart()
 
@@ -35,8 +41,8 @@ def connect():
 
 
 @app.route('/v2/disconnect', methods=['GET'])
+@continue_init
 def disconnect():
-	continue_init()
 	if not 'uid' in session:
 		if continue_active():
 			return continue_now()

@@ -1,13 +1,8 @@
 from src.models.models import User, BannerImg, BannerPosition, Campus, ColorScheme, Profile, Settings, Theme, THEMES
-from flask import render_template, session, redirect, url_for, request
+from ....decorators import auth_required_json
+from src.models.helpers import row_to_dict
+from flask import session
 from .... import app, db
-
-
-def row_to_dict(row):
-	d = {}
-	for column in row.__table__.columns:
-		d[column.name] = getattr(row, column.name)
-	return d
 
 
 def fetch_profile(user_id:int):
@@ -70,10 +65,8 @@ def profile_json(login:str):
 
 
 @app.route('/v2/options.json')
+@auth_required_json
 def my_options_json():
-	if not 'uid' in session:
-		return { 'type': 'error', 'message': 'Not logged in', 'data': {} }, 401
-
 	try:
 		# Fetch profile
 		profile_dict = fetch_profile(session['uid'])

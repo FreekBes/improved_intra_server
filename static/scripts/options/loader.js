@@ -90,6 +90,7 @@ function populateOptions(repopulate = false) {
 			// if the option container is structured like an image selector, add event listeners to the file input
 			if (optionContainer.classList.contains("picture")) {
 				const input = optionContainer.querySelector('.picture-picker');
+				const resetBtn = optionContainer.querySelector('.picture-reset');
 
 				if (repopulate !== true) {
 					// add event listener for file selection change
@@ -98,6 +99,7 @@ function populateOptions(repopulate = false) {
 						const slug = optionContainer.id;
 						const currentPic = optionContainer.querySelector('.current-picture');
 						const futurePic = optionContainer.querySelector('.future-picture');
+						const resetBtn = optionContainer.querySelector('.picture-reset');
 
 						if (ev.currentTarget.files.length > 0) {
 							const file = ev.currentTarget.files[0];
@@ -107,6 +109,7 @@ function populateOptions(repopulate = false) {
 								futurePic.src = ev.target.result;
 								currentPic.style.display = "none";
 								futurePic.style.display = "block";
+								resetBtn.classList.add("show");
 								mod_user_settings[slug] = 'new_upload-' + Math.random().toString(); // update modified user settings so that save button appears
 								checkShowSaveButton();
 							};
@@ -116,6 +119,10 @@ function populateOptions(repopulate = false) {
 								futurePic.style.display = "none";
 								if (currentPic.src.indexOf('/placeholder.png') == -1) {
 									currentPic.style.display = "block";
+									resetBtn.classList.add("show");
+								}
+								else {
+									resetBtn.classList.remove("show");
 								}
 								mod_user_settings[slug] = user_settings[slug];
 								checkShowSaveButton();
@@ -126,10 +133,30 @@ function populateOptions(repopulate = false) {
 							futurePic.style.display = "none";
 							if (currentPic.src.indexOf('/placeholder.png') == -1) {
 								currentPic.style.display = "block";
+								resetBtn.classList.add("show");
+							}
+							else {
+								resetBtn.classList.remove("show");
 							}
 							mod_user_settings[slug] = user_settings[slug];
 							checkShowSaveButton();
 						}
+					});
+
+					// add event listener for reset button
+					resetBtn.addEventListener('click', function(ev) {
+						const optionContainer = ev.currentTarget.closest('.option-container');
+						const slug = optionContainer.id;
+						const currentPic = optionContainer.querySelector('.current-picture');
+						const futurePic = optionContainer.querySelector('.future-picture');
+						const resetBtn = optionContainer.querySelector('.picture-reset');
+
+						futurePic.style.display = "none";
+						currentPic.style.display = "none";
+						mod_user_settings[slug] = '';
+						resetBtn.classList.remove("show");
+						checkShowSaveButton();
+						resetBtn.blur();
 					});
 				}
 			}

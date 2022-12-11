@@ -75,8 +75,12 @@ def handle_git(value:str):
 			return 'github.com@' + username
 		elif parsed_url.netloc == 'gitlab.com':
 			return 'gitlab.com@' + username
+		elif parsed_url.netloc == 'bitbucket.org':
+			return 'bitbucket.org@' + username
 		elif parsed_url.netloc == 'codeberg.org':
 			return 'codeberg.org@' + username
+		elif parsed_url.netloc == 'sr.ht':
+			return 'sr.ht@' + username
 	except:
 		return None
 

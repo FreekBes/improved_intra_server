@@ -1,13 +1,12 @@
+from ...decorators import auth_required_json, staff_acc_required_json
 from ...models.models import BannerImg, User, Campus
 from flask import session
 from ... import app, db
 
 @app.route('/v2/banners/<offset>', methods=['GET'])
+@auth_required_json
+@staff_acc_required_json
 def bannersoffset(offset):
-	if not 'uid' in session:
-		return { 'type': 'error', 'message': 'Unauthorized' }, 401
-	if not 'staff' in session or session['staff'] != True:
-		return { 'type': 'error', 'message': 'Access denied' }, 403
 	try:
 		n_offset = int(offset)
 	except:
