@@ -64,6 +64,7 @@ def set_session_data(user:User):
 	session['uid'] = user.intra_id
 	session['staff'] = user.staff
 	session['campus'] = user.campus_id
+	session['image'] = 'https://iintra.freekb.es/imgs/user.png'
 
 	# Fetch current image from Intra
 	try:
