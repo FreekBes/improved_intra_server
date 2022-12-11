@@ -53,6 +53,9 @@ def add_headers(response):
 	response.headers['X-Content-Type-Options'] = 'nosniff'
 	response.headers['X-Powered-By'] = 'ImprovedIntraServer/{} Werkzeug/{} Flask/{} Python/{}'.format(__version__, __werkzeug_version__, __flask_version__, platform.python_version())
 	response.headers['X-Target-Version'] = 'ImprovedIntra/{}'.format(__target_ext_version__)
+	response.headers['Access-Control-Allow-Credentials'] = 'true'
+	response.headers['Access-Control-Allow-Methods'] = 'GET,HEAD,POST,OPTIONS'
+	response.headers['Access-Control-Allow-Headers'] = 'Access-Control-Allow-Headers, Origin, Accept, Authorization, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers'
 
 	origin = request.environ.get('HTTP_ORIGIN', None)
 	if origin is not None:
