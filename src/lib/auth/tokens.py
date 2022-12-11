@@ -5,7 +5,7 @@ from src.models.models import User, UserToken
 from flask import request, session
 from src import app
 
-token_manager = tokenlib.TokenManager(app.config['TOKEN_SECRET'], app.config['TOKEN_EXPIRATION'])
+token_manager = tokenlib.TokenManager(app.config['TOKEN_SECRET'], float(app.config['TOKEN_EXPIRATION']))
 
 
 # create a token for use in the extension's frontend
