@@ -1,6 +1,6 @@
 from wtforms.validators import Optional, DataRequired, URL as URLValidator
 from wtforms import StringField, SelectField, BooleanField, HiddenField
-from src.banners import ALLOWED_IMG_TYPES, BANNERS_PATH
+from src.lib.banners import ALLOWED_IMG_TYPES, BANNERS_PATH
 from flask_uploads import UploadSet, configure_uploads
 from flask_wtf.file import FileField, FileAllowed
 from flask_wtf import FlaskForm

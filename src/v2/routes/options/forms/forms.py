@@ -1,5 +1,5 @@
+from src.lib.banners import ALLOWED_IMG_TYPES, BANNERS_PATH
 from wtforms import StringField, SelectField, HiddenField
-from src.banners import ALLOWED_IMG_TYPES, BANNERS_PATH
 from flask_uploads import UploadSet, configure_uploads
 from src.v2.routes.options.forms.validators import *
 from src.models.models import ColorScheme, THEMES

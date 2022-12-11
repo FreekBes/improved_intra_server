@@ -18,11 +18,11 @@ import ssl
 from src.models.models import User, Campus, Settings, Profile, Runner, BannerImg, BannerPosition, ColorScheme
 from src.v1.helpers import parse_github_username
 from src.lib.db import session as db_session
-from src.banners import BANNERS_PATH
+from src.lib.banners import BANNERS_PATH
+from datetime import datetime, timezone
 from urllib.request import urlopen
 from os.path import basename, join
 from urllib.parse import urlparse
-from datetime import datetime, timezone
 from src.lib.intra import ic
 
 # Disable SSL certificate checking

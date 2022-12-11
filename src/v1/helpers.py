@@ -1,7 +1,7 @@
 import re
 
 from src.models.models import ColorScheme, BannerImg, BannerPosition, Profile, Settings, User, Team
-from src.banners import upload_banner, get_banner_info
+from src.lib.banners import upload_banner, get_banner_info
 from src.v1.forms import OldSettings
 from flask import request
 from src import db

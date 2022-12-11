@@ -2,8 +2,8 @@ import uuid
 
 from sqlalchemy import Column as Col, Integer, Boolean, Date, DateTime, ForeignKey
 from sqlalchemy_serializer import SerializerMixin
+from src.lib.banners import get_banner_info
 from sqlalchemy.types import TypeDecorator
-from src.banners import get_banner_info
 from sqlalchemy.sql import func
 from src import db
 
