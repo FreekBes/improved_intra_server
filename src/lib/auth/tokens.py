@@ -2,7 +2,7 @@ import tokenlib
 
 from src.lib.auth.oauth import set_session_data
 from src.models.models import User, UserToken
-from flask import request
+from flask import request, session
 from src import app
 
 token_manager = tokenlib.TokenManager(app.config['TOKEN_SECRET'], app.config['TOKEN_EXPIRATION'])
@@ -29,11 +29,29 @@ def parse_ext_token(ext_token:str):
 	return user
 
 
-def auth_with_ext_token():
+def get_ext_token():
 	try:
 		ext_token = request.headers['Authorization'].split(' ')[1]
+		return ext_token
+	except Exception as e:
+		return None
+
+
+def auth_with_ext_token():
+	try:
+		ext_token = get_ext_token()
 		user:User = parse_ext_token(ext_token)
+		session['ext_token'] = ext_token
 		set_session_data(user)
 		return True
+	except Exception as e:
+		return False
+
+
+def auth_token_matches_sessions():
+	try:
+		ext_token = get_ext_token()
+		if not ext_token or not session.get('ext_token') or ext_token != session.get('ext_token'):
+			return False
 	except Exception as e:
 		return False

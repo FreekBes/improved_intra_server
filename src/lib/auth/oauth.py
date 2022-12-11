@@ -55,6 +55,7 @@ def authend():
 	# Back-end version-specific data
 	session.pop('v', None)
 	session.pop('v1_conn_data', None)
+	session.pop('ext_token', None)
 
 
 def set_session_data(user:User):
