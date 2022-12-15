@@ -64,5 +64,9 @@ def ping():
 @app.route('/v2/ext_token', methods=['GET'])
 @auth_required_json
 def ext_token():
-	ext_token = create_ext_token(session['uid'])
-	return { 'type': 'success', 'message': 'ext_token generated', 'data': ext_token }, 200
+	try:
+		ext_token = create_ext_token(session['uid'])
+		return { 'type': 'success', 'message': 'ext_token generated', 'data': ext_token }, 200
+	except Exception as e:
+		print(e)
+		return { 'type': 'error', 'message': 'ext_token generation failed' }, 500
