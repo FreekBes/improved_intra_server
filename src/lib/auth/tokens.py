@@ -3,7 +3,7 @@ import tokenlib
 from src.lib.auth.oauth import set_session_data
 from src.models.models import User, UserToken
 from flask import request, session
-from src import app
+from src import app, db
 
 token_manager = tokenlib.TokenManager(app.config['TOKEN_SECRET'], float(app.config['TOKEN_EXPIRATION']))
 
@@ -11,7 +11,11 @@ token_manager = tokenlib.TokenManager(app.config['TOKEN_SECRET'], float(app.conf
 # create a token for use in the extension's frontend
 # this token identifies the user for requests to the backend without requiring the user's interaction
 def create_ext_token(user_id:int):
-	user_token:UserToken = UserToken.query.filter_by(user_id = user_id).one()
+	user_token:UserToken = UserToken.query.filter_by(user_id = user_id).first()
+	if not user_token:
+		user_token = UserToken(user_id)
+		db.session.add(user_token)
+		db.session.flush()
 	ext_token = token_manager.make_token({ 'user_token': user_token.token })
 	return ext_token
 
