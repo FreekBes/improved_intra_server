@@ -145,6 +145,27 @@ sudo systemctl restart nginx
 ```
 
 
+## Logs
+There are several log files used by the Improved Intra server:
+- *access.log*: contains all requests made to the server
+- *error.log*: contains all errors encountered by the server
+- *server.log*: contains specific logging done by the server, such as requests made to the Intra API and logging for runners
+- *wsgi.log*: contains all logging done in development mode
+
+Additionally, there is another log maintained by the systemd service. This log contains errors encountered by the systemd service itself, such as errors encountered when starting the server. But also, very importantly: errors encountered by the server itself are logged here as well (any `print` statement). This is probably the most important log file to look at when something goes wrong.
+```sh
+# To view the log
+sudo journalctl -u iintra-server.service
+
+# To view the last 100 lines of the log
+sudo journalctl -u iintra-server.service -n 100 --no-pager
+
+# Or, to follow the log (like with tail -f)
+sudo journalctl -u iintra-server.service -f
+```
+
+
+
 ## Using a self-hosted back-end server in development
 On a user machine, modify the hosts file to point to your development server. Don't forget to remove those lines after development!
 
