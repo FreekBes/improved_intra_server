@@ -34,6 +34,8 @@ def options_section(section:str):
 		if not campus:
 			return render_no_campus_settings()
 		dist_key = str(campus.intra_id)
+		if not dist_key in FETCH_DISTRIBUTION:
+			return render_no_campus_settings(campus.name)
 
 	# Fetch table rows based on the fetch_dist_key
 	settings:Settings = None
@@ -70,7 +72,7 @@ def options_section(section:str):
 def render_campus_settings(dist_key:str, campus:Campus, user_settings:tuple[Settings, Profile, BannerImg], possible_options:tuple[list[ColorScheme], list[BannerPosition]]=None):
 	if campus.intra_id == 14: # Codam, Amsterdam
 		return render_template('v2/options/codam.j2', user_settings=user_settings, possible_options=possible_options, user_login=session['login'], user_image=session['image'], version=VERSION_INFO)
-	return render_no_campus_settings()
+	return render_no_campus_settings(campus.name)
 
-def render_no_campus_settings():
-	return render_template('v2/options/no_campus_settings.j2', campus='Unknown', user_login=session['login'], user_image=session['image'], version=VERSION_INFO)
+def render_no_campus_settings(campus_name:str='Unknown'):
+	return render_template('v2/options/no_campus_settings.j2', campus=campus_name, user_login=session['login'], user_image=session['image'], version=VERSION_INFO)
