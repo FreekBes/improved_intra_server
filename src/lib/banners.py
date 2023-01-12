@@ -38,3 +38,14 @@ def get_banner_info(url):
 	except:
 		return 0, 0, 0
 
+
+# The parameter banner_file should be the file name of the banner only, not a path (so also no /banners/ in front of it)
+def delete_banner(banner_file):
+	try:
+		banner_path = os.path.join(BANNERS_PATH, banner_file)
+		if os.path.exists(banner_path):
+			os.remove(banner_path)
+			return True
+	except Exception as e:
+		print("An exception occurred while deleting a banner: {}".format(str(e)))
+		return False
