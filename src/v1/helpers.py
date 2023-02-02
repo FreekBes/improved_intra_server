@@ -146,12 +146,3 @@ def set_v1_settings(form:OldSettings):
 		print("An exception occurred while setting v1 settings: {}".format(str(e)))
 		return False
 	return True
-
-
-def get_projects_users(user_id:int):
-	print(db.session.query(Team.projects_user_id).filter(Team.user_id == user_id).group_by(Team.projects_user_id))
-	db_teams:list[Team] = db.session.query(Team.projects_user_id).filter(Team.user_id == user_id).group_by(Team.projects_user_id).all()
-	projects_user_ids:list[int] = list()
-	for db_team in db_teams:
-		projects_user_ids.append(db_team.projects_user_id)
-	return projects_user_ids
