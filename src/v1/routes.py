@@ -112,7 +112,14 @@ def oldOutstandings():
 	db_q = db.session.query(Team, func.sum(case([(Evaluation.outstanding == True, 1)], else_ = 0)).label('outstandings')).outerjoin(Evaluation, Evaluation.intra_team_id == Team.intra_id).filter(Team.user_id == db_user.intra_id).order_by(Team.projects_user_id.desc(), Team.intra_id.desc()).group_by(Team.id)
 	db_res:list = db_q.all()
 
+	handled_team_ids:list[int] = []
+
 	for db_row in db_res:
+		# Sometimes the same team is returned twice in the query, so we need to skip it
+		# This is because a Team can appear multiple times in the table: once per user in the team!
+		# Makes it easier to handle other data, but it is sort of a pain here... Maybe a postgres view would one day be better?
+		if db_row.Team.intra_id in handled_team_ids:
+			continue
 		if not str(db_row.Team.projects_user_id) in outstandings:
 			pu_outstandings = dict()
 			pu_outstandings['current'] = 0
@@ -126,6 +133,7 @@ def oldOutstandings():
 		if db_row.Team.best:
 			pu_outstandings['best'] = db_row.outstandings
 		pu_outstandings['all'].append(db_row.outstandings)
+		handled_team_ids.append(db_row.Team.intra_id)
 
 	# Create response with additional headers
 	resp = Response(
