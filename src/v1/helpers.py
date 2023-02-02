@@ -153,11 +153,3 @@ def set_v1_settings(form:OldSettings):
 		db.session.rollback()
 		return False
 	return True
-
-
-def get_projects_users(user:User):
-	db_teams:list[Team] = db.session.query(Team.projects_user_id).filter_by(user_id = user.intra_id).group_by(Team.projects_user_id).all()
-	projects_user_ids:list[int] = list()
-	for db_team in db_teams:
-		projects_user_ids.append(db_team.projects_user_id)
-	return projects_user_ids
