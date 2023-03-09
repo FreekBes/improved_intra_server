@@ -1,4 +1,4 @@
-from src.lib.auth.tokens import create_ext_token, parse_ext_token
+from src.lib.auth.tokens import create_ext_token
 from flask import session, redirect, url_for, request
 from src.lib.auth.decorators import auth_required_json
 from src.lib.auth.oauth import authstart, authend

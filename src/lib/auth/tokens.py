@@ -30,7 +30,7 @@ def parse_ext_token(ext_token:str):
 	user:User = User.query.filter_by(intra_id=user_token.user_id).first()
 	if not user:
 		raise Exception('User not found')
-	return user
+	return user, user_token
 
 
 def get_ext_token():
@@ -44,8 +44,9 @@ def get_ext_token():
 def auth_with_ext_token():
 	try:
 		ext_token = get_ext_token()
-		user:User = parse_ext_token(ext_token)
+		user, user_token = parse_ext_token(ext_token)
 		session['ext_token'] = ext_token
+		user_token.update_last_used()
 		set_session_data(user)
 		return True
 	except Exception as e:

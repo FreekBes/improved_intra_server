@@ -266,6 +266,7 @@ class UserToken(db.Model):
 
 	def update_last_used(self):
 		self.last_used_at = func.now()
+		db.session.commit()
 
 	def deactivate(self):
 		db.session.delete(self)
