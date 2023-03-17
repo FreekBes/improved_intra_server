@@ -47,4 +47,12 @@ if (bowserInfo['os']) {
 }
 </script>
 
+<div class="text-container" id="takeout">
+	<h4>Privacy</h4>
+	<p>You can find the Privacy Policy of the Improved Intra browser extension in our GitHub repository (<a href="https://github.com/FreekBes/improved_intra/blob/main/PRIVACY-POLICY.md">link</a>).</p>
+	<p>As a user of Improved Intra, you can request a copy of all the data that Improved Intra has stored about you. This includes your Intra username, campus info, uploaded banners and some data related to your studies. You can download this data by clicking on the link below. The data will be given to you in ZIP format. Inside the ZIP archive, you can find JSON files containing all raw data Improved Intra has stored about you (excluding tokens), in addition to any files you have uploaded to our servers that we decided to keep.</p>
+	<p><b><a href="{{ url_for('takeout') }}">Request a copy of my data</a></b></p>
+	<p>Currently, Improved Intra does not take into account anonymization on the Intranet. This is something that will be added in the future. In the meantime, you can <b>request deletion of all data</b> Improved Intra has stored about you by sending an e-mail to <a href="mailto:fbes@student.codam.nl">fbes@student.codam.nl</a>. <i>Make sure the e-mail contains proof that you are the owner of the account whose data you wish to have deleted.</i></p>
+</div>
+
 {% endblock %}
