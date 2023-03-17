@@ -93,7 +93,7 @@ def takeout():
 						banner_file = banner.url.split('/')[-1]
 						banner_path = os.path.join(BANNERS_PATH, banner_file)
 						if os.path.exists(banner_path):
-							with zip.open(f"banners/{banner.id}", 'w') as f:
+							with zip.open(f"banners/{banner_file}", 'w') as f:
 								f.write(open(banner_path, 'rb').read())
 
 		# Send the zip file to the user
