@@ -17,6 +17,7 @@ def create_ext_token(user_id:int):
 		db.session.add(user_token)
 		db.session.flush()
 	ext_token = token_manager.make_token({ 'user_token': user_token.token })
+	user_token.update_last_used()
 	return ext_token
 
 
@@ -30,6 +31,7 @@ def parse_ext_token(ext_token:str):
 	user:User = User.query.filter_by(intra_id=user_token.user_id).first()
 	if not user:
 		raise Exception('User not found')
+	user_token.update_last_used()
 	return user, user_token
 
 
@@ -46,7 +48,6 @@ def auth_with_ext_token():
 		ext_token = get_ext_token()
 		user, user_token = parse_ext_token(ext_token)
 		session['ext_token'] = ext_token
-		user_token.update_last_used()
 		set_session_data(user)
 		return True
 	except Exception as e:
