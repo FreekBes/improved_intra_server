@@ -58,21 +58,25 @@ def authend():
 	session.pop('ext_token', None)
 
 
-def set_session_data(user:User):
+def set_session_data(user:User, api_user:dict=None):
 	session['login'] = user.login
 	session['uid'] = user.intra_id
 	session['staff'] = user.staff
 	session['campus'] = user.campus_id
 	session['image'] = 'https://iintra.freekb.es/imgs/user.png'
 
-	# Fetch current image from Intra
 	try:
-		resp = intra.get('users?filter[login]={}'.format(user.login))
-		resp.raise_for_status()
-		user_json = resp.json()
-		if (len(user_json) > 0):
-			session['image'] = user_json[0]['image']['versions']['medium']
+		if not api_user:
+			# Fetch current image from Intra if no API user data was provided
+			resp = intra.get('users?filter[login]={}'.format(user.login))
+			resp.raise_for_status()
+			json_users = resp.json()
+			if (len(json_users) > 0):
+				session['image'] = json_users[0]['image']['versions']['medium']
+		else:
+			session['image'] = api_user['image']['versions']['medium']
 	except:
+		# Pass, we already set a fallback image above the try block
 		pass
 
 
@@ -101,7 +105,7 @@ def auth():
 	# Set session data
 	db_user:User = User.query.filter_by(intra_id=user['id']).first()
 	if db_user:
-		set_session_data(db_user)
+		set_session_data(db_user, user)
 
 	# Redirect after auth
 	if 'v' in session and session['v'] == 1:
