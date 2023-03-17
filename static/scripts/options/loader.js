@@ -6,7 +6,7 @@
 /*   By: fbes <fbes@student.codam.nl>                 +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2022/11/05 14:08:09 by fbes          #+#    #+#                 */
-/*   Updated: 2022/11/05 20:54:05 by fbes          ########   odam.nl         */
+/*   Updated: 2023/03/17 22:07:55 by fbes          ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,6 +91,7 @@ function populateOptions(repopulate = false) {
 			if (optionContainer.classList.contains("picture")) {
 				const input = optionContainer.querySelector('.picture-picker');
 				const resetBtn = optionContainer.querySelector('.picture-reset');
+				const picturePicker = optionContainer.querySelector('.picture-picker');
 
 				if (repopulate !== true) {
 					// add event listener for file selection change
@@ -150,6 +151,7 @@ function populateOptions(repopulate = false) {
 						const currentPic = optionContainer.querySelector('.current-picture');
 						const futurePic = optionContainer.querySelector('.future-picture');
 						const resetBtn = optionContainer.querySelector('.picture-reset');
+						picturePicker.value = ''; // clear file input
 
 						futurePic.style.display = "none";
 						currentPic.style.display = "none";
