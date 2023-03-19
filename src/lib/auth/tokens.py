@@ -47,17 +47,21 @@ def auth_with_ext_token():
 	try:
 		ext_token = get_ext_token()
 		user, user_token = parse_ext_token(ext_token)
+		app.logger.debug(f"Authenticated user {user.login} using ext_token")
 		session['ext_token'] = ext_token
 		set_session_data(user)
 		return True
 	except Exception as e:
+		app.logger.exception(f"An error occurred while trying to authenticate using an ext_token: {str(e)}")
 		return False
 
 
 def auth_token_matches_sessions():
 	try:
 		ext_token = get_ext_token()
-		if not ext_token or not session.get('ext_token') or ext_token != session.get('ext_token'):
+		if not ext_token or not 'ext_token' in session or ext_token != session.get('ext_token'):
 			return False
+		return True
 	except Exception as e:
+		app.logger.exception(f"An error occurred while trying to match an ext_token against a session: {str(e)}")
 		return False
