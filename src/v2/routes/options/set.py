@@ -1,5 +1,5 @@
 from src.v2.routes.options.forms.handlers import set_v2_settings
-from src.lib.auth.decorators import auth_required_json
+from src.lib.auth.decorators import session_required_json
 from werkzeug.datastructures import CombinedMultiDict
 from src.v2.routes.options.forms.forms import *
 from flask import session, request
@@ -21,7 +21,7 @@ def get_wtform(section:str):
 
 
 @app.route('/v2/options/<section>/save', methods=['POST'])
-@auth_required_json
+@session_required_json
 def options_section_save(section:str):
 	# Get the correct form to use for this section
 	form = get_wtform(section)

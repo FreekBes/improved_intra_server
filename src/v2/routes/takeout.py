@@ -1,6 +1,6 @@
 from src.models.models import BannerImg, Campus, Evaluation, OAuth2Token, Profile, Settings, Team, User, UserToken
 from src.models.helpers import row_to_json_str, rows_to_json_str, row_to_dict, keyedtuple_rows_to_dict
-from src.lib.auth.decorators import auth_required_redirect
+from src.lib.auth.decorators import session_required_redirect
 from flask import session, send_file, request
 from src.lib.banners import BANNERS_PATH
 from sqlalchemy import literal
@@ -13,7 +13,7 @@ import os
 
 
 @app.route('/v2/takeout')
-@auth_required_redirect
+@session_required_redirect
 def takeout():
 	try:
 		# Get current time

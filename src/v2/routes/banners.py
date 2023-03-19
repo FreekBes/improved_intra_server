@@ -1,10 +1,10 @@
-from src.lib.auth.decorators import auth_required_json, staff_acc_required_json
+from src.lib.auth.decorators import session_required_redirect, staff_acc_required_json
 from src.models.models import BannerImg, User, Campus
 from flask import session
 from src import app, db
 
 @app.route('/v2/banners/<offset>', methods=['GET'])
-@auth_required_json
+@session_required_redirect
 @staff_acc_required_json
 def bannersoffset(offset):
 	try:

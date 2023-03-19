@@ -1,5 +1,5 @@
-from src.models.models import User, BannerImg, BannerPosition, Campus, ColorScheme, Profile, Settings, Theme, THEMES
-from src.lib.auth.decorators import auth_required_json
+from src.models.models import User, BannerImg, BannerPosition, Campus, ColorScheme, Profile, Settings, THEMES
+from src.lib.auth.decorators import ext_token_required_json
 from src.models.helpers import row_to_dict
 from flask import session
 from src import app, db
@@ -65,7 +65,7 @@ def profile_json(login:str):
 
 
 @app.route('/v2/options.json')
-@auth_required_json
+@ext_token_required_json
 def my_options_json():
 	try:
 		# Fetch profile
