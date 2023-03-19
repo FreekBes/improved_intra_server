@@ -165,6 +165,15 @@ sudo journalctl -u iintra-server.service -f
 ```
 
 
+## Resetting all user/extension sessions
+If you wish to reset all extension sessions, effectively logging out all extension sessions, you can do so by changing the _SESSION_KEY_ in the `.secret.env` file. This will invalidate all existing Flask server sessions and force the extension to reauthenticate the user. Normally, this would happen without the user having to do anything - because of the `ext_token` or `user_token` implementation. However, if you wish to force the user to reauthenticate by logging in to the Intranet again, you also do this by deleting all `user_tokens` from the database **(use with caution)**:
+```postgresql
+START TRANSACTION;
+DELETE FROM user_tokens;
+COMMIT;
+```
+
+
 
 ## Using a self-hosted back-end server in development
 On a user machine, modify the hosts file to point to your development server. Don't forget to remove those lines after development!
