@@ -1,6 +1,6 @@
 from src.lib.auth.tokens import create_ext_token
 from flask import session, redirect, url_for, request
-from src.lib.auth.decorators import session_required_json
+from src.lib.auth.decorators import session_required_json, session_ext_token_active, session_active
 from src.lib.auth.oauth import authstart, authend
 from functools import wraps
 from src import app
@@ -56,9 +56,11 @@ def disconnect():
 
 @app.route('/v2/ping', methods=['GET'])
 def ping():
-	if not 'uid' in session:
-		return 'No active session', 404
-	return 'Pong', 200
+	if session_active(): # Try to use session first
+		return 'Pong', 200
+	if session_ext_token_active(): # If no session, try to use ext_token to start a session
+		return 'Pong', 200
+	return 'No active session', 404
 
 
 @app.route('/v2/ext_token', methods=['GET'])
