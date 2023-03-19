@@ -46,6 +46,8 @@ def get_ext_token():
 def auth_with_ext_token():
 	try:
 		ext_token = get_ext_token()
+		if not ext_token:
+			return False
 		user, user_token = parse_ext_token(ext_token)
 		app.logger.debug(f"Authenticated user {user.login} using ext_token")
 		session['ext_token'] = ext_token
