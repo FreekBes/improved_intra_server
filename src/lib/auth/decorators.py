@@ -29,6 +29,16 @@ def ext_token_required_json(f):
 	return decorated_function
 
 
+# Programmatically called endpoint: an ext_token is preferred in the Authorization header to call this endpoint - otherwise a standard session is used, and the response should be json
+def ext_token_preferred_json(f):
+	@wraps(f)
+	def decorated_function(*args, **kwargs):
+		if not session_ext_token_active() and not session_active():
+			return { 'type': 'error', 'message': 'Not logged in or invalid ext_token', 'data': {} }, 401
+		return f(*args, **kwargs)
+	return decorated_function
+
+
 # User-called endpoint: a session is required to call this endpoint, and if no session is active, the user will be redirected to the login page
 def session_required_redirect(f):
 	@wraps(f)
