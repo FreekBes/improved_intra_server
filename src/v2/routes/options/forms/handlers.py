@@ -26,6 +26,7 @@ TABLE_DISTRIBUTION = {
 		'clustermap': 'boolean',
 		'codam_monit': 'boolean',
 		'codam_auto_equip_coa_title': 'boolean',
+		'sort_projects_date': 'boolean',
 	},
 	'profiles': {
 		'banner_img': 'banner_img',

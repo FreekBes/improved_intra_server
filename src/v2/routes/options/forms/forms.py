@@ -44,6 +44,7 @@ class ImprovementsForm(ImprovedIntraForm):
 	show_custom_profiles = SelectField('Customized profiles', name='show_custom_profiles', choices=[('true', 'Enabled'), ('false', 'Disabled')])
 	clustermap = SelectField('Make logged in location clickable', name='clustermap', choices=[('true', 'Enabled'), ('false', 'Disabled')])
 	outstandings = SelectField('Show outstanding flags', name='outstandings', choices=[('true', 'Enabled'), ('false', 'Disabled')])
+	sort_projects_date = SelectField('Sort completed projects by date', name='sort_projects_date', choices=[('true', 'Enabled'), ('false', 'Disabled')])
 	hide_broadcasts = SelectField('Hide broadcasts button', name='hide_broadcasts', choices=[('true', 'Enabled'), ('false', 'Disabled')])
 	holygraph_more_cursuses = SelectField('Show more cursuses in the Holy Graph', name='holygraph_more_cursuses', choices=[('true', 'Enabled'), ('false', 'Disabled')])
 	logsum_month = SelectField('Show monthly logtimes', name='logsum_month', choices=[('true', 'Enabled'), ('false', 'Disabled')])

@@ -191,16 +191,17 @@ class Settings(db.Model):
 	clustermap = Column(Boolean, default=True)
 	codam_monit = Column(Boolean, default=True)
 	codam_auto_equip_coa_title = Column(Boolean, default=False)
+	sort_projects_date = Column(Boolean, default=False)
 
 	def __init__(self, user_id:int):
 		self.user_id = user_id
 
 	def __repr__(self):
 		return "<Settings user_id={}, updated_at='{}', updated_ver='{}', theme={}, colors={}, show_custom_profiles={}, hide_broadcasts={}, logsum_month={}, \
-logsum_week={}, outstandings={}, hide_goals={}, holygraph_more_cursuses={}, old_blackhole={}, codam_monit={}, codam_auto_equip_coa_title={}>"\
+logsum_week={}, outstandings={}, hide_goals={}, holygraph_more_cursuses={}, old_blackhole={}, codam_monit={}, codam_auto_equip_coa_title={}, sort_projects_date={}>"\
 			.format(self.user_id, self.updated_at, self.updated_ver, self.theme, self.colors, str(self.show_custom_profiles), str(self.hide_broadcasts),
 				str(self.logsum_month), str(self.logsum_week), str(self.outstandings), str(self.hide_goals), str(self.holygraph_more_cursuses),
-				str(self.old_blackhole), str(self.codam_monit), str(self.codam_auto_equip_coa_title))
+				str(self.old_blackhole), str(self.codam_monit), str(self.codam_auto_equip_coa_title), str(self.sort_projects_date))
 
 
 class Team(db.Model):

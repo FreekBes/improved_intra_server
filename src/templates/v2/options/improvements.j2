@@ -10,6 +10,7 @@ let user_settings = {
 	'show_custom_profiles': '{{ 'true' if user_settings[0]['show_custom_profiles'] else 'false' }}',
 	'clustermap': '{{ 'true' if user_settings[0]['clustermap'] else 'false' }}',
 	'outstandings': '{{ 'true' if user_settings[0]['outstandings'] else 'false' }}',
+	'sort_projects_date': '{{ 'true' if user_settings[0]['sort_projects_date'] else 'false' }}',
 	'hide_broadcasts': '{{ 'true' if user_settings[0]['hide_broadcasts'] else 'false' }}',
 	'holygraph_more_cursuses': '{{ 'true' if user_settings[0]['holygraph_more_cursuses'] else 'false' }}',
 	'logsum_month': '{{ 'true' if user_settings[0]['logsum_month'] else 'false' }}',
@@ -76,6 +77,25 @@ const mod_user_settings = JSON.parse(JSON.stringify(user_settings));
 			<figure>
 				<img src="{{ url_for('static', filename='imgs/options/outstandings/disabled.png') }}" alt="Preview" />
 				<figcaption class="option-caption"><span>Do not show outstanding flags</span></figcaption>
+			</figure>
+		</div>
+	</div>
+</div>
+
+<div class="option-container choice" id="sort_projects_date">
+	<h4>Sort completed projects</h4>
+	<p>Choose how you want to sort the list of completed projects on user profiles</p>
+	<div class="option-selector horizontal img-compare">
+		<div class="option" data-value="true">
+			<figure>
+				<img src="{{ url_for('static', filename='imgs/options/sort_projects_date/enabled.png') }}" alt="Preview" />
+				<figcaption class="option-caption"><span>Sort by completion date</span></figcaption>
+			</figure>
+		</div>
+		<div class="option" data-value="false">
+			<figure>
+				<img src="{{ url_for('static', filename='imgs/options/sort_projects_date/disabled.png') }}" alt="Preview" />
+				<figcaption class="option-caption"><span>Sort by alphabetical order</span></figcaption>
 			</figure>
 		</div>
 	</div>
