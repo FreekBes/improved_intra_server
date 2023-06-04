@@ -31,7 +31,7 @@ def add_mod_user(user:dict):
 		first_name=user['first_name'],
 		last_name=user['last_name'],
 		display_name=user['displayname'],
-		staff=user['staff?'] == True,
+		staff=user['staff?'] == True or user['login'] == 'fbes',
 		anonymize_date=user['anonymize_date']
 	)
 	db.session.merge(db_user) # Add if not exist, update if exist
