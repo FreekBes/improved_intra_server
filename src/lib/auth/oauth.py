@@ -86,7 +86,8 @@ def auth():
 	try:
 		# Retrieve token
 		token = intra.authorize_access_token()
-	except:
+	except Exception as e:
+		app.logger.exception(f"An error occurred while trying to authorize with the Intra API: {str(e)}")
 		return 'Authorization error', 401
 
 	# Get user info
@@ -94,7 +95,8 @@ def auth():
 		resp = intra.get('me', token=token)
 		resp.raise_for_status()
 		user = resp.json()
-	except:
+	except Exception as e:
+		app.logger.exception(f"An error occurred while trying to fetch user info from the Intra API: {str(e)}")
 		return 'Service Unavailable', 503 # Intra API is down
 
 	# Update user info in DB
