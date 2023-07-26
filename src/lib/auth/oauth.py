@@ -83,13 +83,19 @@ def set_session_data(user:User, api_user:dict=None):
 
 @app.route('/auth')
 def auth():
-	# Retrieve token
-	token = intra.authorize_access_token()
+	try:
+		# Retrieve token
+		token = intra.authorize_access_token()
+	except:
+		return 'Authorization error', 401
 
 	# Get user info
-	resp = intra.get('me', token=token)
-	resp.raise_for_status()
-	user = resp.json()
+	try:
+		resp = intra.get('me', token=token)
+		resp.raise_for_status()
+		user = resp.json()
+	except:
+		return 'Service Unavailable', 503 # Intra API is down
 
 	# Update user info in DB
 	if not add_mod_user(user):
