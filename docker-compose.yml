@@ -1,0 +1,44 @@
+version: '3'
+
+services:
+  iidb:
+    container_name: db
+    image: postgres:9.6
+    restart: unless-stopped
+    expose:
+      - 5432
+    volumes:
+      - ./data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=whatever
+      # Use POSTGRES_USER from .secret.env
+      # Use POSTGRES_PASSWORD from .secret.env
+    env_file:
+      - .shared.env
+      - .secret.env
+
+  iiserver:
+    container_name: iiserver
+    build: .
+    restart: unless-stopped
+    expose:
+      - 8000
+    volumes:
+      - ./static:/opt/improved_intra_server/static
+      - ./logs:/opt/improved_intra_server/logs
+    depends_on:
+      - iidb
+
+  iinginx:
+    container_name: iinginx
+    image: nginx:latest
+    restart: unless-stopped
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - ./useful/iintra.freekb.es.conf:/etc/nginx/conf.d/default.conf
+      - ./useful/ssl:/etc/nginx/ssl
+      - ./static:/opt/improved_intra_server/static
+    depends_on:
+      - iiserver

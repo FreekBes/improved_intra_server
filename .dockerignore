@@ -1,0 +1,6 @@
+dockerfile
+docker-compose.yml
+server.log
+logs/*
+.venv/*
+useful/*
