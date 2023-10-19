@@ -11,101 +11,123 @@ on:
 jobs:
   run:
     runs-on: debian-bullseye
+
     steps:
       - uses: actions/checkout@v4
-        with:
-          path: /opt/improved_intra_server
-          submodules: recursive
-          set-safe-directory: true
+
+      - name: Link /opt/improved_intra_server to the repository
+        run: |
+          ln -s $GITHUB_WORKSPACE /opt/improved_intra_server
 
       - name: Update and install system dependencies
         run: |
-          sudo apt-get update
-          sudo apt-get upgrade
-          sudo apt-get install -y \
+          apt-get update
+          apt-get upgrade
+          apt-get install -y \
             nginx \
-            openssl
+            openssl \
+            dos2unix
 
       - name: Change ownership of /opt/improved_intra_server
         run: |
-          sudo chown -R www-data:www-data /opt/improved_intra_server
+          chown -R www-data:www-data /opt/improved_intra_server
 
       - name: Install PostgreSQL dependencies
         run: |
-          sudo apt-get install -y \
+          apt-get install -y \
             wget \
             lsb-release \
             gnupg2
 
       - name: Add PostgreSQL repository
         run: |
-          sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
-          wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
+          sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
+          wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -
 
       - name: Install PostgresQL
         run: |
-          sudo apt-get update
-          sudo apt-get install -y \
+          apt-get update
+          apt-get install -y \
           postgresql
 
       - name: Start PostgreSQL
         run: |
-          sudo service postgresql start
+          service postgresql start
 
       - name: Set up PostgreSQL
         run: |
-          sudo -u postgres psql -c "ALTER USER postgres PASSWORD 'postgres';"
-          sudo -u postgres psql -c "CREATE DATABASE "iintra" WITH OWNER "postgres" ENCODING 'UTF8';"
+          su - postgres -c "psql -c \"ALTER USER postgres PASSWORD 'postgres';\""
+          su - postgres -c "psql -c \"CREATE DATABASE \\\"iintra\\\" WITH OWNER \\\"postgres\\\" ENCODING 'UTF8';\""
 
       - name: Install Python3
         run: |
-          sudo apt-get install -y \
+          apt-get install -y \
             python3 \
             python3-pip \
             python-setuptools \
             libpq-dev \
-            python3-virtualenv
+            python3-virtualenv \
             virtualenv
 
       - name: Initialize the virtual environment
         working-directory: /opt/improved_intra_server
         run: |
-          sudo virtualenv -p python3 .venv
-          sudo chown -R www-data:www-data /opt/improved_intra_server
+          virtualenv -p python3 .venv
+          chown -R www-data:www-data /opt/improved_intra_server
 
       - name: Install Python dependencies
         working-directory: /opt/improved_intra_server
         run: |
           source .venv/bin/activate
-          sudo .venv/bin/pip install -r requirements.txt
+          .venv/bin/pip install -r requirements.txt
 
       - name: Set up secrets
         working-directory: /opt/improved_intra_server
         run: |
-          sudo cp .secret.env.example .secret.env
-          sudo chown -R www-data:www-data .secret.env
+          cp .secret.env.example .secret.env
+          chown -R www-data:www-data .secret.env
 
       - name: Start Improved Intra server
-        working-directory: /opt/improved_intra_server
         run: |
-          sudo cp ./useful/iintra-server.service /etc/systemd/system/iintra-server.service
-          sudo systemctl daemon-reload
-          sudo systemctl start iintra-server.service
+          dos2unix /opt/improved_intra_server/gunicorn.sh
+          mkdir -p /opt/improved_intra_server/logs
+          chown -R www-data:www-data /opt/improved_intra_server/logs
+          bash /opt/improved_intra_server/gunicorn.sh &
 
       - name: Set up nginx as reverse-proxy
         working-directory: /opt/improved_intra_server
         run: |
-          sudo cp ./useful/*.nginx.snippet.conf /etc/nginx/snippets/
-          sudo rm -f /etc/nginx/sites-enabled/default
-          sudo mkdir -p /etc/nginx/ssl
-          sudo openssl req -newkey rsa:2048 -x509 -days 365 -nodes \
+          cp ./useful/*.nginx.snippet.conf /etc/nginx/snippets/
+          rm -f /etc/nginx/sites-enabled/default
+          mkdir -p /etc/nginx/ssl
+          openssl req -newkey rsa:2048 -x509 -days 365 -nodes \
             -keyout /etc/nginx/ssl/server.key -out /etc/nginx/ssl/server.pem \
-            -subj "/C=NL/ST=North-Holland/L=Amsterdam/O=ImprovedIntra/CN=iintra.freekb.es/
-          sudo cp ./useful/nginx.example.ssl.conf /etc/nginx/sites-available/iintra.freekb.es.conf
-          sudo ln -s /etc/nginx/sites-available/iintra.freekb.es.conf /etc/nginx/sites-enabled/iintra.freekb.es.conf
-          sudo nginx -t
-          sudo systemctl restart nginx
+            -subj "/C=NL/ST=North-Holland/L=Amsterdam/O=ImprovedIntra/CN=iintra.freekb.es/"
+          cp ./useful/nginx.example.ssl.conf /etc/nginx/sites-available/iintra.freekb.es.conf
+          ln -s /etc/nginx/sites-available/iintra.freekb.es.conf /etc/nginx/sites-enabled/iintra.freekb.es.conf
+
+      - name: Wait for the gunicorn server to start
+        run: |
+          sleep 30
+
+      - name: Test nginx configuration
+        run: |
+          cat /etc/nginx/sites-available/iintra.freekb.es.conf
+          cat /etc/nginx/snippets/*.nginx.snippet.conf
+          nginx -t
+
+      - name: Reload nginx
+        run: |
+          /etc/init.d/nginx reload
+          sleep 5
+
+      - name: Install testing dependencies
+        run: |
+          apt-get install -y \
+            curl \
+            net-tools
 
       - name: Curl the server
         run: |
+          netstat -tulpn
           curl -L https://iintra.freekb.es/ --insecure --verbose --resolve 'iintra.freekb.es:443:127.0.0.1' --fail
