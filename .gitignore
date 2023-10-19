@@ -1,9 +1,22 @@
+# User uploaded files
 static/banners/*
 !static/banners/*.txt
 
+# Environment
 .secret.env
 .venv
+
+# SSL
+useful/ssl/*.pem
+useful/ssl/*.crt
+useful/ssl/*.key
+
+# Garbage
 __pycache__
 
+# Logs
 *.log
 logs/*
+
+# Database
+data/*
