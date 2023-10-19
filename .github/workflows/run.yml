@@ -10,7 +10,7 @@ on:
 
 jobs:
   run:
-    runs-on: debian-bullseye
+    runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v4
@@ -22,15 +22,10 @@ jobs:
       - name: Update and install system dependencies
         run: |
           apt-get update
-          apt-get upgrade
           apt-get install -y \
             nginx \
             openssl \
             dos2unix
-
-      - name: Change ownership of /opt/improved_intra_server
-        run: |
-          chown -R www-data:www-data /opt/improved_intra_server
 
       - name: Install PostgreSQL dependencies
         run: |
@@ -64,6 +59,7 @@ jobs:
           apt-get install -y \
             python3 \
             python3-pip \
+            python3-dev \
             python-setuptools \
             libpq-dev \
             python3-virtualenv \
@@ -73,19 +69,12 @@ jobs:
         working-directory: /opt/improved_intra_server
         run: |
           virtualenv -p python3 .venv
-          chown -R www-data:www-data /opt/improved_intra_server
 
       - name: Install Python dependencies
         working-directory: /opt/improved_intra_server
         run: |
           source .venv/bin/activate
           .venv/bin/pip install -r requirements.txt
-
-      - name: Set up secrets
-        working-directory: /opt/improved_intra_server
-        run: |
-          cp .secret.env.example .secret.env
-          chown -R www-data:www-data .secret.env
 
       - name: Set up nginx as reverse-proxy
         working-directory: /opt/improved_intra_server
@@ -121,7 +110,8 @@ jobs:
         run: |
           dos2unix /opt/improved_intra_server/gunicorn.sh
           mkdir -p /opt/improved_intra_server/logs
-          chown -R www-data:www-data /opt/improved_intra_server/logs
+          cp .secret.env.example .secret.env
+          chown -R www-data:www-data /opt/improved_intra_server
 
       - name: Start Improved Intra server
         working-directory: /opt/improved_intra_server
