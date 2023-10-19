@@ -92,7 +92,7 @@ jobs:
         run: |
           cat /etc/nginx/sites-available/iintra.freekb.es.conf
           cat /etc/nginx/snippets/*.nginx.snippet.conf
-          nginx -t
+          sudo nginx -t
 
       - name: Restart nginx
         run: |
