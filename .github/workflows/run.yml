@@ -21,42 +21,42 @@ jobs:
 
       - name: Update and install system dependencies
         run: |
-          apt-get update
-          apt-get install -y \
+          sudo apt-get update
+          sudo apt-get install -y \
             nginx \
             openssl \
             dos2unix
 
       - name: Install PostgreSQL dependencies
         run: |
-          apt-get install -y \
+          sudo apt-get install -y \
             wget \
             lsb-release \
             gnupg2
 
       - name: Add PostgreSQL repository
         run: |
-          sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
-          wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -
+          sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
+          wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
 
       - name: Install PostgresQL
         run: |
-          apt-get update
-          apt-get install -y \
+          sudo apt-get update
+          sudo apt-get install -y \
           postgresql
 
       - name: Start PostgreSQL
         run: |
-          service postgresql start
+          sudo service postgresql start
 
       - name: Set up PostgreSQL
         run: |
-          su - postgres -c "psql -c \"ALTER USER postgres PASSWORD 'postgres';\""
-          su - postgres -c "psql -c \"CREATE DATABASE \\\"iintra\\\" WITH OWNER \\\"postgres\\\" ENCODING 'UTF8';\""
+          sudo -u postgres psql -c "ALTER USER postgres PASSWORD 'postgres';"
+          sudo -u postgres psql -c "CREATE DATABASE \"iintra\" WITH OWNER \"postgres\" ENCODING 'UTF8';"
 
       - name: Install Python3
         run: |
-          apt-get install -y \
+          sudo apt-get install -y \
             python3 \
             python3-pip \
             python3-dev \
@@ -79,14 +79,14 @@ jobs:
       - name: Set up nginx as reverse-proxy
         working-directory: /opt/improved_intra_server
         run: |
-          cp ./useful/*.nginx.snippet.conf /etc/nginx/snippets/
-          rm -f /etc/nginx/sites-enabled/default
-          mkdir -p /etc/nginx/ssl
-          openssl req -newkey rsa:2048 -x509 -days 365 -nodes \
+          sudo cp ./useful/*.nginx.snippet.conf /etc/nginx/snippets/
+          sudo rm -f /etc/nginx/sites-enabled/default
+          sudo mkdir -p /etc/nginx/ssl
+          sudo openssl req -newkey rsa:2048 -x509 -days 365 -nodes \
             -keyout /etc/nginx/ssl/server.key -out /etc/nginx/ssl/server.pem \
             -subj "/C=NL/ST=North-Holland/L=Amsterdam/O=ImprovedIntra/CN=iintra.freekb.es/"
-          cp ./useful/nginx.example.ssl.conf /etc/nginx/sites-available/iintra.freekb.es.conf
-          ln -s /etc/nginx/sites-available/iintra.freekb.es.conf /etc/nginx/sites-enabled/iintra.freekb.es.conf
+          sudo cp ./useful/nginx.example.ssl.conf /etc/nginx/sites-available/iintra.freekb.es.conf
+          sudo ln -s /etc/nginx/sites-available/iintra.freekb.es.conf /etc/nginx/sites-enabled/iintra.freekb.es.conf
 
       - name: Test nginx configuration
         run: |
@@ -96,11 +96,11 @@ jobs:
 
       - name: Restart nginx
         run: |
-          /etc/init.d/nginx restart
+          sudo /etc/init.d/nginx restart
 
       - name: Install testing dependencies
         run: |
-          apt-get install -y \
+          sudo apt-get install -y \
             curl \
             net-tools \
             netcat
@@ -111,7 +111,7 @@ jobs:
           dos2unix /opt/improved_intra_server/gunicorn.sh
           mkdir -p /opt/improved_intra_server/logs
           cp .secret.env.example .secret.env
-          chown -R www-data:www-data /opt/improved_intra_server
+          sudo chown -R www-data:www-data /opt/improved_intra_server
 
       - name: Start Improved Intra server
         working-directory: /opt/improved_intra_server
