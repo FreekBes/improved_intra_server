@@ -1,0 +1,132 @@
+name: Run Improved Intra Server
+
+on:
+  push:
+    branches: [ main, github-actions ]
+  pull_request:
+    branches: [ '*' ]
+  workflow_call:
+  workflow_dispatch:
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Link /opt/improved_intra_server to the repository
+        run: |
+          ln -s $GITHUB_WORKSPACE /opt/improved_intra_server
+
+      - name: Update and install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            nginx \
+            openssl \
+            dos2unix
+
+      - name: Install PostgreSQL dependencies
+        run: |
+          sudo apt-get install -y \
+            wget \
+            lsb-release \
+            gnupg2
+
+      - name: Add PostgreSQL repository
+        run: |
+          sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
+          wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
+
+      - name: Install PostgresQL
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+          postgresql
+
+      - name: Start PostgreSQL
+        run: |
+          sudo service postgresql start
+
+      - name: Set up PostgreSQL
+        run: |
+          sudo -u postgres psql -c "ALTER USER postgres PASSWORD 'postgres';"
+          sudo -u postgres psql -c "CREATE DATABASE \"iintra\" WITH OWNER \"postgres\" ENCODING 'UTF8';"
+
+      - name: Install Python3
+        run: |
+          sudo apt-get install -y \
+            python3 \
+            python3-pip \
+            python3-dev \
+            python-setuptools \
+            libpq-dev \
+            python3-virtualenv \
+            virtualenv
+
+      - name: Initialize the virtual environment
+        working-directory: /opt/improved_intra_server
+        run: |
+          virtualenv -p python3 .venv
+
+      - name: Install Python dependencies
+        working-directory: /opt/improved_intra_server
+        run: |
+          source .venv/bin/activate
+          .venv/bin/pip install -r requirements.txt
+
+      - name: Set up nginx as reverse-proxy
+        working-directory: /opt/improved_intra_server
+        run: |
+          sudo cp ./useful/*.nginx.snippet.conf /etc/nginx/snippets/
+          sudo rm -f /etc/nginx/sites-enabled/default
+          sudo mkdir -p /etc/nginx/ssl
+          sudo openssl req -newkey rsa:2048 -x509 -days 365 -nodes \
+            -keyout /etc/nginx/ssl/server.key -out /etc/nginx/ssl/server.pem \
+            -subj "/C=NL/ST=North-Holland/L=Amsterdam/O=ImprovedIntra/CN=iintra.freekb.es/"
+          sudo cp ./useful/nginx.example.ssl.conf /etc/nginx/sites-available/iintra.freekb.es.conf
+          sudo ln -s /etc/nginx/sites-available/iintra.freekb.es.conf /etc/nginx/sites-enabled/iintra.freekb.es.conf
+
+      - name: Test nginx configuration
+        run: |
+          cat /etc/nginx/sites-available/iintra.freekb.es.conf
+          cat /etc/nginx/snippets/*.nginx.snippet.conf
+          sudo nginx -t
+
+      - name: Restart nginx
+        run: |
+          sudo /etc/init.d/nginx restart
+
+      - name: Install testing dependencies
+        run: |
+          sudo apt-get install -y \
+            curl \
+            net-tools \
+            netcat
+
+      - name: Prepare for Improved Intra server start
+        working-directory: /opt/improved_intra_server
+        run: |
+          dos2unix /opt/improved_intra_server/gunicorn.sh
+          mkdir -p /opt/improved_intra_server/logs
+          cp .secret.env.example .secret.env
+          sudo chown -R www-data:www-data /opt/improved_intra_server
+
+      - name: Start Improved Intra server
+        working-directory: /opt/improved_intra_server
+        shell: bash
+        run: |
+          bash /opt/improved_intra_server/gunicorn.sh &
+          timeout 3m bash -c 'until nc -w 10 127.0.0.1 8000; do sleep 1; done'
+          netstat -tulpn
+          curl -L http://localhost:8000/ --insecure --verbose --fail
+          curl -L https://iintra.freekb.es/ --insecure --verbose --resolve 'iintra.freekb.es:443:127.0.0.1' --fail
+
+      - name: Print logs
+        if: always()
+        working-directory: /opt/improved_intra_server
+        run: |
+          cat /opt/improved_intra_server/logs/server.log || true
+          cat /opt/improved_intra_server/logs/error.log || true
+          cat /opt/improved_intra_server/logs/access.log || true
