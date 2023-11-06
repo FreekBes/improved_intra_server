@@ -120,26 +120,47 @@ class Evaluation(db.Model):
 		return "<Evaluation intra_id={}, intra_team_id={}, success={}, outstanding={}, mark={}, evaluator_id={}, evaluated_at={}>"\
 			.format(self.intra_id, self.intra_team_id, self.success, self.outstanding, self.mark, self.evaluator_id, self.evaluated_at)
 
-class Event(db.Model): # WARNING: includes exams from the Intranet
+
+class Event(db.Model): # WARNING: includes exams from the Intranet, because they are so similar and it does not make sense to have two tables
 	__tablename__ = 'events'
 	id = Column(Integer, primary_key=True)
-	intra_id = Column(Integer) # Intra ID, is not unique - events here are tied to campuses instead of Intra events (they could appear twice)
-	campus_id = Column(Integer, ForeignKey('campuses.intra_id'), nullable=True)
-	name = Column(String(256))
-	description = Column(String(4096), default="")
-	location = Column(String(256), default="")
-	kind = Column(String(128), default="event") # can be "event", "association", "exam",
+	intra_id = Column(Integer) # Intra ID, is not unique - events here are tied to users instead of Intra events (they could appear twice)
+	is_exam = Column(Boolean, default=False) # Defines if this is an exam or not (Intra ID could appear twice: once for an exam, once for an event)
+	user_id = Column(Integer, ForeignKey('users.intra_id'), nullable=True)
+	name = Column(String(1024))
+	description = Column(String(16384), default="")
+	location = Column(String(1024), default="")
+	kind = Column(String(128), default="event")
+	# Some examples from the staff page for "kind"; probably not exhaustive
+	# - pedago: "rush", "piscine", "partnership"
+	# - meet: "conference", "meet_up", "event"
+	# - association: "association"
+	# - speed working: "hackathon", "workshop", "challenge"
+	# - exam: "exam"
+	# - other: "extern"
 	max_people = Column(Integer, nullable=True, default=None)
 	nbr_subscribers = Column(Integer, default=0)
-	cursus_ids = Column(String(256))
-	begin_at = Column(DateTime(timezone=False))
-	end_at = Column(DateTime(timezone=False))
-	created_at = Column(DateTime(timezone=False)) # set by Intra
-	updated_at = Column(DateTime(timezone=False)) # set by Intra
+	cursus_ids = Column(String(1024), default="[]")
+	campus_ids = Column(String(1024), default="[]")
+	# The following timestamps are set by Intra, but by default initialized to now() to make initializing easier
+	begin_at = Column(DateTime(timezone=False), default=func.now())
+	end_at = Column(DateTime(timezone=False), default=func.now())
+	created_at = Column(DateTime(timezone=False), default=func.now())
+	updated_at = Column(DateTime(timezone=False), default=func.now())
 
 	def __repr__(self):
-		return "<Event id={}, intra_id={}, campus_id={}, name='{}', description='{}', location='{}', kind='{}', max_people={}, nbr_subscribers={}, begin_at={}, end_at={}, cursus_ids='{}', created_at={}, updated_at={}>"\
-			.format(self.id, self.intra_id, self.campus_id, self.name, self.description, self.location, self.kind, self.max_people, self.nbr_subscribers, self.begin_at, self.end_at, self.cursus_ids, self.created_at, self.updated_at)
+		return "<Event id={}, intra_id={}, is_exam={}, user_id={}, name='{}', description='{}', location='{}', kind='{}', max_people={}, nbr_subscribers={}, \
+begin_at={}, end_at={}, cursus_ids='{}', campus_ids='{}', created_at={}, updated_at={}>"\
+			.format(self.id, self.intra_id, str(self.is_exam), self.user_id, self.name, self.description, self.location, self.kind, self.max_people,
+				self.nbr_subscribers, self.begin_at, self.end_at, self.cursus_ids, self.campus_ids, self.created_at, self.updated_at)
+
+	def __init__(self, intra_id:int, user_id:int, name:str, is_exam:int=False):
+		self.intra_id = intra_id
+		self.user_id = user_id
+		self.name = name
+		self.is_exam = is_exam
+		if self.is_exam:
+			self.kind = "exam"
 
 
 class OAuth2Token(db.Model):
@@ -185,13 +206,14 @@ class Runner(db.Model):
 	__tablename__ = 'runners'
 	user_id = Column(Integer, ForeignKey('users.intra_id'), primary_key=True)
 	outstandings = Column(DateTime(timezone=False), nullable=True, default=None)
+	events = Column(DateTime(timezone=False), nullable=True, default=None)
 
 	def __init__(self, user_id:int):
 		self.user_id = user_id
 
 	def __repr__(self):
-		return "<Runner user_id={}, outstandings='{}'>"\
-			.format(self.user_id, self.updated_at)
+		return "<Runner user_id={}, outstandings='{}', events='{}'>"\
+			.format(self.user_id, self.outstandings, self.events)
 
 
 class Settings(db.Model):
@@ -228,7 +250,7 @@ logsum_week={}, outstandings={}, hide_goals={}, holygraph_more_cursuses={}, old_
 class Team(db.Model):
 	__tablename__ = 'teams'
 	id = Column(Integer, primary_key=True)
-	intra_id = Column(Integer) # Intra ID, is not unique - teams here are tied to users instead of Intra teams
+	intra_id = Column(Integer) # Intra ID, is not unique - teams here are tied to users instead of Intra teams (they could appear twice)
 	user_id = Column(Integer, ForeignKey('users.intra_id'))
 	projects_user_id = Column(Integer)
 	current = Column(Boolean, default=False)

@@ -6,7 +6,7 @@ from src.lib.db import session
 from datetime import datetime
 from src.lib.intra import ic
 
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.000Z'
+DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
 BEGINNING_OF_TIME = 1262300400 # 2010-01-01
 
 
