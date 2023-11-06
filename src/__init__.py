@@ -43,6 +43,7 @@ from src.v2.routes.options.set import *
 from src.v2.routes.options.json import *
 from src.v2.routes.home import *
 from src.v2.routes.takeout import *
+from src.v2.routes.events import *
 from src.lib import utilities
 from src.lib.auth import oauth
 
