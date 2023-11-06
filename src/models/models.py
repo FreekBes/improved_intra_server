@@ -1,6 +1,6 @@
 import uuid
 
-from sqlalchemy import Column as Col, Integer, Boolean, Date, DateTime, ForeignKey
+from sqlalchemy import Column as Col, Integer, Boolean, Date, DateTime, ForeignKey, String
 from sqlalchemy_serializer import SerializerMixin
 from src.lib.banners import get_banner_info
 from sqlalchemy.types import TypeDecorator
@@ -119,6 +119,27 @@ class Evaluation(db.Model):
 	def __repr__(self):
 		return "<Evaluation intra_id={}, intra_team_id={}, success={}, outstanding={}, mark={}, evaluator_id={}, evaluated_at={}>"\
 			.format(self.intra_id, self.intra_team_id, self.success, self.outstanding, self.mark, self.evaluator_id, self.evaluated_at)
+
+class Event(db.Model): # WARNING: includes exams from the Intranet
+	__tablename__ = 'events'
+	id = Column(Integer, primary_key=True)
+	intra_id = Column(Integer) # Intra ID, is not unique - events here are tied to campuses instead of Intra events (they could appear twice)
+	campus_id = Column(Integer, ForeignKey('campuses.intra_id'), nullable=True)
+	name = Column(String(256))
+	description = Column(String(4096), default="")
+	location = Column(String(256), default="")
+	kind = Column(String(128), default="event") # can be "event", "association", "exam",
+	max_people = Column(Integer, nullable=True, default=None)
+	nbr_subscribers = Column(Integer, default=0)
+	cursus_ids = Column(String(256))
+	begin_at = Column(DateTime(timezone=False))
+	end_at = Column(DateTime(timezone=False))
+	created_at = Column(DateTime(timezone=False)) # set by Intra
+	updated_at = Column(DateTime(timezone=False)) # set by Intra
+
+	def __repr__(self):
+		return "<Event id={}, intra_id={}, campus_id={}, name='{}', description='{}', location='{}', kind='{}', max_people={}, nbr_subscribers={}, begin_at={}, end_at={}, cursus_ids='{}', created_at={}, updated_at={}>"\
+			.format(self.id, self.intra_id, self.campus_id, self.name, self.description, self.location, self.kind, self.max_people, self.nbr_subscribers, self.begin_at, self.end_at, self.cursus_ids, self.created_at, self.updated_at)
 
 
 class OAuth2Token(db.Model):
