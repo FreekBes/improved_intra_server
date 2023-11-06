@@ -7,6 +7,7 @@ from datetime import datetime
 from src.lib.intra import ic
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.000Z'
+BEGINNING_OF_TIME = 1262300400 # 2010-01-01
 
 
 class OutstandingsRunner:
@@ -73,7 +74,7 @@ class OutstandingsRunner:
 
 	def fetch_for_user(self, user:User):
 		db_runner:Runner = session.query(Runner).filter_by(user_id = user.intra_id).one()
-		last_fetch_time = 1262300400 #2010-01-01
+		last_fetch_time = BEGINNING_OF_TIME
 		if db_runner.outstandings:
 			last_fetch_time = int(db_runner.outstandings.timestamp())
 		last_fetch_str = datetime.utcfromtimestamp(last_fetch_time).strftime(DATE_FORMAT)
