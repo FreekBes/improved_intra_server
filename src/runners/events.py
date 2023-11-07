@@ -132,6 +132,7 @@ class EventsRunner:
 			# If not, we do not create a new event - we only want events that any user is registered to.
 			events_in_db:list[Event] = session.query(Event).filter_by(intra_id=event['id']).all()
 			for event_in_db in events_in_db:
+				logging.debug('Updating or creating event with intra_id {}, id {}'.format(str(event_in_db.intra_id), str(event_in_db.id)))
 				create_or_update_event(event, event_in_db.user_id)
 		session.flush()
 
@@ -142,7 +143,7 @@ class EventsRunner:
 		last_updated_event:Event = session.query(Event).order_by(Event.updated_at.desc()).first()
 		if last_updated_event:
 			last_fetch_time = int(last_updated_event.updated_at.timestamp())
-		last_fetch_time -= 604800 # Take a week off from the last fetch time, to make sure we don't miss any events
+		last_fetch_time -= 43200 * 12 # Take a day off from the last fetch time, to make sure we don't miss any events
 		last_fetch_str = datetime.utcfromtimestamp(last_fetch_time).strftime(DATE_FORMAT)
 		fetch_start_str = fetch_start.strftime(DATE_FORMAT)
 
