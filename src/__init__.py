@@ -66,8 +66,13 @@ def add_headers(response):
 			response.headers['Access-Control-Allow-Origin'] = 'https://{}'.format(origin_host)
 			response.headers['X-Frame-Options'] = 'allow-from'
 
-	# If request was for a svg file, set content type to svg
-	if request.path.endswith('.svg'):
-		response.headers['Content-Type'] = 'image/svg+xml'
+	ext_content_types = {
+		'.svg': 'image/svg+xml',
+		'.ics': 'text/calendar',
+	}
+	# If request ends with a specific file extension, set the content type
+	for ext in ext_content_types:
+		if request.path.endswith(ext):
+			response.headers['Content-Type'] = ext_content_types[ext]
 
 	return response
