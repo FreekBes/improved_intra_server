@@ -49,7 +49,7 @@ from src.lib.auth import oauth
 
 # Set up headers
 @app.after_request
-def add_headers(response):
+def add_headers(response:Response):
 	response.headers['X-Frame-Options'] = 'sameorigin'
 	response.headers['Vary'] = 'Origin'
 	response.headers['X-Content-Type-Options'] = 'nosniff'
@@ -66,13 +66,14 @@ def add_headers(response):
 			response.headers['Access-Control-Allow-Origin'] = 'https://{}'.format(origin_host)
 			response.headers['X-Frame-Options'] = 'allow-from'
 
-	ext_content_types = {
-		'.svg': 'image/svg+xml',
-		'.ics': 'text/calendar',
-	}
-	# If request ends with a specific file extension, set the content type
-	for ext in ext_content_types:
-		if request.path.endswith(ext):
-			response.headers['Content-Type'] = ext_content_types[ext]
+	# If request ends with a specific file extension, set the content type (and if request was met with a 200 status code)
+	if response.status_code == 200:
+		ext_content_types = {
+			'.svg': 'image/svg+xml',
+			'.ics': 'text/calendar',
+		}
+		for ext in ext_content_types:
+			if request.path.endswith(ext):
+				response.headers['Content-Type'] = ext_content_types[ext]
 
 	return response
