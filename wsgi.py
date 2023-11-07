@@ -55,12 +55,12 @@ runner_scheduler.add_job(
 	'cron',
 	month='*',
 	day='*',
-	hour='1,5,9,13,17,21', # Every 4 hours (more time-sensitive data)
+	hour='1,4,7,10,13,16,19,22', # Every 3 hours (more time-sensitive data)
 	id='events-rnr',
 	name='events-runner',
 	replace_existing=True,
 	coalesce=True,
-	misfire_grace_time=3600 # 1 hour
+	misfire_grace_time=1800 # 30 minutes
 )
 runner_scheduler.add_job(
 	bannerCleaningRunner.run, # Delete unused banners
