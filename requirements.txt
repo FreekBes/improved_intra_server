@@ -46,6 +46,6 @@ tzdata==2022.2
 tzlocal==4.2
 urllib3==1.26.18
 uuid==1.30
-Werkzeug==2.3.6
+Werkzeug==3.0.1
 WTForms==3.0.1
 zipp==3.8.1
