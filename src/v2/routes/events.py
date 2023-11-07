@@ -54,6 +54,14 @@ def redir_to_ics():
 	return redirect("{}v2/events/{}.ics".format(request.url_root, ical_token.encode().hex()), code=302)
 
 
+@app.route('/v2/events/ics.json', methods=['GET'])
+@ext_token_preferred_json
+def get_ics_link():
+	# Generate ext_token for user and redirect to events_ics endpoint
+	ical_token = create_ical_token(session['uid'])
+	return { 'type': 'success', 'message': 'Generated iCal link', 'data': '{}v2/events/{}.ics'.format(request.url_root, ical_token.encode().hex()) }
+
+
 # Get iCal calendar for events a user is subscribed to
 # User is authenticated based on an ext_token (this URL should thus never be shared, as it would allow anyone to access the user's session)
 @app.route('/v2/events/<hextoken>.ics', methods=['GET'])
