@@ -34,6 +34,29 @@ def create_or_update_event(event, user_intra_id:int):
 		session.rollback()
 
 
+def update_many_events(event):
+	try:
+		rows_updated = session.query(Event).filter_by(intra_id=event['id']).update({
+			'name': event['name'].encode().hex()[:1024],
+			'description': event['description'].encode().hex()[:16384] if event['description'] else "",
+			'location': event['location'].encode().hex()[:1024] if event['location'] else "",
+			'kind': event['kind'] if event['kind'] else "event",
+			'max_people': int(event['max_people']) if event['max_people'] else 0,
+			'nbr_subscribers': int(event['nbr_subscribers']) if event['nbr_subscribers'] else 0,
+			'cursus_ids': json.dumps(event['cursus_ids']) if (event['cursus_ids'] and len(event['cursus_ids']) > 0) else "[]",
+			'campus_ids': json.dumps(event['campus_ids']) if (event['campus_ids'] and len(event['campus_ids']) > 0) else "[]",
+			'begin_at': datetime.strptime(event['begin_at'], DATE_FORMAT),
+			'end_at': datetime.strptime(event['end_at'], DATE_FORMAT),
+			'created_at': datetime.strptime(event['created_at'], DATE_FORMAT),
+			'updated_at': datetime.strptime(event['updated_at'], DATE_FORMAT),
+		})
+		logging.info('Updated {} events with intra_id {}'.format(str(rows_updated), str(event['id'])))
+		session.commit()
+	except Exception as e:
+		logging.error('Error updating event in DB: {}'.format(str(e)))
+		session.rollback()
+
+
 def create_or_update_exam(exam, user:User):
 	try:
 		# Create or update exam
@@ -130,10 +153,8 @@ class EventsRunner:
 		for event in events:
 			# Check if an event with this intra_id exists in the DB. If so, update all.
 			# If not, we do not create a new event - we only want events that any user is registered to.
-			events_in_db:list[Event] = session.query(Event).filter_by(intra_id=event['id']).all()
-			for event_in_db in events_in_db:
-				logging.debug('Updating or creating event with intra_id {}, id {}'.format(str(event_in_db.intra_id), str(event_in_db.id)))
-				create_or_update_event(event, event_in_db.user_id)
+			logging.info('Updating or creating events with intra_id {}'.format(str(event.id)))
+			update_many_events(event)
 		session.flush()
 
 
