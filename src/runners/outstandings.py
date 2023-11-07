@@ -6,13 +6,19 @@ from src.lib.db import session
 from datetime import datetime
 from src.lib.intra import ic
 
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.000Z'
+DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
+BEGINNING_OF_TIME = 1262300400 # 2010-01-01
 
 
 class OutstandingsRunner:
 	def get_teams(self, user:User, since:str, now:str):
 		payload = { 'range[updated_at]': '{},{}'.format(since, now) }
-		projects_users = ic.pages_threaded('users/{}/projects_users'.format(user.intra_id), params=payload)
+		try:
+			projects_users = ic.pages_threaded('users/{}/projects_users'.format(user.intra_id), params=payload)
+		except Exception as e:
+			logging.error('Error fetching outstandings for user {}'.format(user.login))
+			logging.error(str(e))
+			return
 		logging.info('Fetched {} projects_users'.format(len(projects_users)))
 		for projects_user in projects_users:
 			try:
@@ -51,7 +57,12 @@ class OutstandingsRunner:
 
 	def get_evaluations(self, user:User, since:str, now:str):
 		payload = { 'range[updated_at]': '{},{}'.format(since, now), 'filter[future]': 'false', 'filter[filled]': 'true' }
-		evaluations = ic.pages_threaded('users/{}/scale_teams/as_corrected'.format(user.intra_id), params=payload)
+		try:
+			evaluations = ic.pages_threaded('users/{}/scale_teams/as_corrected'.format(user.intra_id), params=payload)
+		except Exception as e:
+			logging.error('Error fetching evaluations for user {}'.format(user.login))
+			logging.error(str(e))
+			return
 		logging.info('Fetched {} evaluations'.format(len(evaluations)))
 		for eval in evaluations:
 			# Create or update all evaluations
@@ -73,7 +84,7 @@ class OutstandingsRunner:
 
 	def fetch_for_user(self, user:User):
 		db_runner:Runner = session.query(Runner).filter_by(user_id = user.intra_id).one()
-		last_fetch_time = 1262300400 #2010-01-01
+		last_fetch_time = BEGINNING_OF_TIME
 		if db_runner.outstandings:
 			last_fetch_time = int(db_runner.outstandings.timestamp())
 		last_fetch_str = datetime.utcfromtimestamp(last_fetch_time).strftime(DATE_FORMAT)

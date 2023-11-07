@@ -6,6 +6,7 @@ from src.models.defaults import populate_banner_pos, populate_color_schemes
 from apscheduler.schedulers.background import BackgroundScheduler
 from sqlalchemy_utils import database_exists, create_database
 from src.runners.outstandings import outstandingsRunner
+from src.runners.events import eventsRunner
 from src.runners.bannercleaning import bannerCleaningRunner
 from src.lib.config import config
 from src import app, db
@@ -48,6 +49,18 @@ runner_scheduler.add_job(
 	replace_existing=True,
 	coalesce=True,
 	misfire_grace_time=7200 # 2 hours
+)
+runner_scheduler.add_job(
+	eventsRunner.run, # Sync events
+	'cron',
+	month='*',
+	day='*',
+	hour='1,4,7,10,13,16,19,22', # Every 3 hours (more time-sensitive data)
+	id='events-rnr',
+	name='events-runner',
+	replace_existing=True,
+	coalesce=True,
+	misfire_grace_time=1800 # 30 minutes
 )
 runner_scheduler.add_job(
 	bannerCleaningRunner.run, # Delete unused banners

@@ -1,6 +1,6 @@
 # App info
-__version__ = '3.2.1' # Server version, not Improved Intra version
-__target_ext_version__ = '4.1.0' # Targeting Improved Intra extension version
+__version__ = '3.3.0' # Server version, not Improved Intra version
+__target_ext_version__ = '4.2.0' # Targeting Improved Intra extension version
 __author__ = 'Freek Bes'
 
 # Imports
@@ -43,12 +43,13 @@ from src.v2.routes.options.set import *
 from src.v2.routes.options.json import *
 from src.v2.routes.home import *
 from src.v2.routes.takeout import *
+from src.v2.routes.events import *
 from src.lib import utilities
 from src.lib.auth import oauth
 
 # Set up headers
 @app.after_request
-def add_headers(response):
+def add_headers(response:Response):
 	response.headers['X-Frame-Options'] = 'sameorigin'
 	response.headers['Vary'] = 'Origin'
 	response.headers['X-Content-Type-Options'] = 'nosniff'
@@ -65,8 +66,14 @@ def add_headers(response):
 			response.headers['Access-Control-Allow-Origin'] = 'https://{}'.format(origin_host)
 			response.headers['X-Frame-Options'] = 'allow-from'
 
-	# If request was for a svg file, set content type to svg
-	if request.path.endswith('.svg'):
-		response.headers['Content-Type'] = 'image/svg+xml'
+	# If request ends with a specific file extension, set the content type (and if request was met with a 200 status code)
+	if response.status_code == 200:
+		ext_content_types = {
+			'.svg': 'image/svg+xml',
+			'.ics': 'text/calendar',
+		}
+		for ext in ext_content_types:
+			if request.path.endswith(ext):
+				response.headers['Content-Type'] = ext_content_types[ext]
 
 	return response
