@@ -66,7 +66,7 @@ def events_ics(hextoken:str):
 
 	# Check if ical_token belongs to any user
 	try:
-		user, user_token = parse_ical_token(ical_token)
+		user, user_token, expires_at = parse_ical_token(ical_token)
 	except:
 		return "401 Unauthorized", 401
 
@@ -98,6 +98,11 @@ def events_ics(hextoken:str):
 		))
 
 	# Create response with additional headers
-	return cal.serialize(), 200, {'Content-Type': 'text/calendar', 'Last-Modified': runner.events.strftime('%a, %d %b %Y %H:%M:%S GMT'), 'Content-Disposition': 'attachment; filename="events-{}.ics"'.format(user.login)}
+	return cal.serialize(), 200, {
+		'Content-Type': 'text/calendar',
+		'Last-Modified': runner.events.strftime('%a, %d %b %Y %H:%M:%S GMT'),
+		'Content-Disposition': 'attachment; filename="events-{}.ics"'.format(user.login),
+		'Expires': expires_at.strftime('%a, %d %b %Y %H:%M:%S GMT'),
+	}
 	# Use the line below for debugging plaintext
 	# return cal.serialize(), 200, {'Content-Type': 'text/plain', 'Last-Modified': runner.events.strftime('%a, %d %b %Y %H:%M:%S GMT')}
