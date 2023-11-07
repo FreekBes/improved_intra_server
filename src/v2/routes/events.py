@@ -87,7 +87,15 @@ def events_ics(hextoken:str):
 	events:list[Event] = Event.query.filter_by(user_id=user.intra_id).all()
 
 	# Create iCal calendar
-	cal = Calendar(creator='-//Improved Intra Server v{}//NONSGML v1.0//EN'.format(__version__))
+	cal = Calendar(creator='-//Improved Intra Server v{}//NONSGML Intra Event Calendar//EN'.format(__version__))
+	cal.extra.append('X-WR-CALNAME:Intra {}'.format(user.login))
+	cal.extra.append('NAME:Intra {}'.format(user.login))
+	cal.extra.append('X-WR-CALDESC:Intra events and exams {} has registered to'.format(user.login))
+	cal.extra.append('DESCRIPTION:Intra events and exams {} has registered to'.format(user.login))
+	cal.extra.append('X-PUBLISHED-TTL:PT3H')
+	cal.extra.append('REFRESH-INTERVAL;VALUE=DURATION:PT3H')
+	cal.extra.append('X-ORIGINAL-URL:{}'.format(request.url))
+	cal.extra.append('URL:{}'.format(request.url))
 	for event in events:
 		cal.events.add(IcsEvent(
 			name = bytes.fromhex(event.name).decode('utf-8', 'ignore'),
@@ -102,7 +110,7 @@ def events_ics(hextoken:str):
 			categories = [event.kind],
 			transparent = False,
 			status = 'CONFIRMED',
-			classification = 'PRIVATE',
+			classification = 'PUBLIC', # Otherwise Google Calendar won't show the event
 		))
 
 	# Create response with additional headers
