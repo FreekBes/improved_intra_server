@@ -5,6 +5,7 @@ from src.lib.auth.tokens import parse_ical_token, create_ical_token
 from flask import session, request, redirect, Response
 from src.models.models import Event, Runner
 from ics import Calendar, Event as IcsEvent
+from ics.grammar.parse import ContentLine
 from src import app, __version__
 
 
@@ -88,14 +89,14 @@ def events_ics(hextoken:str):
 
 	# Create iCal calendar
 	cal = Calendar(creator='-//Improved Intra Server v{}//NONSGML Intra Event Calendar//EN'.format(__version__))
-	cal.extra.append('X-WR-CALNAME:Intra {}'.format(user.login))
-	cal.extra.append('NAME:Intra {}'.format(user.login))
-	cal.extra.append('X-WR-CALDESC:Intra events and exams {} has registered to'.format(user.login))
-	cal.extra.append('DESCRIPTION:Intra events and exams {} has registered to'.format(user.login))
-	cal.extra.append('X-PUBLISHED-TTL:PT3H')
-	cal.extra.append('REFRESH-INTERVAL;VALUE=DURATION:PT3H')
-	cal.extra.append('X-ORIGINAL-URL:{}'.format(request.url))
-	cal.extra.append('URL:{}'.format(request.url))
+	cal.extra.append(ContentLine(name='X-WR-CALNAME', value='Intra {}'.format(user.login)))
+	cal.extra.append(ContentLine(name='NAME', value='Intra {}'.format(user.login)))
+	cal.extra.append(ContentLine(name='X-WR-CALDESC', value='Intra events and exams {} has registered to'.format(user.login)))
+	cal.extra.append(ContentLine(name='DESCRIPTION', value='Intra events and exams {} has registered to'.format(user.login)))
+	cal.extra.append(ContentLine(name='X-PUBLISHED-TTL', value='PT3H'))
+	cal.extra.append(ContentLine(name='REFRESH-INTERVAL;VALUE=DURATION', value='PT3H'))
+	cal.extra.append(ContentLine(name='X-ORIGINAL-URL', value=str(request.url)))
+	cal.extra.append(ContentLine(name='URL', value=str(request.url)))
 	for event in events:
 		cal.events.add(IcsEvent(
 			name = bytes.fromhex(event.name).decode('utf-8', 'ignore'),
