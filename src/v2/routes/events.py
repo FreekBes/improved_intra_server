@@ -79,7 +79,7 @@ def events_ics(hextoken:str):
 		return "401 Unauthorized", 401
 
 	# Retrieve last fetch date from runner
-	runner:Runner = Runner.query.filter_by(user_id=session['uid']).first()
+	runner:Runner = Runner.query.filter_by(user_id=user.intra_id).first()
 	if not runner or not runner.events:
 		return "404 Not Found", 404
 
