@@ -13,7 +13,13 @@ BEGINNING_OF_TIME = 1262300400 # 2010-01-01
 class EventsRunner:
 	def get_events(self, user:User, since:str, now:str):
 		payload = { 'range[updated_at]': '{},{}'.format(since, now) }
-		events = ic.pages_threaded('users/{}/events'.format(user.intra_id), params=payload)
+
+		try:
+			events = ic.pages_threaded('users/{}/events'.format(user.intra_id), params=payload)
+		except Exception as e:
+			logging.error('Error fetching events for user {}'.format(user.login))
+			logging.error(str(e))
+			return
 		logging.info('Fetched {} events'.format(len(events)))
 		for event in events:
 			try:
@@ -40,8 +46,12 @@ class EventsRunner:
 		session.flush()
 
 		# And now, surprise, also fetch exams!
-		payload = { 'range[updated_at]': '{},{}'.format(since, now) }
-		exams = ic.pages_threaded('users/{}/exams'.format(user.intra_id), params=payload)
+		try:
+			exams = ic.pages_threaded('users/{}/exams'.format(user.intra_id), params=payload)
+		except Exception as e:
+			logging.error('Error fetching exams for user {}'.format(user.login))
+			logging.error(str(e))
+			return
 		logging.info('Fetched {} exams'.format(len(exams)))
 		for exam in exams:
 			try:

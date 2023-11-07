@@ -13,7 +13,12 @@ BEGINNING_OF_TIME = 1262300400 # 2010-01-01
 class OutstandingsRunner:
 	def get_teams(self, user:User, since:str, now:str):
 		payload = { 'range[updated_at]': '{},{}'.format(since, now) }
-		projects_users = ic.pages_threaded('users/{}/projects_users'.format(user.intra_id), params=payload)
+		try:
+			projects_users = ic.pages_threaded('users/{}/projects_users'.format(user.intra_id), params=payload)
+		except Exception as e:
+			logging.error('Error fetching outstandings for user {}'.format(user.login))
+			logging.error(str(e))
+			return
 		logging.info('Fetched {} projects_users'.format(len(projects_users)))
 		for projects_user in projects_users:
 			try:
@@ -52,7 +57,12 @@ class OutstandingsRunner:
 
 	def get_evaluations(self, user:User, since:str, now:str):
 		payload = { 'range[updated_at]': '{},{}'.format(since, now), 'filter[future]': 'false', 'filter[filled]': 'true' }
-		evaluations = ic.pages_threaded('users/{}/scale_teams/as_corrected'.format(user.intra_id), params=payload)
+		try:
+			evaluations = ic.pages_threaded('users/{}/scale_teams/as_corrected'.format(user.intra_id), params=payload)
+		except Exception as e:
+			logging.error('Error fetching evaluations for user {}'.format(user.login))
+			logging.error(str(e))
+			return
 		logging.info('Fetched {} evaluations'.format(len(evaluations)))
 		for eval in evaluations:
 			# Create or update all evaluations
