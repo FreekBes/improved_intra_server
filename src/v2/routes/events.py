@@ -1,7 +1,7 @@
 import json
 
 from src.lib.auth.decorators import ext_token_preferred_json
-from src.lib.auth.tokens import parse_ext_token, create_ext_token
+from src.lib.auth.tokens import parse_ical_token, create_ical_token
 from flask import session, request, redirect, Response
 from src.models.models import Event, Runner
 from ics import Calendar, Event as IcsEvent
@@ -50,23 +50,23 @@ def events_overview():
 @ext_token_preferred_json
 def redir_to_ics():
 	# Generate ext_token for user and redirect to events_ics endpoint
-	ext_token = create_ext_token(session['uid'])
-	return redirect("{}v2/events/{}.ics".format(request.url_root, ext_token.encode().hex()), code=302)
+	ical_token = create_ical_token(session['uid'])
+	return redirect("{}v2/events/{}.ics".format(request.url_root, ical_token.encode().hex()), code=302)
 
 
 # Get iCal calendar for events a user is subscribed to
 # User is authenticated based on an ext_token (this URL should thus never be shared, as it would allow anyone to access the user's session)
 @app.route('/v2/events/<hextoken>.ics', methods=['GET'])
 def events_ics(hextoken:str):
-	# Convert hex token to ext_token
+	# Convert hex token to ical_token
 	try:
-		ext_token = bytes.fromhex(hextoken).decode('utf-8', 'strict')
+		ical_token = bytes.fromhex(hextoken).decode('utf-8', 'strict')
 	except:
 		return "400 Bad Request", 400
 
-	# Check if ext_token belongs to user
+	# Check if ical_token belongs to any user
 	try:
-		user, user_token = parse_ext_token(ext_token)
+		user, user_token = parse_ical_token(ical_token)
 	except:
 		return "401 Unauthorized", 401
 
