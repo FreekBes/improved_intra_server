@@ -93,8 +93,8 @@ def events_ics(hextoken:str):
 	cal.extra.append(ContentLine(name='NAME', value='Intra {}'.format(user.login)))
 	cal.extra.append(ContentLine(name='X-WR-CALDESC', value='Intra events and exams {} has registered to'.format(user.login)))
 	cal.extra.append(ContentLine(name='DESCRIPTION', value='Intra events and exams {} has registered to'.format(user.login)))
-	cal.extra.append(ContentLine(name='X-PUBLISHED-TTL', value='PT3H'))
-	cal.extra.append(ContentLine(name='REFRESH-INTERVAL;VALUE=DURATION', value='PT3H'))
+	cal.extra.append(ContentLine(name='X-PUBLISHED-TTL', value='PT2H'))
+	cal.extra.append(ContentLine(name='REFRESH-INTERVAL;VALUE=DURATION', value='PT2H'))
 	cal.extra.append(ContentLine(name='X-ORIGINAL-URL', value=str(request.url)))
 	cal.extra.append(ContentLine(name='URL', value=str(request.url)))
 	for event in events:

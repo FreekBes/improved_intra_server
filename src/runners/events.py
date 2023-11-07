@@ -12,7 +12,12 @@ BEGINNING_OF_TIME = 1262300400 # 2010-01-01
 
 class EventsRunner:
 	def get_events(self, user:User, since:str, now:str):
-		payload = { 'range[updated_at]': '{},{}'.format(since, now) }
+		payload = { }
+		# Always fetch all events - no filtering on updated_at.
+		# The reason for this is that an event could show up here after a user has registered to it,
+		# but since we filter on updated_at, we could possibly never fetch it if it was last updated before the user registered.
+		# Also, with the Intra API it's impossible to fetch exam_users without staff credentials,
+		# so it's impossible to see if a user is registered to an exam that way.
 
 		try:
 			events = ic.pages_threaded('users/{}/events'.format(user.intra_id), params=payload)
