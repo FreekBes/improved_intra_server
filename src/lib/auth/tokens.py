@@ -87,7 +87,7 @@ def create_ical_token(user_id:int):
 		user_token = UserToken(user_id)
 		db.session.add(user_token)
 		db.session.flush()
-	ical_token = ical_token_manager.make_token({ '_user_token': user_token.token, '_user_token_created_at': datetime.timestamp(user_token.created_at), '_ical_token_created_at': time() })
+	ical_token = ical_token_manager.make_token({ '_user_token': user_token.token, '_user_token_created_at': datetime.timestamp(user_token.created_at), '_ical_token_created_at': time(), '_ical_token_expires_at': time() + ICAL_LINK_EXPIRE_TIME })
 	user_token.update_last_used()
 	return ical_token
 
@@ -95,7 +95,7 @@ def create_ical_token(user_id:int):
 # parse an ical token and return the user
 # throws an exception if it is unable to
 def parse_ical_token(ical_token:str):
-	ical_token_content = token_manager.parse_token(ical_token)
+	ical_token_content = ical_token_manager.parse_token(ical_token)
 	if not '_user_token' in ical_token_content:
 		raise Exception('Invalid ical_token')
 	user_token:UserToken = UserToken.query.filter_by(token = ical_token_content['_user_token']).first()
@@ -107,4 +107,5 @@ def parse_ical_token(ical_token:str):
 	# do not update last_used, since this token is not used by the extension directly
 	# and we only wish to measure the user's activity on the extension
 	# user_token.update_last_used()
-	return user, user_token
+	expires_at = datetime.fromtimestamp(ical_token_content['_ical_token_expires_at'])
+	return user, user_token, expires_at
