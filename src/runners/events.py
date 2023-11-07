@@ -1,7 +1,7 @@
 import logging
 import json
 
-from src.models.models import Runner, Event, User
+from src.models.models import Runner, Event, User, Campus
 from src.lib.db import session
 from datetime import datetime
 from src.lib.intra import ic
@@ -10,12 +10,12 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
 BEGINNING_OF_TIME = 1262300400 # 2010-01-01
 
 
-def create_or_update_event(event, user:User):
+def create_or_update_event(event, user_intra_id:int):
 	try:
 		# Create or update event
-		db_event:Event = session.query(Event).filter_by(intra_id=event['id'], user_id=user.intra_id, is_exam=False).first()
+		db_event:Event = session.query(Event).filter_by(intra_id=event['id'], user_id=user_intra_id, is_exam=False).first()
 		if not db_event:
-			db_event = Event(int(event['id']), user.intra_id, event['name'].encode().hex()[:1024], is_exam=False)
+			db_event = Event(int(event['id']), user_intra_id, event['name'].encode().hex()[:1024], is_exam=False)
 		db_event.description = event['description'].encode().hex()[:16384] if event['description'] else ""
 		db_event.location = event['location'].encode().hex()[:1024] if event['location'] else ""
 		db_event.kind = event['kind'] if event['kind'] else "event"
@@ -67,8 +67,8 @@ def create_or_update_exam(exam, user:User):
 
 
 class EventsRunner:
-	def get_events(self, user:User, since:str, now:str):
-		payload = { 'range[updated_at]': '{},{}'.format(since, now) }
+	def get_events(self, user:User, since:str, fetch_start_str:str):
+		payload = { 'range[updated_at]': '{},{}'.format(since, fetch_start_str) }
 
 		# Fetch events_users
 		# To watch for any new or updated registrations
@@ -79,23 +79,9 @@ class EventsRunner:
 			logging.error(str(e))
 			return
 
-		logging.info('Fetched {} events_users'.format(len(events)))
+		logging.info('Fetched {} events_users'.format(len(events_users)))
 		for events_user in events_users:
-			create_or_update_event(events_user['event'], user)
-		session.flush()
-
-		# Fetch events
-		# To watch for any updates to events (updates to events do not update events_users)
-		try:
-			events = ic.pages_threaded('users/{}/events'.format(user.intra_id), params=payload)
-		except Exception as e:
-			logging.error('Error fetching events for user {}'.format(user.login))
-			logging.error(str(e))
-			return
-
-		logging.info('Fetched {} events'.format(len(events)))
-		for event in events:
-			create_or_update_event(event, user)
+			create_or_update_event(events_user['event'], user.intra_id)
 		session.flush()
 
 		# And now, surprise, also fetch exams!
@@ -113,13 +99,12 @@ class EventsRunner:
 		session.flush()
 
 
-	def fetch_for_user(self, user:User):
+	def fetch_for_user(self, user:User, fetch_start:datetime):
 		db_runner:Runner = session.query(Runner).filter_by(user_id = user.intra_id).one()
 		last_fetch_time = BEGINNING_OF_TIME
 		if db_runner.events:
 			last_fetch_time = int(db_runner.events.timestamp())
 		last_fetch_str = datetime.utcfromtimestamp(last_fetch_time).strftime(DATE_FORMAT)
-		fetch_start = datetime.utcnow()
 		fetch_start_str = fetch_start.strftime(DATE_FORMAT)
 		logging.info('Fetching changes in events (and exams) for user since {}'.format(last_fetch_str))
 		self.get_events(user, last_fetch_str, fetch_start_str)
@@ -128,14 +113,61 @@ class EventsRunner:
 		session.commit()
 		session.flush()
 
-	def run(self):
-		users:list[User] = session.query(User.intra_id, User.login, User.campus_id).all()
 
+	def get_events_for_campus(self, campus:Campus, since:str, fetch_start_str:str):
+		payload = { 'range[updated_at]': '{},{}'.format(since, fetch_start_str) }
+
+		# Fetch events
+		# To watch for any updates to events (updates to events do not update events_users)
+		try:
+			events = ic.pages_threaded('campus/{}/events'.format(campus.intra_id), params=payload)
+		except Exception as e:
+			logging.error('Error fetching events for campus {}'.format(campus.name))
+			logging.error(str(e))
+			return
+
+		logging.info('Fetched {} events'.format(len(events)))
+		for event in events:
+			# Check if an event with this intra_id exists in the DB. If so, update all.
+			# If not, we do not create a new event - we only want events that any user is registered to.
+			events_in_db:list[Event] = session.query(Event).filter_by(intra_id=event['id']).all()
+			for event_in_db in events_in_db:
+				create_or_update_event(event, event_in_db.user_id)
+		session.flush()
+
+
+	def fetch_for_campuses(self, fetch_start:datetime):
+
+		# Create last fetch string based on the last updated_at event
+		last_fetch_time = BEGINNING_OF_TIME
+		last_updated_event:Event = session.query(Event).order_by(Event.updated_at.desc()).first()
+		if last_updated_event:
+			last_fetch_time = int(last_updated_event.updated_at.timestamp())
+		last_fetch_str = datetime.utcfromtimestamp(last_fetch_time).strftime(DATE_FORMAT)
+		fetch_start_str = fetch_start.strftime(DATE_FORMAT)
+
+		campuses:list[Campus] = session.query(Campus).all()
+		i = 1
+		amount_campuses = len(campuses)
+		for campus in campuses:
+			logging.info('Fetching events for campus {} ({}) --- {} of {} campuses...'.format(campus.name, str(campus.intra_id), str(i), amount_campuses))
+			self.get_events_for_campus(campus, last_fetch_str, fetch_start_str)
+			i += 1
+
+
+	def run(self):
+		fetch_start = datetime.utcnow()
+
+		# First fetch all events for campuses (to update any previously existing events)
+		self.fetch_for_campuses(fetch_start)
+
+		# And now for the users (to update any new events and registrations)
+		users:list[User] = session.query(User.intra_id, User.login, User.campus_id).all()
 		i = 1
 		amount_users = len(users)
 		for user in users:
 			logging.info('Fetching events (and exams) for {} ({}) --- {} of {} users...'.format(user.login, str(user.intra_id), str(i), amount_users))
-			self.fetch_for_user(user)
+			self.fetch_for_user(user, fetch_start)
 			i += 1
 
 
