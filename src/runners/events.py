@@ -151,9 +151,7 @@ class EventsRunner:
 
 		logging.info('Fetched {} events'.format(len(events)))
 		for event in events:
-			# Check if an event with this intra_id exists in the DB. If so, update all.
-			# If not, we do not create a new event - we only want events that any user is registered to.
-			logging.info('Updating or creating events with intra_id {}'.format(str(event.id)))
+			logging.info('Updating or creating events with intra_id {}'.format(str(event['id'])))
 			update_many_events(event)
 		session.flush()
 
