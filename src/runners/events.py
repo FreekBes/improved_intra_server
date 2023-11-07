@@ -137,12 +137,12 @@ class EventsRunner:
 
 
 	def fetch_for_campuses(self, fetch_start:datetime):
-
 		# Create last fetch string based on the last updated_at event
 		last_fetch_time = BEGINNING_OF_TIME
 		last_updated_event:Event = session.query(Event).order_by(Event.updated_at.desc()).first()
 		if last_updated_event:
 			last_fetch_time = int(last_updated_event.updated_at.timestamp())
+		last_fetch_time -= 604800 # Take a week off from the last fetch time, to make sure we don't miss any events
 		last_fetch_str = datetime.utcfromtimestamp(last_fetch_time).strftime(DATE_FORMAT)
 		fetch_start_str = fetch_start.strftime(DATE_FORMAT)
 
