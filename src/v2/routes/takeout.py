@@ -75,7 +75,8 @@ def takeout():
 		data = io.BytesIO()
 		with zipfile.ZipFile(data, 'w') as zip:
 			with zip.open("readme.txt", 'w') as f:
-				f.write(bytes(f"This archive contains the data that the Improved Intra browser extension had stored about the user '{user.login}' on {now.strftime('%A %B %-d %Y')}, at {now.strftime('%-I:%M:%S.%f %p')}. It was downloaded from the URL {request.base_url} by {user.display_name}, who requested this information using IP address {request.remote_addr}.", encoding='utf-8'))
+				client_ip_address = request.remote_addr if not request.headers.getlist("X-Forwarded-For") else request.headers.getlist("X-Forwarded-For")[0]
+				f.write(bytes(f"This archive contains the data that the Improved Intra browser extension had stored about the user '{user.login}' on {now.strftime('%A %B %-d %Y')}, at {now.strftime('%-I:%M:%S.%f %p')}. It was downloaded from the URL {request.base_url} by {user.display_name}, who requested this information using IP address {client_ip_address}.", encoding='utf-8'))
 			with zip.open("user.json", 'w') as f:
 				f.write(row_to_json_str(user))
 			with zip.open("campus.json", 'w') as f:
