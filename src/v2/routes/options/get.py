@@ -8,6 +8,7 @@ FETCH_DISTRIBUTION = {
 	'appearance': [ 'settings', 'color_schemes' ],
 	'profile': [ 'profile', 'banner_positions' ],
 	'14': [ 'settings' ], # Codam campus, Amsterdam
+	'calendar': [],
 	'help': []
 }
 

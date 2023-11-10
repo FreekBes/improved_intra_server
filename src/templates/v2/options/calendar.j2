@@ -1,0 +1,66 @@
+{% extends 'v2/options/base.j2' %}
+{% set section = 'calendar' %}
+{% block title %}Calendar Synchronization{% endblock %}
+{% block head %}
+	{{ super() }}
+{% endblock %}
+{% block user_settings %}
+<script>
+let user_settings = {};
+const mod_user_settings = JSON.parse(JSON.stringify(user_settings));
+</script>
+{% endblock %}
+{% block content %}
+
+<div class="text-container" id="ical_sync">
+	<h4>Integrate Intra's calendar into an external calendar app</h4>
+	<p>When you register for an event on the Intranet, you can use the Calendar Synchronization feature of Improved Intra to automatically add this event to your personal calendar, such as Google Calendar or any other calendar app that supports the iCal protocol.</p>
+	<p><a class="link-button" id="ical_link" href="#">Loading iCal link. One moment please...</a></p>
+	<p><small></small></p>
+</div>
+
+<div class="text-container" id="ical_disclaimer">
+	<h4>F.A.Q.</h4>
+	<p>
+		<ul class="extra-padding">
+			<li>Events are synchronized with the Intranet every 3 hours.</li>
+			<li>Only events that you are registered to will be synchronized. This also includes exams.</li>
+			<li>The iCal link is generated on the fly and is unique to you. You should not share it with others.</li>
+			<li>Improved Intra does not track usage data of the iCal link.</li>
+			<li>The iCal link is valid for up to three years, after which you will have to add the calendar again.</li>
+		</ul>
+	</p>
+</div>
+
+<script>
+// Fetch iCal link
+document.addEventListener('DOMContentLoaded', function() {
+	fetch('/v2/events/ics.json', {
+		method: 'GET',
+		credentials: 'same-origin',
+		headers: {
+			'Content-Type': 'application/json'
+		}
+	}).then(function(response) {
+		if (response.ok) {
+			return response.json();
+		} else {
+			throw new Error('Failed to fetch iCal link');
+		}
+	}).then(function(data) {
+		console.log("Fetched iCal link", data);
+		if (data["type"] !== "success") {
+			throw new Error('Failed to fetch iCal link');
+		}
+		const ical_proto_link = "webcal://" + data["data"].split("://")[1];
+
+		const ical_link_elem = document.getElementById('ical_link');
+		ical_link_elem.innerText = "Add the Intra calendar to your calendar app";
+		ical_link_elem.href = ical_proto_link;
+	}).catch(function(error) {
+		console.error(error);
+	});
+});
+</script>
+
+{% endblock %}

@@ -366,6 +366,10 @@ main {
 	margin: 8px 0 0 0;
 }
 
+.text-container ul.extra-padding li:not(:last-child) {
+	padding-bottom: 4px;
+}
+
 .text-container p a,
 .text-container ul a {
 	color: var(--theme-color);
@@ -376,6 +380,28 @@ main {
 .text-container ul a:hover,
 .text-container ul a:focus {
 	color: var(--theme-color-light);
+}
+
+.text-container p a.link-button {
+	display: inline-block;
+	margin: 0 auto;
+	background-color: var(--theme-color);
+	color: #fff;
+	font-weight: bold;
+	cursor: pointer;
+	border: none;
+	border-radius: 4px;
+	padding: 8px;
+	text-decoration: none !important;
+}
+
+.text-container p a.link-button:hover,
+.text-container p a.link-button:focus {
+	background: var(--theme-color-light) !important;
+}
+
+.text-container p a.link-button:active {
+	background: var(--theme-color-dark) !important;
 }
 
 .option-container .form-error {
