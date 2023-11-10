@@ -1,4 +1,4 @@
-from src.models.models import BannerImg, Campus, Evaluation, OAuth2Token, Profile, Settings, Team, User, UserToken
+from src.models.models import BannerImg, Campus, Evaluation, Event, OAuth2Token, Profile, Settings, Team, User, UserToken
 from src.models.helpers import row_to_json_str, rows_to_json_str, row_to_dict, keyedtuple_rows_to_dict
 from src.lib.auth.decorators import session_required_redirect
 from flask import session, send_file, request
@@ -50,6 +50,19 @@ def takeout():
 				team_dict['evaluations'].append(row_to_dict(eval))
 			project_users[team.projects_user_id].append(team_dict)
 
+		# Retrieve the user's events
+		# Parse the events somewhat to make them more human-readable
+		user_events = list()
+		events:list[Event] = Event.query.filter_by(user_id=user.intra_id).all()
+		for event in events:
+			user_event = row_to_dict(event)
+			user_event['cursus_ids'] = json.loads(user_event['cursus_ids'])
+			user_event['campus_ids'] = json.loads(user_event['campus_ids'])
+			user_event['name'] = bytes.fromhex(user_event['name']).decode('utf-8', 'ignore')
+			user_event['description'] = bytes.fromhex(user_event['description']).decode('utf-8', 'ignore')
+			user_event['location'] = bytes.fromhex(user_event['location']).decode('utf-8', 'ignore')
+			user_events.append(user_event)
+
 		# Retrieve the user's tokens (not OAuth, but the user tokens used to authenticate the user to the Improved Intra server from the extension)
 		# Do not retrieve the token value, only the creation date and last used date - for security's sake
 		user_tokens:list = db.session.query(UserToken.user_id, UserToken.created_at, UserToken.last_used_at, literal('***').label('token')).filter_by(user_id=user.intra_id).all()
@@ -78,6 +91,9 @@ def takeout():
 				with zip.open("project_users.json", 'w') as f:
 					# Only write the values of the projects_users dict: we do not care about the keys - they are the projects_user ids, which are already stored in each team object's values
 					f.write(json.dumps(list(project_users.values()), indent=2, sort_keys=True, default=str).encode('utf-8'))
+			if events:
+				with zip.open("events.json", 'w') as f:
+					f.write(json.dumps(user_events, indent=2, sort_keys=True, default=str).encode('utf-8'))
 			if user_tokens:
 				with zip.open("user_tokens.json", 'w') as f:
 					f.write(json.dumps(keyedtuple_rows_to_dict(user_tokens), indent=2, sort_keys=True, default=str).encode('utf-8'))
