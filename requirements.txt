@@ -40,7 +40,7 @@ SQLAlchemy-serializer==1.4.1
 SQLAlchemy-Utils==0.38.3
 TatSu==5.8.3
 tokenlib==2.0.0
-tqdm==4.56.0
+tqdm==4.66.3
 types-python-dateutil==2.8.19.14
 tzdata==2022.2
 tzlocal==4.2
