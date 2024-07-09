@@ -48,4 +48,4 @@ urllib3==1.26.19
 uuid==1.30
 Werkzeug==2.3.6
 WTForms==3.0.1
-zipp==3.8.1
+zipp==3.19.1
