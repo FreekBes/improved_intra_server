@@ -95,8 +95,9 @@ class OutstandingsRunner:
 		logging.info('Fetching changes in projects_users since {}'.format(last_fetch_str))
 		self.get_teams(user, last_fetch_str, fetch_start_str)
 		self.get_evaluations(user, last_fetch_str, fetch_start_str)
-		db_runner:Runner = session.query(Runner).filter_by(user_id=user.intra_id).one()
-		db_runner.outstandings = fetch_start
+		if not fetch_all:
+			db_runner:Runner = session.query(Runner).filter_by(user_id=user.intra_id).one()
+			db_runner.outstandings = fetch_start
 		session.commit()
 		session.flush()
 
