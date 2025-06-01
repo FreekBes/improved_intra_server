@@ -62,7 +62,7 @@ jobs:
             python3 \
             python3-pip \
             python3-dev \
-            python-setuptools \
+            python3-setuptools \
             libpq-dev \
             python3-virtualenv \
             virtualenv
