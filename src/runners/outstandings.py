@@ -39,6 +39,9 @@ class OutstandingsRunner:
 					current_team.current = True
 
 				# Set best team
+				if not projects_user['teams'] or len(projects_user['teams']) == 0:
+					logging.warning('No teams found for user {} in project {}'.format(user.login, projects_user['project']['name']))
+					continue
 				highest_mark = projects_user['teams'][0]['final_mark']
 				highest_mark_id = projects_user['teams'][0]['id']
 				for team in projects_user['teams']:
