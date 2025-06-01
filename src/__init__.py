@@ -1,5 +1,5 @@
 # App info
-__version__ = '3.3.0' # Server version, not Improved Intra version
+__version__ = '3.3.1' # Server version, not Improved Intra version
 __target_ext_version__ = '4.2.0' # Targeting Improved Intra extension version
 __author__ = 'Freek Bes'
 
