@@ -191,4 +191,21 @@ class EventsRunner:
 			i += 1
 
 
+	def run_for_user(self, login:str):
+		user:User = session.query(User).filter_by(login=login).one_or_none()
+		if not user:
+			logging.error('User with login {} not found'.format(login))
+			return
+
+		fetch_start = datetime.utcnow()
+
+		# First fetch all events for campuses (to update any previously existing events)
+		logging.info('Preparing to fetch events (and exams) for user {} ({}), first fetching all campus events...'.format(user.login, str(user.intra_id)))
+		self.fetch_for_campuses(fetch_start)
+
+		# And now for the user
+		logging.info('Fetching events (and exams) for user {} ({})'.format(user.login, str(user.intra_id)))
+		self.fetch_for_user(user, fetch_start)
+
+
 eventsRunner = EventsRunner()

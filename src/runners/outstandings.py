@@ -84,11 +84,10 @@ class OutstandingsRunner:
 		session.flush()
 
 
-
-	def fetch_for_user(self, user:User):
+	def fetch_for_user(self, user:User, fetch_all:bool = False):
 		db_runner:Runner = session.query(Runner).filter_by(user_id = user.intra_id).one()
 		last_fetch_time = BEGINNING_OF_TIME
-		if db_runner.outstandings:
+		if db_runner.outstandings and not fetch_all:
 			last_fetch_time = int(db_runner.outstandings.timestamp())
 		last_fetch_str = datetime.utcfromtimestamp(last_fetch_time).strftime(DATE_FORMAT)
 		fetch_start = datetime.utcnow()
@@ -101,6 +100,7 @@ class OutstandingsRunner:
 		session.commit()
 		session.flush()
 
+
 	def run(self):
 		users:list[User] = session.query(User.intra_id, User.login).all()
 
@@ -110,6 +110,16 @@ class OutstandingsRunner:
 			logging.info('Fetching outstandings for {} ({}) --- {} of {} users...'.format(user.login, str(user.intra_id), str(i), amount_users))
 			self.fetch_for_user(user)
 			i += 1
+
+
+	def run_for_user(self, login:str):
+		user:User = session.query(User).filter_by(login=login).one_or_none()
+		if not user:
+			logging.error('User with login {} not found'.format(login))
+			return
+
+		logging.info('Fetching outstandings for user {}'.format(user.login))
+		self.fetch_for_user(user, fetch_all=True)
 
 
 outstandingsRunner = OutstandingsRunner()
