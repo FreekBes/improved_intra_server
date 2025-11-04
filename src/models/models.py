@@ -225,6 +225,7 @@ class Settings(db.Model):
 	colors = Column(Integer, ForeignKey('color_schemes.id'), default=1)
 	show_custom_profiles = Column(Boolean, default=True)
 	hide_broadcasts = Column(Boolean, default=False)
+	hide_help = Column(Boolean, default=False)
 	logsum_month = Column(Boolean, default=True)
 	logsum_week = Column(Boolean, default=True)
 	outstandings = Column(Boolean, default=True)
@@ -240,9 +241,9 @@ class Settings(db.Model):
 		self.user_id = user_id
 
 	def __repr__(self):
-		return "<Settings user_id={}, updated_at='{}', updated_ver='{}', theme={}, colors={}, show_custom_profiles={}, hide_broadcasts={}, logsum_month={}, \
+		return "<Settings user_id={}, updated_at='{}', updated_ver='{}', theme={}, colors={}, show_custom_profiles={}, hide_broadcasts={}, hide_help={}, logsum_month={}, \
 logsum_week={}, outstandings={}, hide_goals={}, holygraph_more_cursuses={}, old_blackhole={}, codam_monit={}, codam_auto_equip_coa_title={}, sort_projects_date={}>"\
-			.format(self.user_id, self.updated_at, self.updated_ver, self.theme, self.colors, str(self.show_custom_profiles), str(self.hide_broadcasts),
+			.format(self.user_id, self.updated_at, self.updated_ver, self.theme, self.colors, str(self.show_custom_profiles), str(self.hide_broadcasts), str(self.hide_help),
 				str(self.logsum_month), str(self.logsum_week), str(self.outstandings), str(self.hide_goals), str(self.holygraph_more_cursuses),
 				str(self.old_blackhole), str(self.codam_monit), str(self.codam_auto_equip_coa_title), str(self.sort_projects_date))
 

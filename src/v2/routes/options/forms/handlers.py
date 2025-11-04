@@ -17,6 +17,7 @@ TABLE_DISTRIBUTION = {
 		'colors': 'id',
 		'show_custom_profiles': 'boolean',
 		'hide_broadcasts': 'boolean',
+		'hide_help': 'boolean',
 		'logsum_month': 'boolean',
 		'logsum_week': 'boolean',
 		'outstandings': 'boolean',

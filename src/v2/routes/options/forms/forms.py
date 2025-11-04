@@ -46,6 +46,7 @@ class ImprovementsForm(ImprovedIntraForm):
 	outstandings = SelectField('Show outstanding flags', name='outstandings', choices=[('true', 'Enabled'), ('false', 'Disabled')])
 	sort_projects_date = SelectField('Sort completed projects by date', name='sort_projects_date', choices=[('true', 'Enabled'), ('false', 'Disabled')])
 	hide_broadcasts = SelectField('Hide broadcasts button', name='hide_broadcasts', choices=[('true', 'Enabled'), ('false', 'Disabled')])
+	hide_help = SelectField('Hide &apos;Have a problem?&apos; button', name='hide_help', choices=[('true', 'Enabled'), ('false', 'Disabled')])
 	holygraph_more_cursuses = SelectField('Show more cursuses in the Holy Graph', name='holygraph_more_cursuses', choices=[('true', 'Enabled'), ('false', 'Disabled')])
 	logsum_month = SelectField('Show monthly logtimes', name='logsum_month', choices=[('true', 'Enabled'), ('false', 'Disabled')])
 	logsum_week = SelectField('Show weekly logtimes', name='logsum_week', choices=[('true', 'Enabled'), ('false', 'Disabled')])
