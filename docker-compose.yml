@@ -1,0 +1,68 @@
+services:
+  intra_server:
+    build: .
+    container_name: improved_intra_server
+    restart: always
+    depends_on:
+      - db
+      - nginx
+    env_file:
+      - .env
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./logs:/app/logs
+    networks:
+      - iintra_network
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8000 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  nginx:
+    image: nginx:stable
+    container_name: improved_intra_nginx
+    restart: always
+    ports:
+      - "8080:80"
+      - "4430:443"
+    volumes:
+      - ./nginx/snippets:/etc/nginx/snippets
+      - ./nginx/conf.d:/etc/nginx/conf.d
+      - ./logs/nginx:/var/log/nginx
+      - ./static:/usr/share/nginx/html/static
+      # add volume for SSL certificates if needed
+      #- ./nginx/certs:/etc/nginx/certs
+    networks:
+      - iintra_network
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  db:
+    image: postgres:16
+    container_name: improved_intra_db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: iintra
+    volumes:
+      - ./pgdata:/var/lib/postgresql/data
+    networks:
+      - iintra_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+
+networks:
+  iintra_network:
+    driver: bridge

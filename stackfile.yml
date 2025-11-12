@@ -1,0 +1,89 @@
+services:
+  intra_server:
+    build: .
+    container_name: improved_intra_server
+    restart: always
+    depends_on:
+      - db
+      - nginx
+    env_file:
+      - .env
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./logs:/app/logs
+    networks:
+      - iintra_network
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8000 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+      update_config:
+        delay: 5s
+      # Swarm attend la santé du service db
+      depends_on:
+        db:
+          condition: service_healthy
+
+  nginx:
+    image: nginx:stable
+    container_name: improved_intra_nginx
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/snippets:/etc/nginx/snippets
+      - ./nginx/conf.d:/etc/nginx/conf.d
+      - ./logs/nginx:/var/log/nginx
+      - ./static:/usr/share/nginx/html/static
+      # add volume for SSL certificates if needed
+      #- ./nginx/certs:/etc/nginx/certs
+    networks:
+      - iintra_network
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+      depends_on:
+        intra_server:
+          condition: service_healthy
+
+  db:
+    image: postgres:16
+    container_name: improved_intra_db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: iintra
+    volumes:
+      - ./pgdata:/var/lib/postgresql/data
+    networks:
+      - iintra_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: any
+
+networks:
+  iintra_network:
+    driver: bridge
