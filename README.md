@@ -2,7 +2,7 @@
 This repository contains the back-end for use with the [Improved Intra](https://github.com/FreekBes/improved_intra) browser extension.
 
 
-## Deploy with Docker (recommended)
+## Deploy with Docker
 
 This repository now ships a Dockerfile and `docker-compose.yml` to run the Improved Intra back-end with Docker. Using Docker simplifies deployment (no system-wide Python, virtualenvs or manual Postgres installs).
 
@@ -21,8 +21,8 @@ sudo systemctl enable --now docker
 2. Clone the repository and cd into it:
 
 ```sh
-git clone https://github.com/FreekBes/improved_intra_server.git /opt/improved_intra_server
-cd /opt/improved_intra_server
+git clone https://github.com/FreekBes/improved_intra_server.git
+cd improved_intra_server
 ```
 
 3. Create the secret environment file used by the application. The app loads `.secret.env` at runtime; an example is provided in the repository.
@@ -37,7 +37,7 @@ Note: `docker-compose.yml` references a `.env` file for docker-compose substitut
 4. Start the stack:
 
 ```sh
-docker-compose up -d --build
+docker compose up -d --build
 ```
 
 The compose stack contains three services:
@@ -50,21 +50,21 @@ By default the app is exposed on container port 8000 (mapped to host port 8000 i
 5. Check logs and health:
 
 ```sh
-docker-compose logs -f
+docker compose logs -f
 # or follow a single service
-docker-compose logs -f intra_server
+docker compose logs -f intra_server
 ```
 
 6. Stop and remove containers (keep data):
 
 ```sh
-docker-compose down
+docker compose down
 ```
 
 Remove containers and volumes (will remove the Postgres data in `./pgdata`):
 
 ```sh
-docker-compose down -v
+docker compose down -v
 ```
 
 ### SSL / nginx notes
@@ -78,71 +78,49 @@ To update after pulling new changes:
 ```sh
 git pull
 cp .secret.env.example .secret.env  # only if you need new variables, edit as necessary
-docker-compose build intra_server
-docker-compose up -d
+docker compose build intra_server
+docker compose up -d
 ```
 
 If you need to rebuild everything and refresh images:
 
 ```sh
-docker-compose up -d --build
+docker compose up -d --build
 ```
-
-### When to use the old manual instructions
-
-The repository previously documented a manual setup (installing Python, virtualenv, PostgreSQL, systemd service and nginx on the host). If you prefer a host-native installation (for example on a production server without Docker), the older instructions are still available in earlier commits. For most use-cases Docker is recommended because it isolates dependencies and simplifies upgrades.
-
-
-## Updating the server
-```sh
-# Pull latest updates
-cd /opt/improved_intra_server
-git pull
-
-# Activate the virtual environment
-. .venv/bin/activate
-
-# Install and update dependencies
-sudo .venv/bin/pip install -r requirements.txt
-
-# Fix permissions
-sudo chown -R www-data:www-data /opt/improved_intra_server
-
-# Restart the wsgi server
-cp useful/iintra-server.service /etc/systemd/system/
-sudo systemctl daemon-reload
-sudo systemctl restart iintra-server.service
-
-# Update nginx snippets
-cp ./useful/*.nginx.snippet.conf /etc/nginx/snippets/
-
-# Do not run this step if you do not use a self-signed certificate but do use SSL/HTTPS
-cp ./useful/nginx.example.conf /etc/nginx/sites-available/iintra.freekb.es.conf
-
-# Restart nginx
-sudo systemctl restart nginx
-```
-
 
 ## Logs
-There are several log files used by the Improved Intra server:
-- *logs/access.log*: contains all requests made to the server
-- *logs/error.log*: contains all errors encountered by the server
-- *logs/server.log*: contains specific logging done by the server, such as requests made to the Intra API and logging for runners
-- *wsgi.log*: contains all logging done in development mode
+Logs produced by the application and nginx are stored in the repository `./logs` directory, which is mounted into the containers by `docker-compose`:
 
-Additionally, there is another log maintained by the systemd service. This log contains errors encountered by the systemd service itself, such as errors encountered when starting the server. But also, very importantly: errors encountered by the server itself are logged here as well (any `print` statement). This is probably the most important log file to look at when something goes wrong.
+- Application logs (Gunicorn / app): `./logs` (inside the container this is `/app/logs`). Typical files you may see:
+	- `logs/app/access.log` — access requests
+	- `logs/app/error.log` — application/Gunicorn errors
+	- `logs/app/server.log` — app-specific logging (runners, API calls)
+	- `wsgi.log` — development-mode logging
+
+- Nginx logs are mounted to `./logs/nginx` and are available on the host at that path as well.
+
+Because the directory is mounted from the host, you can inspect logs directly on the host filesystem, for example:
+
 ```sh
-# To view the log
-sudo journalctl -u iintra-server.service
-
-# To view the last 100 lines of the log
-sudo journalctl -u iintra-server.service -n 100 --no-pager
-
-# Or, to follow the log (like with tail -f)
-sudo journalctl -u iintra-server.service -f
+ls -la ./logs
+tail -n 200 ./logs/error.log
+tail -n 200 ./logs/nginx/error.log
 ```
 
+You can also view logs through Docker: follow all services or a single service:
+
+```sh
+docker compose logs -f         # follow logs from all compose services
+docker compose logs -f intra_server
+docker compose logs -f nginx
+```
+
+Or use `docker logs` for the specific container name from `docker-compose.yml` (container names set in compose file):
+
+```sh
+docker logs -f improved_intra_server   # application container
+docker logs -f improved_intra_nginx    # nginx container
+```
 
 ## Resetting all user/extension sessions
 If you wish to reset all extension sessions, effectively logging out all extension sessions, you can do so by changing the _SESSION_KEY_ in the `.secret.env` file. This will invalidate all existing Flask server sessions and force the extension to reauthenticate the user. Normally, this would happen without the user having to do anything - because of the `ext_token` or `user_token` implementation. However, if you wish to force the user to reauthenticate by logging in to the Intranet again, you also do this by deleting all `user_tokens` from the database **(use with caution)**:
@@ -151,8 +129,6 @@ START TRANSACTION;
 DELETE FROM user_tokens;
 COMMIT;
 ```
-
-
 
 ## Using a self-hosted back-end server in development
 On a user machine, modify the hosts file to point to your development server. Don't forget to remove those lines after development!
