@@ -2,116 +2,95 @@
 This repository contains the back-end for use with the [Improved Intra](https://github.com/FreekBes/improved_intra) browser extension.
 
 
-## Install
-This guide is written with Debian 11 ("Bullseye") in mind. It should also work on Windows Subsystem for Linux.
+## Deploy with Docker (recommended)
 
-### Update & install system dependencies
+This repository now ships a Dockerfile and `docker-compose.yml` to run the Improved Intra back-end with Docker. Using Docker simplifies deployment (no system-wide Python, virtualenvs or manual Postgres installs).
+
+Supported on Linux (Debian/Ubuntu tested). You will need Docker and docker-compose (or the Docker Compose plugin) installed on the host.
+
+### Quick start
+
+1. Install Docker & docker-compose (example for Debian/Ubuntu):
+
 ```sh
-sudo apt update && sudo apt upgrade
-sudo apt install git nginx openssl
+sudo apt update
+sudo apt install -y docker.io docker-compose
+sudo systemctl enable --now docker
 ```
 
-### Clone the repository
+2. Clone the repository and cd into it:
+
 ```sh
 git clone https://github.com/FreekBes/improved_intra_server.git /opt/improved_intra_server
-sudo chown -R www-data:www-data /opt/improved_intra_server
 cd /opt/improved_intra_server
 ```
 
-### Install PostgreSQL
+3. Create the secret environment file used by the application. The app loads `.secret.env` at runtime; an example is provided in the repository.
+
 ```sh
-sudo apt install -y wget lsb-release gnupg2
-sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
-wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
-sudo apt update && sudo apt install -y postgresql
+cp .secret.env.example .secret.env
+# Edit .secret.env and fill in the values (SESSION_KEY, INTRA credentials, etc.)
 ```
-More installation options available [here](https://www.postgresql.org/download/).
 
-### Set up PostgreSQL
+Note: `docker-compose.yml` references a `.env` file for docker-compose substitution if you want to override compose-time variables. That file is optional; the compose file includes defaults. If you need to provide host-specific variables for docker-compose, create a `.env` in the repository root.
+
+4. Start the stack:
+
 ```sh
-# Enable PostgreSQL at boot
-sudo systemctl enable postgresql
-
-# Start PostgreSQL now
-sudo service postgresql start
-
-# Launch and enter a PostgreSQL console
-sudo -u postgres psql postgres
-```
-```postgresql
---- Set password for postgres user to 'postgres' (you can modify this)
-ALTER USER postgres PASSWORD 'postgres';
-
---- Create database (optional, __init__.py will do this for you)
-CREATE DATABASE "iintra" WITH OWNER "postgres" ENCODING 'UTF8';
-
---- Exit PostgreSQL console
-EXIT;
+docker-compose up -d --build
 ```
 
-### Install Python3
+The compose stack contains three services:
+- `db` (Postgres 16) mapped to local `./pgdata` for persisted database files
+- `nginx` (official nginx image) serving static files and acting as a reverse proxy
+- `intra_server` (this application, served with Gunicorn on port 8000)
+
+By default the app is exposed on container port 8000 (mapped to host port 8000 in the compose file). Nginx in the compose file exposes host ports 8080 (HTTP) and 4430 (HTTPS) — adjust these mappings in `docker-compose.yml` if you want standard ports (80/443).
+
+5. Check logs and health:
+
 ```sh
-sudo apt install -y python3 python3-pip python-setuptools libpq-dev python3-virtualenv virtualenv
+docker-compose logs -f
+# or follow a single service
+docker-compose logs -f intra_server
 ```
 
-### Initialize the virtual environment
+6. Stop and remove containers (keep data):
+
 ```sh
-# Create a virtual environment
-sudo virtualenv -p python3 .venv
-sudo chown -R www-data:www-data /opt/improved_intra_server
-
-# Activate the virtual environment
-. .venv/bin/activate
-
-# Install packages
-sudo .venv/bin/pip install -r requirements.txt
+docker-compose down
 ```
 
-### Set up secrets
-Copy the `.secret.env.example` file, rename it to `.secret.env` and fill it in.
+Remove containers and volumes (will remove the Postgres data in `./pgdata`):
 
-### Configure the systemd service
 ```sh
-cp useful/iintra-server.service /etc/systemd/system/
-sudo systemctl start iintra-server.service
-sudo systemctl enable iintra-server.service
+docker-compose down -v
 ```
 
-### Set up nginx as reverse-proxy
+### SSL / nginx notes
+
+The `nginx` service mounts `./nginx/snippets` and `./nginx/conf.d` from the repository. If you want to use custom SSL certificates, create a `./nginx/certs` directory and either uncomment the certs volume in `docker-compose.yml` or add a volume mapping, then update the nginx configs in `nginx/conf.d` accordingly.
+
+### Updating the server (Docker)
+
+To update after pulling new changes:
+
 ```sh
-# Copy custom nginx config snippets
-cp ./useful/*.nginx.snippet.conf /etc/nginx/snippets/
-
-# Remove default nginx server
-rm -f /etc/nginx/sites-enabled/default
+git pull
+cp .secret.env.example .secret.env  # only if you need new variables, edit as necessary
+docker-compose build intra_server
+docker-compose up -d
 ```
 
-#### Use with self-signed certificate
+If you need to rebuild everything and refresh images:
+
 ```sh
-# Create SSL certificate for HTTPS support
-sudo mkdir -p /etc/nginx/ssl
-sudo openssl req -newkey rsa:2048 -x509 -days 365 -nodes \
-	-keyout /etc/nginx/ssl/server.key -out /etc/nginx/ssl/server.pem \
-	-subj "/C=NL/ST=North-Holland/L=Amsterdam/O=ImprovedIntra/CN=iintra.freekb.es/"
-
-# Copy server config
-cp ./useful/nginx.example.ssl.conf /etc/nginx/sites-available/iintra.freekb.es.conf
-ln -s /etc/nginx/sites-available/iintra.freekb.es.conf /etc/nginx/sites-enabled/
-
-# Restart nginx
-sudo systemctl restart nginx
+docker-compose up -d --build
 ```
 
-#### Use without SSL support
-Useful if you want to add a certificate yourself, for example using `certbot`.
-```sh
-# Copy server config
-cp ./useful/nginx.example.conf /etc/nginx/sites-available/iintra.freekb.es.conf
-ln -s /etc/nginx/sites-available/iintra.freekb.es.conf /etc/nginx/sites-enabled/
+### When to use the old manual instructions
 
-# Restart nginx
-sudo systemctl restart nginx
-```
+The repository previously documented a manual setup (installing Python, virtualenv, PostgreSQL, systemd service and nginx on the host). If you prefer a host-native installation (for example on a production server without Docker), the older instructions are still available in earlier commits. For most use-cases Docker is recommended because it isolates dependencies and simplifies upgrades.
 
 
 ## Updating the server
