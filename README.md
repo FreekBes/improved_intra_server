@@ -43,7 +43,7 @@ docker compose up -d --build
 The compose stack contains three services:
 - `db` (Postgres 16) mapped to local `./pgdata` for persisted database files
 - `nginx` (official nginx image) serving static files and acting as a reverse proxy
-- `intra_server` (this application, served with Gunicorn on port 8000)
+- `iintra_server` (this application, served with Gunicorn on port 8000)
 
 By default the app is exposed on container port 8000 (mapped to host port 8000 in the compose file). Nginx in the compose file exposes host ports 8080 (HTTP) and 4430 (HTTPS) — adjust these mappings in `docker-compose.yml` if you want standard ports (80/443).
 
@@ -52,7 +52,7 @@ By default the app is exposed on container port 8000 (mapped to host port 8000 i
 ```sh
 docker compose logs -f
 # or follow a single service
-docker compose logs -f intra_server
+docker compose logs -f iintra_server
 ```
 
 6. Stop and remove containers (keep data):
@@ -78,7 +78,7 @@ To update after pulling new changes:
 ```sh
 git pull
 cp .secret.env.example .secret.env  # only if you need new variables, edit as necessary
-docker compose build intra_server
+docker compose build iintra_server
 docker compose up -d
 ```
 
@@ -111,7 +111,7 @@ You can also view logs through Docker: follow all services or a single service:
 
 ```sh
 docker compose logs -f         # follow logs from all compose services
-docker compose logs -f intra_server
+docker compose logs -f iintra_server
 docker compose logs -f nginx
 ```
 

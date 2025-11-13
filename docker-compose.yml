@@ -1,5 +1,5 @@
 services:
-  intra_server:
+  iintra_server:
     build: .
     container_name: improved_intra_server
     restart: always
