@@ -2,168 +2,125 @@
 This repository contains the back-end for use with the [Improved Intra](https://github.com/FreekBes/improved_intra) browser extension.
 
 
-## Install
-This guide is written with Debian 11 ("Bullseye") in mind. It should also work on Windows Subsystem for Linux.
+## Deploy with Docker
 
-### Update & install system dependencies
+This repository now ships a Dockerfile and `docker-compose.yml` to run the Improved Intra back-end with Docker. Using Docker simplifies deployment (no system-wide Python, virtualenvs or manual Postgres installs).
+
+Supported on Linux (Debian/Ubuntu tested). You will need Docker and docker-compose (or the Docker Compose plugin) installed on the host.
+
+### Quick start
+
+1. Install Docker & docker-compose (example for Debian/Ubuntu):
+
 ```sh
-sudo apt update && sudo apt upgrade
-sudo apt install git nginx openssl
+sudo apt update
+sudo apt install -y docker.io docker-compose
+sudo systemctl enable --now docker
 ```
 
-### Clone the repository
+2. Clone the repository and cd into it:
+
 ```sh
-git clone https://github.com/FreekBes/improved_intra_server.git /opt/improved_intra_server
-sudo chown -R www-data:www-data /opt/improved_intra_server
-cd /opt/improved_intra_server
+git clone https://github.com/FreekBes/improved_intra_server.git
+cd improved_intra_server
 ```
 
-### Install PostgreSQL
+3. Create the secret environment file used by the application. The app loads `.secret.env` at runtime; an example is provided in the repository.
+
 ```sh
-sudo apt install -y wget lsb-release gnupg2
-sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
-wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
-sudo apt update && sudo apt install -y postgresql
-```
-More installation options available [here](https://www.postgresql.org/download/).
-
-### Set up PostgreSQL
-```sh
-# Enable PostgreSQL at boot
-sudo systemctl enable postgresql
-
-# Start PostgreSQL now
-sudo service postgresql start
-
-# Launch and enter a PostgreSQL console
-sudo -u postgres psql postgres
-```
-```postgresql
---- Set password for postgres user to 'postgres' (you can modify this)
-ALTER USER postgres PASSWORD 'postgres';
-
---- Create database (optional, __init__.py will do this for you)
-CREATE DATABASE "iintra" WITH OWNER "postgres" ENCODING 'UTF8';
-
---- Exit PostgreSQL console
-EXIT;
+cp .secret.env.example .secret.env
+# Edit .secret.env and fill in the values (SESSION_KEY, INTRA credentials, etc.)
 ```
 
-### Install Python3
+Note: `docker-compose.yml` references a `.env` file for docker-compose substitution if you want to override compose-time variables. That file is optional; the compose file includes defaults. If you need to provide host-specific variables for docker-compose, create a `.env` in the repository root.
+
+4. Start the stack:
+
 ```sh
-sudo apt install -y python3 python3-pip python-setuptools libpq-dev python3-virtualenv virtualenv
+docker compose up -d --build
 ```
 
-### Initialize the virtual environment
+The compose stack contains three services:
+- `db` (Postgres 16) mapped to local `./pgdata` for persisted database files
+- `nginx` (official nginx image) serving static files and acting as a reverse proxy
+- `iintra_server` (this application, served with Gunicorn on port 8000)
+
+By default the app is exposed on container port 8000 (mapped to host port 8000 in the compose file). Nginx in the compose file exposes host ports 8080 (HTTP) and 4430 (HTTPS) — adjust these mappings in `docker-compose.yml` if you want standard ports (80/443).
+
+5. Check logs and health:
+
 ```sh
-# Create a virtual environment
-sudo virtualenv -p python3 .venv
-sudo chown -R www-data:www-data /opt/improved_intra_server
-
-# Activate the virtual environment
-. .venv/bin/activate
-
-# Install packages
-sudo .venv/bin/pip install -r requirements.txt
+docker compose logs -f
+# or follow a single service
+docker compose logs -f iintra_server
 ```
 
-### Set up secrets
-Copy the `.secret.env.example` file, rename it to `.secret.env` and fill it in.
+6. Stop and remove containers (keep data):
 
-### Configure the systemd service
 ```sh
-cp useful/iintra-server.service /etc/systemd/system/
-sudo systemctl start iintra-server.service
-sudo systemctl enable iintra-server.service
+docker compose down
 ```
 
-### Set up nginx as reverse-proxy
-```sh
-# Copy custom nginx config snippets
-cp ./useful/*.nginx.snippet.conf /etc/nginx/snippets/
+Remove containers and volumes (will remove the Postgres data in `./pgdata`):
 
-# Remove default nginx server
-rm -f /etc/nginx/sites-enabled/default
+```sh
+docker compose down -v
 ```
 
-#### Use with self-signed certificate
+### SSL / nginx notes
+
+The `nginx` service mounts `./nginx/snippets` and `./nginx/conf.d` from the repository. If you want to use custom SSL certificates, create a `./nginx/certs` directory and either uncomment the certs volume in `docker-compose.yml` or add a volume mapping, then update the nginx configs in `nginx/conf.d` accordingly.
+
+### Updating the server (Docker)
+
+To update after pulling new changes:
+
 ```sh
-# Create SSL certificate for HTTPS support
-sudo mkdir -p /etc/nginx/ssl
-sudo openssl req -newkey rsa:2048 -x509 -days 365 -nodes \
-	-keyout /etc/nginx/ssl/server.key -out /etc/nginx/ssl/server.pem \
-	-subj "/C=NL/ST=North-Holland/L=Amsterdam/O=ImprovedIntra/CN=iintra.freekb.es/"
-
-# Copy server config
-cp ./useful/nginx.example.ssl.conf /etc/nginx/sites-available/iintra.freekb.es.conf
-ln -s /etc/nginx/sites-available/iintra.freekb.es.conf /etc/nginx/sites-enabled/
-
-# Restart nginx
-sudo systemctl restart nginx
-```
-
-#### Use without SSL support
-Useful if you want to add a certificate yourself, for example using `certbot`.
-```sh
-# Copy server config
-cp ./useful/nginx.example.conf /etc/nginx/sites-available/iintra.freekb.es.conf
-ln -s /etc/nginx/sites-available/iintra.freekb.es.conf /etc/nginx/sites-enabled/
-
-# Restart nginx
-sudo systemctl restart nginx
-```
-
-
-## Updating the server
-```sh
-# Pull latest updates
-cd /opt/improved_intra_server
 git pull
-
-# Activate the virtual environment
-. .venv/bin/activate
-
-# Install and update dependencies
-sudo .venv/bin/pip install -r requirements.txt
-
-# Fix permissions
-sudo chown -R www-data:www-data /opt/improved_intra_server
-
-# Restart the wsgi server
-cp useful/iintra-server.service /etc/systemd/system/
-sudo systemctl daemon-reload
-sudo systemctl restart iintra-server.service
-
-# Update nginx snippets
-cp ./useful/*.nginx.snippet.conf /etc/nginx/snippets/
-
-# Do not run this step if you do not use a self-signed certificate but do use SSL/HTTPS
-cp ./useful/nginx.example.conf /etc/nginx/sites-available/iintra.freekb.es.conf
-
-# Restart nginx
-sudo systemctl restart nginx
+cp .secret.env.example .secret.env  # only if you need new variables, edit as necessary
+docker compose build iintra_server
+docker compose up -d
 ```
 
+If you need to rebuild everything and refresh images:
+
+```sh
+docker compose up -d --build
+```
 
 ## Logs
-There are several log files used by the Improved Intra server:
-- *logs/access.log*: contains all requests made to the server
-- *logs/error.log*: contains all errors encountered by the server
-- *logs/server.log*: contains specific logging done by the server, such as requests made to the Intra API and logging for runners
-- *wsgi.log*: contains all logging done in development mode
+Logs produced by the application and nginx are stored in the repository `./logs` directory, which is mounted into the containers by `docker-compose`:
 
-Additionally, there is another log maintained by the systemd service. This log contains errors encountered by the systemd service itself, such as errors encountered when starting the server. But also, very importantly: errors encountered by the server itself are logged here as well (any `print` statement). This is probably the most important log file to look at when something goes wrong.
+- Application logs (Gunicorn / app): `./logs` (inside the container this is `/app/logs`). Typical files you may see:
+	- `logs/app/access.log` — access requests
+	- `logs/app/error.log` — application/Gunicorn errors
+	- `logs/app/server.log` — app-specific logging (runners, API calls)
+	- `wsgi.log` — development-mode logging
+
+- Nginx logs are mounted to `./logs/nginx` and are available on the host at that path as well.
+
+Because the directory is mounted from the host, you can inspect logs directly on the host filesystem, for example:
+
 ```sh
-# To view the log
-sudo journalctl -u iintra-server.service
-
-# To view the last 100 lines of the log
-sudo journalctl -u iintra-server.service -n 100 --no-pager
-
-# Or, to follow the log (like with tail -f)
-sudo journalctl -u iintra-server.service -f
+ls -la ./logs
+tail -n 200 ./logs/error.log
+tail -n 200 ./logs/nginx/error.log
 ```
 
+You can also view logs through Docker: follow all services or a single service:
+
+```sh
+docker compose logs -f         # follow logs from all compose services
+docker compose logs -f iintra_server
+docker compose logs -f nginx
+```
+
+Or use `docker logs` for the specific container name from `docker-compose.yml` (container names set in compose file):
+
+```sh
+docker logs -f improved_intra_server   # application container
+docker logs -f improved_intra_nginx    # nginx container
+```
 
 ## Resetting all user/extension sessions
 If you wish to reset all extension sessions, effectively logging out all extension sessions, you can do so by changing the _SESSION_KEY_ in the `.secret.env` file. This will invalidate all existing Flask server sessions and force the extension to reauthenticate the user. Normally, this would happen without the user having to do anything - because of the `ext_token` or `user_token` implementation. However, if you wish to force the user to reauthenticate by logging in to the Intranet again, you also do this by deleting all `user_tokens` from the database **(use with caution)**:
@@ -172,8 +129,6 @@ START TRANSACTION;
 DELETE FROM user_tokens;
 COMMIT;
 ```
-
-
 
 ## Using a self-hosted back-end server in development
 On a user machine, modify the hosts file to point to your development server. Don't forget to remove those lines after development!

@@ -5,7 +5,7 @@ Any file that is static in here, any subdirectory, MUST be declared in useful/in
 # Static files
 location ~ ^/(banners/|campus_specifics/|fonts/|favicon.ico)/ {
 # ADD FILE/DIR HERE      ^^^^^^^^^^^^
-    root              /opt/improved_intra_server/static;
+    root              /usr/share/nginx/html/static;
     autoindex         off;
 ...
 ------

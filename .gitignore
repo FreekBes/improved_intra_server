@@ -5,6 +5,7 @@ static/banners/*
 # Environment
 .secret.env
 .venv
+.env
 
 # SSL
 useful/ssl/*.pem
@@ -20,3 +21,4 @@ logs/*
 
 # Database
 data/*
+pgdata/*
