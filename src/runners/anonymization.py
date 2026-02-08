@@ -15,7 +15,7 @@ class AnonymizationRunner:
 			runners:list[Runner] = session.query(Runner).filter_by(user_id=user.intra_id).all()
 			for runner in runners:
 				session.delete(runner)
-				logging.info('Deleted runner {} of user {} from DB due to anonymization'.format(runner.intra_id, user.intra_id))
+				logging.info('Deleted runner for user {} from DB due to anonymization'.format(user.intra_id))
 
 			# Delete all user's settings from database
 			settings = session.query(Settings).filter_by(user_id=user.intra_id).all()
@@ -45,7 +45,7 @@ class AnonymizationRunner:
 				logging.info('Deleted banner of user {} from DB due to anonymization'.format(user.intra_id))
 
 			# Delete user's teams from database
-			teams:list[Team] = Team.query.filter_by(user_id=user.intra_id).all()
+			teams:list[Team] = session.query(Team).filter_by(user_id=user.intra_id).all()
 			for team in teams:
 				session.delete(team)
 				logging.info('Deleted team {} of user {} from DB due to anonymization'.format(team.intra_id, user.intra_id))
