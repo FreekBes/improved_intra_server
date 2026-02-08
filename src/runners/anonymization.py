@@ -108,7 +108,7 @@ class AnonymizationRunner:
 
 		# Check if user is set to be anonymized and if the anonymization date has passed
 		if not user.anonymize_date or user.anonymize_date > datetime.now().date():
-			logging.warning('User {} is not set to be anonymized or the anonymization date has not passed yet! Sleeping for 5 seconds to allow user to cancel...'.format(user.intra_id))
+			print('User {} is not set to be anonymized or the anonymization date has not passed yet! Sleeping for 5 seconds to allow user to cancel...'.format(user.intra_id))
 			sleep(5) # Sleep for a bit to allow user to cancel
 
 		try:
