@@ -1,6 +1,6 @@
 import logging
 
-from src.models.models import User, Profile, Settings, BannerImg, Team, Evaluation, Event, UserToken, OAuth2Token
+from src.models.models import User, Profile, Settings, BannerImg, Team, Evaluation, Event, UserToken, OAuth2Token, Runner
 from src.lib.db import session
 from src.lib.banners import delete_banner
 from datetime import datetime
@@ -11,6 +11,12 @@ from time import sleep
 class AnonymizationRunner:
 	def anonymize_user(self, user:User):
 		try:
+			# Delete runners for this user
+			runners:list[Runner] = session.query(Runner).filter_by(user_id=user.intra_id).all()
+			for runner in runners:
+				session.delete(runner)
+				logging.info('Deleted runner {} of user {} from DB due to anonymization'.format(runner.intra_id, user.intra_id))
+
 			# Delete all user's settings from database
 			settings = session.query(Settings).filter_by(user_id=user.intra_id).all()
 			for setting in settings:
