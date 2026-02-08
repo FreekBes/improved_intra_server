@@ -108,7 +108,7 @@ class AnonymizationRunner:
 			if resp.status_code == 200:
 				full_user = resp.json()
 				if 'anonymize_date' in full_user and full_user['anonymize_date']:
-					anonymize_date = datetime.strptime(full_user['anonymize_date'], '%Y-%m-%d').date()
+					anonymize_date = datetime.strptime(full_user['anonymize_date'], '%Y-%m-%dT%H:%M:%S').date()
 					if anonymize_date > datetime.now().date():
 						logging.info('User {} ({}), anonymization date on Intra has been updated to {}, skipping anonymization'.format(user.login, user.intra_id, anonymize_date))
 						user.anonymize_date = anonymize_date
