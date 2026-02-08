@@ -99,7 +99,7 @@ class AnonymizationRunner:
 
 			# Double check if anonymize date has not been updated on Intra
 			logging.info('Checking if user {} ({}), anonymization date has been updated on Intra...'.format(user.login, user.intra_id))
-			resp = ic.get('users/{}'.format(user.intra_id))
+			resp = ic.get('users/{}'.format(user.intra_id), noraise=True)
 			if resp.status_code == 404:
 				logging.info('User {} ({}), anonymization date passed ({}) and user not found on Intra, proceeding with anonymization'.format(user.login, user.intra_id, user.anonymize_date))
 			if resp.status_code > 500:
