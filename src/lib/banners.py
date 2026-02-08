@@ -43,9 +43,10 @@ def get_banner_info(url):
 def delete_banner(banner_file):
 	try:
 		banner_path = os.path.join(BANNERS_PATH, banner_file)
-		if os.path.exists(banner_path):
-			os.remove(banner_path)
-			return True
+		if not os.path.exists(banner_path):
+			raise FileNotFoundError('Banner file not found: {}'.format(banner_path))
+		os.remove(banner_path)
+		return True
 	except Exception as e:
 		print("An exception occurred while deleting a banner: {}".format(str(e)))
 		return False
