@@ -2,6 +2,7 @@ import logging
 
 from src.models.models import User, Profile, Settings, BannerImg, Team, Evaluation, Event, UserToken, OAuth2Token, Runner
 from src.lib.db import session
+from src.lib.intra import ic
 from src.lib.banners import banner_exists, delete_banner
 from datetime import datetime
 from src import app
@@ -95,6 +96,32 @@ class AnonymizationRunner:
 			# Check if user is set to be anonymized and if the anonymization date has passed
 			if not user.anonymize_date or user.anonymize_date > datetime.now().date():
 				continue
+
+			# Double check if anonymize date has not been updated on Intra
+			logging.info('Checking if user {} ({}), anonymization date has been updated on Intra...'.format(user.login, user.intra_id))
+			resp = ic.get('users/{}'.format(user.intra_id))
+			if resp.status_code == 404:
+				logging.info('User {} ({}), anonymization date passed ({}) and user not found on Intra, proceeding with anonymization'.format(user.login, user.intra_id, user.anonymize_date))
+			if resp.status_code > 500:
+				logging.error('Error fetching user {} from Intra for anonymization check, status code: {}'.format(user.intra_id, resp.status_code))
+				continue
+			if resp.status_code == 200:
+				full_user = resp.json()
+				if 'anonymize_date' in full_user and full_user['anonymize_date']:
+					anonymize_date = datetime.strptime(full_user['anonymize_date'], '%Y-%m-%d').date()
+					if anonymize_date > datetime.now().date():
+						logging.info('User {} ({}), anonymization date on Intra has been updated to {}, skipping anonymization'.format(user.login, user.intra_id, anonymize_date))
+						user.anonymize_date = anonymize_date
+						session.commit()
+						continue
+				elif 'anonymize_date' in full_user and not full_user['anonymize_date']:
+					logging.info('User {} ({}), anonymization date on Intra has been removed, skipping anonymization'.format(user.login, user.intra_id))
+					user.anonymize_date = None
+					session.commit()
+					continue
+				elif 'anonymize_date' not in full_user:
+					raise Exception('Anonymize date field not found in Intra API response for user {}: {}'.format(user.intra_id, full_user))
+
 			logging.info('Anonymizing user {} ({}), anonymization date passed ({})'.format(user.login, user.intra_id, user.anonymize_date))
 			self.anonymize_user(user)
 
