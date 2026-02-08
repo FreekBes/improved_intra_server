@@ -2,7 +2,7 @@ import logging
 
 from src.models.models import User, Profile, Settings, BannerImg, Team, Evaluation, Event, UserToken, OAuth2Token, Runner
 from src.lib.db import session
-from src.lib.banners import delete_banner
+from src.lib.banners import banner_exists, delete_banner
 from datetime import datetime
 from src import app
 from time import sleep
@@ -36,9 +36,9 @@ class AnonymizationRunner:
 				if banner.url.startswith(app.config['IINTRA_URL']):
 					# Get banner file name from url
 					banner_file = banner.url.split('/')[-1]
-					if not delete_banner(banner_file):
-						logging.error('Could not delete banner file: {}'.format(banner_file))
-						continue # otherwise we lose track of this file
+					if banner_exists(banner_file): # If banner exists locally on disk, delete it
+						if not delete_banner(banner_file):
+							raise Exception('Could not delete banner file: {}'.format(banner_file))
 
 				# Delete banner from database
 				session.delete(banner)

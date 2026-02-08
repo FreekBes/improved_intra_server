@@ -39,6 +39,11 @@ def get_banner_info(url):
 		return 0, 0, 0
 
 
+def banner_exists(banner_file):
+	banner_path = os.path.join(BANNERS_PATH, banner_file)
+	return os.path.exists(banner_path)
+
+
 # The parameter banner_file should be the file name of the banner only, not a path (so also no /banners/ in front of it)
 def delete_banner(banner_file):
 	try:
