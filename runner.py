@@ -8,7 +8,7 @@ if len(sys.argv) < 2:
 	sys.exit(1)
 
 runner_name = sys.argv[1]
-if runner_name not in ['events', 'outstandings', 'bannercleaning']:
+if runner_name not in ['events', 'outstandings', 'bannercleaning', 'anonymization']:
 	print('Usage: python3 run_runner.py <runner_name>')
 	sys.exit(1)
 
