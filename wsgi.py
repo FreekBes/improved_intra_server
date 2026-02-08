@@ -8,6 +8,7 @@ from sqlalchemy_utils import database_exists, create_database
 from src.runners.outstandings import outstandingsRunner
 from src.runners.events import eventsRunner
 from src.runners.bannercleaning import bannerCleaningRunner
+from src.runners.anonymization import anonymizationRunner
 from src.lib.config import config
 from src import app, db
 
@@ -70,6 +71,18 @@ runner_scheduler.add_job(
 	hour='4', # Every day at 4 AM
 	id='bannercleaning-rnr',
 	name='bannercleaning-runner',
+	replace_existing=True,
+	coalesce=True,
+	misfire_grace_time=43200 # 12 hours
+)
+runner_scheduler.add_job(
+	anonymizationRunner.run, # Anonymize users that have passed their anonymization date
+	'cron',
+	month='*',
+	day='*',
+	hour='3', # Every day at 3 AM
+	id='anonymization-rnr',
+	name='anonymization-runner',
 	replace_existing=True,
 	coalesce=True,
 	misfire_grace_time=43200 # 12 hours

@@ -22,6 +22,9 @@ elif runner_name == 'outstandings':
 elif runner_name == 'bannercleaning':
 	from src.runners.bannercleaning import BannerCleaningRunner
 	runner = BannerCleaningRunner()
+elif runner_name == 'anonymization':
+	from src.runners.anonymization import AnonymizationRunner
+	runner = AnonymizationRunner()
 
 
 login = None
