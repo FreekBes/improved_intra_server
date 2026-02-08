@@ -71,13 +71,13 @@ class AnonymizationRunner:
 			user_tokens = session.query(UserToken).filter_by(user_id=user.intra_id).all()
 			for token in user_tokens:
 				session.delete(token)
-				logging.info('Deleted user token {} of user {} from DB due to anonymization'.format(token.intra_id, user.intra_id))
+				logging.info('Deleted user token of user {} from DB due to anonymization'.format(user.intra_id))
 
 			# Delete user's OAuth2 tokens from database
 			oauth_tokens = session.query(OAuth2Token).filter_by(user_id=user.intra_id).all()
 			for token in oauth_tokens:
 				session.delete(token)
-				logging.info('Deleted OAuth2 token {} of user {} from DB due to anonymization'.format(token.intra_id, user.intra_id))
+				logging.info('Deleted OAuth2 token of user {} from DB due to anonymization'.format(user.intra_id))
 
 			# Finally, delete the user from the database
 			session.delete(user)
