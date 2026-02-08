@@ -113,6 +113,7 @@ class AnonymizationRunner:
 
 		try:
 			self.anonymize_user(user)
+			print('Anonymization of user {} completed successfully.'.format(user.intra_id))
 		except Exception as e:
 			logging.error('Error anonymizing user {}: {}'.format(user.intra_id, str(e)))
 			session.rollback()
