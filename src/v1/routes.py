@@ -3,7 +3,7 @@ import time
 
 from flask import session, jsonify, request, redirect, url_for, render_template, Response
 from src.v1.helpers import get_v1_settings, set_v1_settings
-from src.models.models import OAuth2Token, User, Team, Evaluation, Runner
+from src.models.models import OAuth2Token, User, Team, Evaluation, Runner, Campus
 from werkzeug.datastructures import CombinedMultiDict
 from src.lib.auth.oauth import authstart
 from src.v1.forms import OldSettings
@@ -151,4 +151,4 @@ def imagery():
 		return redirect(url_for('connect'), 302)
 	if not 'staff' in session or session['staff'] != True:
 		return 'Access Denied', 403
-	return render_template('v1/banners.j2')
+	return render_template('v1/banners.j2', campuses=Campus.query.order_by(Campus.name).all())

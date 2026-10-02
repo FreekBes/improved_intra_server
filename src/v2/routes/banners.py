@@ -1,6 +1,7 @@
 from src.lib.auth.decorators import session_required_redirect, staff_acc_required_json
 from src.models.models import BannerImg, User, Campus
-from flask import session
+from flask import request
+from sqlalchemy import func
 from src import app, db
 
 @app.route('/v2/banners/<offset>', methods=['GET'])
@@ -9,18 +10,31 @@ from src import app, db
 def bannersoffset(offset):
 	try:
 		n_offset = int(offset)
-	except:
+		if not 0 <= n_offset <= 9223372036854775807:
+			raise ValueError
+	except ValueError:
 		return { 'type': 'error', 'message': 'Invalid offset' }, 400
-	campuses:list[Campus] = db.session.query(Campus.intra_id, Campus.name).all()
-	banner_imgs:list[BannerImg] = BannerImg.query.filter(BannerImg.url != '').order_by(BannerImg.created_at.desc()).offset(n_offset).limit(100).all()
+	query = db.session.query(BannerImg, User, Campus.name).outerjoin(User, User.intra_id == BannerImg.user_id).outerjoin(Campus, Campus.intra_id == User.campus_id).filter(BannerImg.url != '')
+	campus_id = request.args.get('campus_id', '').strip()
+	if campus_id:
+		try:
+			campus_id = int(campus_id)
+			if not 0 < campus_id <= 2147483647:
+				raise ValueError
+		except ValueError:
+			return { 'type': 'error', 'message': 'Invalid campus' }, 400
+		query = query.filter(User.campus_id == campus_id)
+	login = request.args.get('login', '').strip()
+	if login:
+		query = query.filter(func.lower(User.login).contains(login.lower(), autoescape=True))
+	banner_imgs = query.order_by(BannerImg.created_at.desc(), BannerImg.id.desc()).offset(n_offset).limit(100).all()
 	banners = []
-	for banner_img in banner_imgs:
+	for banner_img, user, campus_name in banner_imgs:
 		banner_dict = banner_img.to_dict()
-		user:User = db.session.query(User.campus_id, User.login, User.staff).filter(User.intra_id == banner_img.user_id).first()
 		banner_dict['user'] = {
-			'campus': next(campus.name for campus in campuses if campus.intra_id == user.campus_id) if user.campus_id != None else None,
-			'login': user.login,
-			'staff': user.staff
+			'campus': campus_name,
+			'login': user.login if user else None,
+			'staff': user.staff if user else False
 		}
 		banners.append(banner_dict)
 	if len(banners) > 0:
