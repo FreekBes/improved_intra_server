@@ -19,7 +19,7 @@ def bannersoffset(offset):
 	if campus_id:
 		try:
 			campus_id = int(campus_id)
-			if not 0 < campus_id <= 2147483647:
+			if Campus.query.filter_by(intra_id=campus_id).first() is None:
 				raise ValueError
 		except ValueError:
 			return { 'type': 'error', 'message': 'Invalid campus' }, 400
