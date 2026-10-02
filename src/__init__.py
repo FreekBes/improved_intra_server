@@ -8,10 +8,12 @@ import platform
 import logging
 
 # Import specifics
-from werkzeug import __version__ as __werkzeug_version__
 from flask import Flask, request, __version__ as __flask_version__
 from flask_sqlalchemy import SQLAlchemy
 from urllib.parse import urlparse
+from importlib.metadata import version
+
+__werkzeug_version__ = version('werkzeug')
 
 from src.lib.config import config
 
