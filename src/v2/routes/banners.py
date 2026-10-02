@@ -3,6 +3,8 @@ from src.models.models import BannerImg, User, Campus
 from flask import request
 from sqlalchemy import func
 from src import app, db
+import sys
+
 
 @app.route('/v2/banners/<offset>', methods=['GET'])
 @session_required_redirect
@@ -10,7 +12,7 @@ from src import app, db
 def bannersoffset(offset):
 	try:
 		n_offset = int(offset)
-		if not 0 <= n_offset <= 9223372036854775807:
+		if not 0 <= n_offset <= sys.maxsize:
 			raise ValueError
 	except ValueError:
 		return { 'type': 'error', 'message': 'Invalid offset' }, 400
