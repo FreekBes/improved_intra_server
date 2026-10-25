@@ -382,7 +382,7 @@ main {
 	color: var(--theme-color-light);
 }
 
-.text-container p a.link-button {
+.text-container a.link-button {
 	display: inline-block;
 	margin: 0 auto;
 	background-color: var(--theme-color);
@@ -395,13 +395,22 @@ main {
 	text-decoration: none !important;
 }
 
-.text-container p a.link-button:hover,
-.text-container p a.link-button:focus {
+.text-container a.link-button:hover,
+.text-container a.link-button:focus {
 	background: var(--theme-color-light) !important;
 }
 
-.text-container p a.link-button:active {
+.text-container a.link-button:active {
 	background: var(--theme-color-dark) !important;
+}
+
+.text-container a.link-button.danger {
+	background-color: var(--danger-color);
+}
+
+.text-container a.link-button.danger:hover,
+.text-container a.link-button.danger:focus {
+	background: var(--danger-color-light) !important;
 }
 
 .option-container .form-error {

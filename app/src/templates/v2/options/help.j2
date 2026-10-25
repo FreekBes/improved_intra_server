@@ -56,7 +56,7 @@ if (bowserInfo['os']) {
 	<form id="delete-form" method="POST" action="{{ url_for('delete_account') }}">
 		<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
 		<input type="hidden" name="confirmation" id="delete-confirmation" value="" />
-		<button type="submit" class="button danger" id="delete-btn">Delete all my data</button>
+		<button type="submit" class="link-button danger" id="delete-btn">Delete all my data</button>
 	</form>
 	<p>If this does not work, you can still request deletion by sending an e-mail to <a href="mailto:fbes@student.codam.nl">fbes@student.codam.nl</a>. <i>Make sure the e-mail contains proof that you are the owner of the account whose data you wish to have deleted.</i></p>
 </div>
