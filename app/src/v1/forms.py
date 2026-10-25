@@ -1,12 +1,12 @@
 from wtforms.validators import Optional, DataRequired
 from wtforms import StringField, SelectField, BooleanField, HiddenField
-from src.lib.banners import ALLOWED_IMG_TYPES, BANNERS_PATH
+from src.lib.banners import ALLOWED_IMG_EXTENSIONS, BANNERS_PATH
 from flask_uploads import UploadSet, configure_uploads
 from flask_wtf.file import FileField, FileAllowed
 from flask_wtf import FlaskForm
 from src import app
 
-images = UploadSet('images', ALLOWED_IMG_TYPES, default_dest=lambda app: BANNERS_PATH)
+images = UploadSet('images', ALLOWED_IMG_EXTENSIONS, default_dest=lambda app: BANNERS_PATH)
 configure_uploads(app, (images))
 
 # Do not update these settings, as these are the only ones that v3 of Improved Intra supports

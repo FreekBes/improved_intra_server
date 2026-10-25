@@ -6,7 +6,10 @@ from io import BytesIO
 from time import time
 from src import app
 
-ALLOWED_IMG_TYPES = ['jpg', 'jpeg', 'png', 'gif']
+# Filename extensions accepted by the upload forms
+ALLOWED_IMG_EXTENSIONS = ['jpg', 'jpeg', 'png', 'gif']
+# Formats Pillow may report for those files: it calls both .jpg and .jpeg 'jpeg'
+ALLOWED_IMG_FORMATS = ['jpeg', 'png', 'gif']
 
 # Without this a stalled response would hold a worker thread forever
 BANNER_FETCH_TIMEOUT = 15 # seconds
@@ -19,7 +22,7 @@ def upload_banner(file, file_name, username:str):
 		# imghdr was removed from the standard library in Python 3.13
 		with Image.open(BytesIO(image_data)) as img:
 			ext = (img.format or '').lower()
-		if ext not in ALLOWED_IMG_TYPES:
+		if ext not in ALLOWED_IMG_FORMATS:
 			return None, None
 		banner_file = username + '-' + str(int(time())) + '.' + ext
 		banner_path = os.path.join(BANNERS_PATH, banner_file)
