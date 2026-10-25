@@ -4,19 +4,13 @@ __target_ext_version__ = '4.4.2' # Targeting Improved Intra extension version
 __author__ = 'Freek Bes'
 
 # Imports
-import platform
 import logging
 import logging.handlers
 
 # Import specifics
-from importlib.metadata import version as __dist_version
 from flask import Flask, request
 from flask_sqlalchemy import SQLAlchemy
 from urllib.parse import urlparse
-
-# Werkzeug 3.1 and Flask 3.2 no longer expose a module-level __version__
-__werkzeug_version__ = __dist_version('werkzeug')
-__flask_version__ = __dist_version('flask')
 
 from src.lib.config import config
 
@@ -69,7 +63,7 @@ def add_headers(response:Response):
 	response.headers['X-Frame-Options'] = 'sameorigin'
 	response.headers['Vary'] = 'Origin'
 	response.headers['X-Content-Type-Options'] = 'nosniff'
-	response.headers['X-Powered-By'] = 'ImprovedIntraServer/{} Werkzeug/{} Flask/{} Python/{}'.format(__version__, __werkzeug_version__, __flask_version__, platform.python_version())
+	response.headers['X-Powered-By'] = 'ImprovedIntraServer/{}'.format(__version__)
 	response.headers['X-Target-Version'] = 'ImprovedIntra/{}'.format(__target_ext_version__)
 	response.headers['Access-Control-Allow-Credentials'] = 'true'
 	response.headers['Access-Control-Allow-Methods'] = 'GET,HEAD,POST,OPTIONS'
