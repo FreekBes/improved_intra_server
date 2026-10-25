@@ -1,4 +1,4 @@
-FROM python:3.10-slim as runner
+FROM python:3.14-slim AS runner
 
 RUN apt-get update && apt-get install -y \
 	curl \
