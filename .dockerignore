@@ -6,9 +6,8 @@
 **/venv/
 logs/
 pgdata/
-# Deployment config and ad-hoc tooling are not part of the app image
+# Deployment config is not part of the app image
 deploy/
-tools/
 static/banners/*
 
 # Never let secrets reach the image; they are injected as environment variables
