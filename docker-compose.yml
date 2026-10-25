@@ -12,9 +12,8 @@ services:
       # Deployment topology, not a secret: the database service name
       PSQL_HOST: db
     ports:
-      # Bound to loopback: run your own reverse proxy in front of this.
-      # Use "8000:8000" instead if the proxy lives on another host.
-      - "127.0.0.1:8000:8000"
+      # Set up a reverse proxy that points to this port in production
+      - "8000:8000"
     volumes:
       - app_logs:/app/logs
       # User-uploaded banners must outlive the container
