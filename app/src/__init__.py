@@ -45,7 +45,6 @@ db = SQLAlchemy(app)
 print('Flask initialized')
 
 # Import routes
-from src.v1 import routes as v1routes
 from src.v2.routes.banners import *
 from src.v2.routes.sessions import *
 from src.v2.routes.options.get import *
@@ -54,6 +53,8 @@ from src.v2.routes.options.json import *
 from src.v2.routes.home import *
 from src.v2.routes.takeout import *
 from src.v2.routes.events import *
+from src.v2.routes.outstandings import *
+from src.v1 import routes as v1routes
 from src.lib import utilities
 from src.lib.auth import oauth
 

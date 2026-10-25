@@ -2,7 +2,7 @@ import traceback
 import re
 
 from src.models.models import BannerImg, Profile, Settings, User
-from src.v1.helpers import valid_github_username
+from src.lib.git import valid_github_username
 from src.lib.banners import upload_banner
 from urllib.parse import urlparse
 from flask import request

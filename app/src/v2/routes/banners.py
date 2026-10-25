@@ -1,6 +1,6 @@
-from src.lib.auth.decorators import session_required_redirect, staff_acc_required_json
+from src.lib.auth.decorators import session_required_redirect, staff_acc_required, staff_acc_required_json
 from src.models.models import BannerImg, User, Campus
-from flask import request
+from flask import render_template, request
 from sqlalchemy import func
 from src import app, db
 import sys
@@ -42,3 +42,10 @@ def bannersoffset(offset):
 	if len(banners) > 0:
 		return { 'type': 'success', 'message': 'Banners retrieved', 'data': banners }, 200
 	return { 'type': 'success', 'message': 'No more banners to retrieve', 'data': [] }, 204
+
+
+@app.route('/v2/banners', methods=['GET'])
+@session_required_redirect
+@staff_acc_required
+def banners():
+	return render_template('v2/banners.j2', campuses=Campus.query.order_by(Campus.name).all())

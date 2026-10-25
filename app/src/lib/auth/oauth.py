@@ -39,8 +39,7 @@ oauth.register(
 intra = oauth.create_client('intra')
 
 
-def authstart(v:int=2):
-	session['v'] = v # Version of the back-end
+def authstart():
 	return intra.authorize_redirect(url_for('auth', _external=True))
 
 
@@ -54,7 +53,6 @@ def authend():
 
 	# Back-end version-specific data
 	session.pop('v', None)
-	session.pop('v1_conn_data', None)
 	session.pop('ext_token', None)
 
 
@@ -116,11 +114,6 @@ def auth():
 		set_session_data(db_user, user)
 
 	# Redirect after auth
-	if 'v' in session and session['v'] == 1:
-		session['v1_conn_data'] = token
-		del session['v1_conn_data']['expires_in']
-		session['v1_conn_data']['expires_at'] = db_token.expires_at
-		return redirect(url_for('oldConnect'), 302)
 	return redirect(url_for('connect'), 302)
 
 
@@ -146,6 +139,6 @@ def auth_on_noauth(f):
 	@wraps(f)
 	def decorated_function(*args, **kwargs):
 		if 'uid' not in session:
-			return authstart(v=2)
+			return authstart()
 		return f(*args, **kwargs)
 	return decorated_function
