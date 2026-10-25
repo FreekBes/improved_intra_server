@@ -1,20 +1,34 @@
-FROM python:3.14-slim AS runner
+# Build stage: compiles psycopg2 into a virtualenv. None of the toolchain this
+# needs ends up in the image that actually runs.
+FROM python:3.14-slim AS builder
 
-RUN apt-get update && apt-get install -y \
-	curl \
+RUN apt-get update && apt-get install -y --no-install-recommends \
+	gcc \
+	build-essential \
 	libpq-dev \
-    gcc \
-    build-essential \
-    && rm -rf /var/lib/apt/lists/*
-
-WORKDIR /app
+	&& rm -rf /var/lib/apt/lists/*
 
 RUN python3 -m venv /app/venv
 ENV PATH="/app/venv/bin:$PATH"
 
-COPY ./app/requirements.txt /app/
-RUN pip install --upgrade pip && \
-    if [ -f "requirements.txt" ]; then pip install -r requirements.txt; fi
+COPY ./app/requirements.txt /tmp/requirements.txt
+RUN pip install --upgrade pip && pip install -r /tmp/requirements.txt
+
+
+# Runtime stage
+FROM python:3.14-slim AS runner
+
+# libpq5 is the runtime half of libpq-dev, which psycopg2 links against;
+# curl answers the container healthcheck.
+RUN apt-get update && apt-get install -y --no-install-recommends \
+	curl \
+	libpq5 \
+	&& rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+ENV PATH="/app/venv/bin:$PATH"
+
+COPY --from=builder /app/venv /app/venv
 
 COPY ./app /app/
 RUN chmod +x /app/entrypoint.sh
