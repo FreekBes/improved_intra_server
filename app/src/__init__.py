@@ -15,7 +15,7 @@ from urllib.parse import urlparse
 from src.lib.config import config
 
 # Set up DB uri
-config['SQLALCHEMY_DATABASE_URI'] = f"postgresql+psycopg2://{config['PSQL_USER']}:{config['PSQL_PASS']}@{config['PSQL_HOST']}:{config['PSQL_PORT']}/{config['PSQL_DB']}"
+config['SQLALCHEMY_DATABASE_URI'] = f"postgresql+psycopg2://{config['POSTGRES_USER']}:{config['POSTGRES_PASSWORD']}@{config['POSTGRES_HOST']}:{config['POSTGRES_PORT']}/{config['POSTGRES_DB']}"
 
 # Prevent Internal Server Error (Flask is stupid)
 config['MAX_CONTENT_LENGTH'] = int(config['MAX_CONTENT_LENGTH'])

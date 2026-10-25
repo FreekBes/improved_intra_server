@@ -34,7 +34,7 @@ cp .private.env.example .private.env
 
 Note: non-secret defaults live in `.public.env`, which is committed and baked into the image, so you only need to fill in `.private.env`. Anything set in `.private.env` (or in the environment) overrides `.public.env`.
 
-If you change `PSQL_USER`, `PSQL_PASS` or `PSQL_DB`, start the stack with `docker compose --env-file .private.env up -d` so the database container is created with the same credentials the app uses. With the defaults, plain `docker compose up -d` is fine.
+The application and the database container read the same `POSTGRES_*` names out of `.private.env`, so changing the credentials there is enough; nothing has to be kept in step by hand.
 
 4. Create the data directory before the first start. Docker would otherwise create it as root, and you would need sudo to read or delete anything in it:
 

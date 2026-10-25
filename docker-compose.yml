@@ -10,9 +10,6 @@ services:
         condition: service_healthy
     env_file:
       - .private.env
-    environment:
-      # Deployment topology, not a secret: the database service name
-      PSQL_HOST: iintra_database
     ports:
       # Set up a reverse proxy that points to this port in production
       - "8000:8000"
@@ -36,10 +33,9 @@ services:
     image: postgres:16
     container_name: improved_intra_database
     restart: always
-    environment:
-      POSTGRES_USER: ${PSQL_USER:-postgres}
-      POSTGRES_PASSWORD: ${PSQL_PASS:-postgres}
-      POSTGRES_DB: ${PSQL_DB:-iintra}
+    env_file:
+      # The same names the application uses, so each is written only once
+      - .private.env
     volumes:
       - ./data/pgdata:/var/lib/postgresql/data
     logging:
@@ -48,7 +44,7 @@ services:
         max-size: "10m"
         max-file: "5"
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${PSQL_USER:-postgres}"]
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER}"]
       interval: 5s
       timeout: 5s
       retries: 5

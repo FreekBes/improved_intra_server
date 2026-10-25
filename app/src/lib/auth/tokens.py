@@ -8,7 +8,8 @@ from src import app, db
 from time import time
 
 ICAL_LINK_EXPIRE_TIME = 60 * 60 * 24 * 365 * 3 # 3 years
-token_manager = tokenlib.TokenManager(app.config['TOKEN_SECRET'], float(app.config['TOKEN_EXPIRATION']))
+
+token_manager = tokenlib.TokenManager(app.config['TOKEN_SECRET'], float(app.config.get('TOKEN_EXPIRATION') or 30 * 24 * 60 * 60)) # Defaults to 30 days when TOKEN_EXPIRATION is not configured
 ical_token_manager = tokenlib.TokenManager(app.config['TOKEN_SECRET'], ICAL_LINK_EXPIRE_TIME)
 
 
