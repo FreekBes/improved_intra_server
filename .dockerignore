@@ -1,0 +1,14 @@
+.git/
+.gitignore
+**/__pycache__/
+**/*.py[cod]
+**/.venv/
+**/venv/
+data/
+# Deployment config is not part of the app image
+deploy/
+static/banners/*
+
+# Never let secrets reach the image; they are injected as environment variables
+.private.env
+.env

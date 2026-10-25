@@ -6,6 +6,7 @@ __author__ = 'Freek Bes'
 # Imports
 import platform
 import logging
+import logging.handlers
 
 # Import specifics
 from importlib.metadata import version as __dist_version
@@ -25,8 +26,21 @@ config['SQLALCHEMY_DATABASE_URI'] = f"postgresql+psycopg2://{config['PSQL_USER']
 # Prevent Internal Server Error (Flask is stupid)
 config['MAX_CONTENT_LENGTH'] = int(config['MAX_CONTENT_LENGTH'])
 
-# Set up logging
-logging.basicConfig(filename=config['LOG_FILE_SERVER'], level=logging.DEBUG, format=config['LOG_FORMAT'])
+# Set up logging: to the log file and to stdout, so `docker logs` shows it too.
+# force=True because gunicorn has already configured the root logger by now.
+logging.basicConfig(
+	level=logging.DEBUG,
+	format=config['LOG_FORMAT'],
+	handlers=[
+		logging.handlers.TimedRotatingFileHandler(
+			config['LOG_FILE_SERVER'],
+			when='midnight',
+			backupCount=int(config.get('LOG_RETENTION_DAYS', 30))
+		),
+		logging.StreamHandler(),
+	],
+	force=True
+)
 
 # Set up Flask
 print('Initializing Flask...')

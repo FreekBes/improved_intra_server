@@ -3,20 +3,15 @@ static/banners/*
 !static/banners/*.txt
 
 # Environment
-.secret.env
+.private.env
 .venv
-
-# SSL
-useful/ssl/*.pem
-useful/ssl/*.crt
-useful/ssl/*.key
+.env
 
 # Garbage
 __pycache__
 
 # Logs
 *.log
-logs/*
 
-# Database
+# All persistent container state (database, logs, uploaded banners)
 data/*

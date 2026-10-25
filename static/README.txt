@@ -1,11 +1,6 @@
-Any file that is static in here, any subdirectory, MUST be declared in useful/intra.nginx.snippet.conf!
+Static files in this directory are served by the application itself
+(Flask is configured with static_folder='../static' and static_url_path=''),
+so adding a file or subdirectory here needs no further configuration.
 
------- useful/intra.nginx.snippet.conf:
-...
-# Static files
-location ~ ^/(banners/|campus_specifics/|fonts/|favicon.ico)/ {
-# ADD FILE/DIR HERE      ^^^^^^^^^^^^
-    root              /opt/improved_intra_server/static;
-    autoindex         off;
-...
-------
+static/banners/ holds user-uploaded banners. It is a Docker volume in the
+compose setup, and is excluded from the repository and the image.
