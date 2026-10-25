@@ -4,22 +4,20 @@ services:
     container_name: improved_intra_server
     restart: always
     depends_on:
-      db:
+      iintra_database:
         condition: service_healthy
     env_file:
       - .private.env
     environment:
       # Deployment topology, not a secret: the database service name
-      PSQL_HOST: db
+      PSQL_HOST: iintra_database
     ports:
       # Set up a reverse proxy that points to this port in production
       - "8000:8000"
     volumes:
-      - app_logs:/app/logs
+      - ./data/logs:/app/logs
       # User-uploaded banners must outlive the container
-      - banners:/app/static/banners
-    networks:
-      - iintra_network
+      - ./data/banners:/app/static/banners
     logging:
       driver: json-file
       options:
@@ -32,18 +30,16 @@ services:
       retries: 5
       start_period: 10s
 
-  db:
+  iintra_database:
     image: postgres:16
-    container_name: improved_intra_db
+    container_name: improved_intra_database
     restart: always
     environment:
       POSTGRES_USER: ${PSQL_USER:-postgres}
       POSTGRES_PASSWORD: ${PSQL_PASS:-postgres}
       POSTGRES_DB: ${PSQL_DB:-iintra}
     volumes:
-      - pgdata:/var/lib/postgresql/data
-    networks:
-      - iintra_network
+      - ./data/pgdata:/var/lib/postgresql/data
     logging:
       driver: json-file
       options:
@@ -55,12 +51,3 @@ services:
       timeout: 5s
       retries: 5
       start_period: 5s
-
-networks:
-  iintra_network:
-    driver: bridge
-
-volumes:
-  app_logs:
-  banners:
-  pgdata:

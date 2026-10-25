@@ -46,9 +46,9 @@ The compose stack contains two services:
 - `iintra_server` (this application, served with Gunicorn)
 - `db` (Postgres 16)
 
-The application serves its own static files, so no reverse proxy is needed to run or develop against it. It is published on `127.0.0.1:8000`; open <http://127.0.0.1:8000> and you have the whole thing.
+The application serves its own static files, so no reverse proxy is needed to run or develop against it. It is published on port 8000; open <http://127.0.0.1:8000> and you have the whole thing.
 
-Three named volumes hold the state that must outlive the containers: `pgdata` (the database), `banners` (user-uploaded banners) and `app_logs` (log files).
+All persistent state is bind-mounted from `./data`, which is gitignored: `data/pgdata` (the database), `data/banners` (user-uploaded banners) and `data/logs` (log files). Back up that one directory and you have everything.
 
 5. Check logs and health:
 
@@ -58,25 +58,21 @@ docker compose logs -f
 docker compose logs -f iintra_server
 ```
 
-6. Stop and remove containers (keep data):
+6. Stop and remove the containers:
 
 ```sh
 docker compose down
 ```
 
-Remove containers and volumes (this deletes the database, the uploaded banners and the logs):
-
-```sh
-docker compose down -v
-```
+Nothing under `./data` is touched by this, so the database, banners and logs all survive a `down`, a rebuild or an image change. Delete that directory by hand to start from scratch.
 
 ### Putting a reverse proxy in front (production)
 
-The stack deliberately contains no web server of its own. In production, terminate TLS on whatever reverse proxy you already run and point it at `127.0.0.1:8000`; the application serves the static files itself, so the proxy needs no access to this repository.
+The stack deliberately contains no web server of its own. In production, terminate TLS on whatever reverse proxy you already run and point it at port 8000; the application serves the static files itself, so the proxy needs no access to this repository.
 
 Example nginx configurations are in `deploy/nginx/`: `iintra.example.conf` for plain HTTP and `iintra.example.ssl.conf` for TLS with an HTTP redirect.
 
-If the proxy runs on another host, change the published port in `docker-compose.yml` from `127.0.0.1:8000:8000` to `8000:8000` and firewall it appropriately.
+Port 8000 is published on all interfaces. If the proxy runs on the same host, restrict it by changing the mapping in `docker-compose.yml` to `127.0.0.1:8000:8000`; otherwise make sure the port is firewalled.
 
 ### Updating the server (Docker)
 
@@ -97,7 +93,7 @@ docker compose up -d --build
 
 ## Logs
 
-Everything is logged twice: to the container's stdout/stderr, and to files inside the `app_logs` volume.
+Everything is logged twice: to the container's stdout/stderr, and to files in `./data/logs`.
 
 ```sh
 docker compose logs -f                  # all services
@@ -110,11 +106,10 @@ Docker keeps at most 5 × 10 MB of stdout per container. The files in the volume
 - `logs/error.log` — Gunicorn and application errors
 - `logs/server.log` — application logging (runners, API calls)
 
-To read them inside the container, or copy them out:
+They are readable straight from the host:
 
 ```sh
-docker compose exec iintra_server tail -n 200 logs/error.log
-docker compose cp iintra_server:/app/logs ./logs
+tail -n 200 ./data/logs/error.log
 ```
 
 ## Resetting all user/extension sessions

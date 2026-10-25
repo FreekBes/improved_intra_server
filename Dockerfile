@@ -19,9 +19,10 @@ RUN pip install --upgrade pip && \
 COPY ./app /app/
 # Public, non-secret defaults are version-controlled and ride along with the
 # image; .private.env supplies only secrets and per-deployment overrides.
+# .private.env is of course not copied into the image. Mount it yourself.
 COPY .public.env /app/.public.env
 # The application serves its own static files, so they belong in the image.
-# User uploads under static/banners live on a volume instead.
+# User uploads under static/banners are bind-mounted from data/ instead.
 COPY ./static /app/static
 RUN mkdir -p /app/logs /app/static/banners
 

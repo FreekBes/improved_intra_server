@@ -12,8 +12,6 @@ __pycache__
 
 # Logs
 *.log
-logs/*
 
-# Database
+# All persistent container state (database, logs, uploaded banners)
 data/*
-pgdata/*

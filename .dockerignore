@@ -4,8 +4,7 @@
 **/*.py[cod]
 **/.venv/
 **/venv/
-logs/
-pgdata/
+data/
 # Deployment config is not part of the app image
 deploy/
 static/banners/*
