@@ -1,0 +1,86 @@
+name: release
+
+# On every push to main:
+#   1. semantic-release reads the commit messages, decides the next version,
+#      updates __version__, creates the git tag + a GitHub Release with
+#      auto-generated notes.
+#   2. The image is built and pushed to GHCR. "latest" (and a short-sha tag) is
+#      updated on every push; the versioned tags (vX.Y.Z / X.Y.Z) are added only
+#      when semantic-release cut a new version this run.
+#
+# Versions come from Conventional Commits:
+#   fix: ...            -> patch (1.2.3 -> 1.2.4)
+#   feat: ...           -> minor (1.2.3 -> 1.3.0)
+#   feat!: ... or a "BREAKING CHANGE:" footer -> major (1.2.3 -> 2.0.0)
+#   docs:/chore:/refactor: ... -> no release (image still gets latest)
+#
+# The plugin list lives in .releaserc.json. It deliberately leaves out
+# @semantic-release/npm, which is in semantic-release's defaults and fails with
+# ENOPKG on a project that has no package.json.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: {}
+
+jobs:
+  # Do not publish an image that does not come up. run.yml builds the stack and
+  # checks that it serves, and already exposes workflow_call for this.
+  test:
+    uses: ./.github/workflows/run.yml
+
+  release:
+    needs: test
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write        # create tags + GitHub releases
+      packages: write        # push image to GHCR
+      issues: write          # semantic-release can comment on issues/PRs
+      pull-requests: write
+    steps:
+      - name: Checkout (full history so semantic-release sees all tags)
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Semantic release
+        id: semantic
+        uses: cycjimmy/semantic-release-action@v4
+        with:
+          # Neither ships with semantic-release; .releaserc.json needs both
+          extra_plugins: |
+            @semantic-release/exec
+            @semantic-release/git
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Compute image tags
+        id: tags
+        run: |
+          IMAGE=$(echo "ghcr.io/${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
+          SHA=$(echo "${{ github.sha }}" | cut -c1-7)
+          TAGS="${IMAGE}:latest,${IMAGE}:sha-${SHA}"
+          if [ "${{ steps.semantic.outputs.new_release_published }}" = "true" ]; then
+            V="${{ steps.semantic.outputs.new_release_version }}"
+            TAGS="${TAGS},${IMAGE}:v${V},${IMAGE}:${V}"
+          fi
+          echo "tags=${TAGS}" >> "$GITHUB_OUTPUT"
+
+      - name: Set up Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.tags.outputs.tags }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
