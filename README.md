@@ -36,7 +36,13 @@ Note: non-secret defaults live in `.public.env`, which is committed and baked in
 
 If you change `PSQL_USER`, `PSQL_PASS` or `PSQL_DB`, start the stack with `docker compose --env-file .private.env up -d` so the database container is created with the same credentials the app uses. With the defaults, plain `docker compose up -d` is fine.
 
-4. Start the stack:
+4. Create the data directory before the first start. Docker would otherwise create it as root, and you would need sudo to read or delete anything in it:
+
+```sh
+mkdir -p data/logs data/banners data/pgdata
+```
+
+5. Start the stack:
 
 ```sh
 docker compose up -d --build
@@ -48,11 +54,11 @@ The compose stack contains two services:
 
 The application serves its own static files, so no reverse proxy is needed to run or develop against it. It is published on port 8000; open <http://127.0.0.1:8000> and you have the whole thing.
 
-The application container runs two processes, started by `app/entrypoint.sh`: the scheduled runners and the Gunicorn workers. Keeping the scheduler out of the workers means the jobs fire exactly once regardless of how many workers there are, so `GUNICORN_WORKERS` (default 2) and `GUNICORN_THREADS` (default 4) can be raised freely.
+The application container runs as an unprivileged user (uid 1000) and runs two processes, started by `app/entrypoint.sh`: the scheduled runners and the Gunicorn workers. Keeping the scheduler out of the workers means the jobs fire exactly once regardless of how many workers there are, so `GUNICORN_WORKERS` (default 2) and `GUNICORN_THREADS` (default 4) can be raised freely.
 
 All persistent state is bind-mounted from `./data`, which is gitignored: `data/pgdata` (the database), `data/banners` (user-uploaded banners) and `data/logs` (log files). Back up that one directory and you have everything.
 
-5. Check logs and health:
+6. Check logs and health:
 
 ```sh
 docker compose logs -f
@@ -60,7 +66,7 @@ docker compose logs -f
 docker compose logs -f iintra_server
 ```
 
-6. Stop and remove the containers:
+7. Stop and remove the containers:
 
 ```sh
 docker compose down

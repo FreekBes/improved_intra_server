@@ -25,8 +25,17 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 	libpq5 \
 	&& rm -rf /var/lib/apt/lists/*
 
+# Unprivileged account the application actually runs as. entrypoint.sh starts
+# as root only long enough to take ownership of the bind-mounted directories,
+# then drops to this user.
+RUN groupadd --system --gid 1000 iintra \
+	&& useradd --system --uid 1000 --gid iintra --home-dir /app --no-create-home iintra
+
 WORKDIR /app
 ENV PATH="/app/venv/bin:$PATH"
+# The application directory is not writable by the app user, so do not try to
+# leave .pyc files behind in it.
+ENV PYTHONDONTWRITEBYTECODE=1
 
 COPY --from=builder /app/venv /app/venv
 
@@ -39,7 +48,7 @@ COPY .public.env /app/.public.env
 # The application serves its own static files, so they belong in the image.
 # User uploads under static/banners are bind-mounted from data/ instead.
 COPY ./static /app/static
-RUN mkdir -p /app/logs /app/static/banners
+RUN mkdir -p /app/logs /app/static/banners && chown -R iintra:iintra /app
 
 ENV DEBUG=False
 

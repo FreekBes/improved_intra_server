@@ -13,6 +13,14 @@ set -euo pipefail
 cd "$(dirname "$0")"
 
 LOG_DIR="${LOG_DIR:-logs}"
+APP_USER="${APP_USER:-iintra}"
+
+# logs/ and static/banners are bind mounts, which Docker creates owned by root.
+# Take them over while still privileged, then re-exec this script unprivileged.
+if [ "$(id -u)" = "0" ]; then
+	chown -R "$APP_USER:$APP_USER" "$LOG_DIR" static/banners 2>/dev/null || true
+	exec setpriv --reuid="$APP_USER" --regid="$APP_USER" --init-groups "$0" "$@"
+fi
 
 # Runs to completion before anything else starts, so the web workers and the
 # scheduler never race each other over the schema or the default rows.
