@@ -1,7 +1,7 @@
 import re
 
 from src.models.models import ColorScheme, BannerImg, BannerPosition, Profile, Settings, User, Team
-from src.lib.banners import upload_banner, get_banner_info
+from src.lib.banners import upload_banner
 from src.v1.forms import OldSettings
 from flask import request
 from src import db
@@ -119,21 +119,6 @@ def set_v1_settings(form:OldSettings):
 		# Banner position
 		db_banner_pos:BannerPosition = db.session.query(BannerPosition.id).filter(BannerPosition.internal_name == form.custom_banner_pos.data).one()
 		db_profile.banner_pos = db_banner_pos.id
-
-		# Banner image from url
-		# URL is validated by wtforms already
-		if form.custom_banner_url.data:
-			db_banner_img_url:BannerImg = db.session.query(BannerImg).filter(BannerImg.user_id == db_user.intra_id, BannerImg.url == form.custom_banner_url.data).first()
-			if not db_banner_img_url:
-				w, h, s = get_banner_info(form.custom_banner_url.data)
-				if w and h and s:
-					db_banner_img_url = BannerImg(db_user.intra_id, form.custom_banner_url.data, width=w, height=h, size=s)
-					db.session.add(db_banner_img_url)
-					db.session.flush()
-					db.session.refresh(db_banner_img_url)
-					db_profile.banner_img = db_banner_img_url.id
-		else:
-			db_profile.banner_img = None
 
 		# Banner image upload
 		if form.custom_banner_upload.data:

@@ -1,4 +1,4 @@
-from wtforms.validators import Optional, DataRequired, URL as URLValidator
+from wtforms.validators import Optional, DataRequired
 from wtforms import StringField, SelectField, BooleanField, HiddenField
 from src.lib.banners import ALLOWED_IMG_TYPES, BANNERS_PATH
 from flask_uploads import UploadSet, configure_uploads
@@ -30,7 +30,6 @@ class OldSettings(FlaskForm):
 	holygraph_more_cursuses = BooleanField('Show more cursuses in the Holy Graph', name='holygraph-morecursuses', default=False)
 	old_blackhole = BooleanField('Old Black Hole countdown', name='old-blackhole', default=False)
 	clustermap = BooleanField('Make logged in location clickable', name='clustermap', default=True)
-	custom_banner_url = StringField('Custom profile banner background', name='custom-banner-url', validators=[Optional(), URLValidator(True, 'Invalid URL')])
 	custom_banner_upload = FileField('Upload a new custom banner', name='custom-banner-upload', validators=[Optional(), FileAllowed(images, 'Only images are allowed as banners')])
 	custom_banner_pos = SelectField('Custom banner image position', name='custom-banner-pos', default='center-center', choices=[('center-top', 'Top'), ('center-center', 'Centered (default)'), ('center-bottom', 'Bottom')])
 	link_github = StringField('Your GitHub username', name='link-github')
