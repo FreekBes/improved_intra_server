@@ -4,7 +4,7 @@ This repository contains the back-end for use with the [Improved Intra](https://
 
 ## Deploy with Docker
 
-This repository now ships a Dockerfile and `docker-compose.yml` to run the Improved Intra back-end with Docker. Using Docker simplifies deployment (no system-wide Python, virtualenvs or manual Postgres installs).
+This repository ships a Dockerfile and `docker-compose.yml` to run the Improved Intra back-end. Docker is the only supported way to run it, in development as well as in production: there is no bare-metal setup.
 
 Supported on Linux (Debian/Ubuntu tested). You will need Docker and docker-compose (or the Docker Compose plugin) installed on the host.
 
@@ -42,12 +42,13 @@ If you change `PSQL_USER`, `PSQL_PASS` or `PSQL_DB`, start the stack with `docke
 docker compose up -d --build
 ```
 
-The compose stack contains three services:
-- `db` (Postgres 16) mapped to local `./pgdata` for persisted database files
-- `nginx` (official nginx image) serving static files and acting as a reverse proxy
-- `iintra_server` (this application, served with Gunicorn on port 8000)
+The compose stack contains two services:
+- `iintra_server` (this application, served with Gunicorn)
+- `db` (Postgres 16)
 
-The application listens on container port 8000 and is not published to the host; nginx proxies to it over the compose network. Nginx publishes host ports 80 (HTTP) and 443 (HTTPS) — adjust these mappings in `docker-compose.yml` if those ports are already in use.
+The application serves its own static files, so no reverse proxy is needed to run or develop against it. It is published on `127.0.0.1:8000`; open <http://127.0.0.1:8000> and you have the whole thing.
+
+Three named volumes hold the state that must outlive the containers: `pgdata` (the database), `banners` (user-uploaded banners) and `app_logs` (log files).
 
 5. Check logs and health:
 
@@ -63,15 +64,19 @@ docker compose logs -f iintra_server
 docker compose down
 ```
 
-Remove containers and volumes (will remove the Postgres data in `./pgdata`):
+Remove containers and volumes (this deletes the database, the uploaded banners and the logs):
 
 ```sh
 docker compose down -v
 ```
 
-### SSL / nginx notes
+### Putting a reverse proxy in front (production)
 
-The `nginx` service mounts `./deploy/nginx/snippets` and `./deploy/nginx/conf.d` from the repository. If you want to use custom SSL certificates, place them in `./deploy/nginx/ssl` (gitignored) and uncomment the certs volume in `docker-compose.yml`, then update the nginx configs in `deploy/nginx/conf.d` accordingly.
+The stack deliberately contains no web server of its own. In production, terminate TLS on whatever reverse proxy you already run and point it at `127.0.0.1:8000`; the application serves the static files itself, so the proxy needs no access to this repository.
+
+Example nginx configurations are in `deploy/nginx/`: `iintra.example.conf` for plain HTTP and `iintra.example.ssl.conf` for TLS with an HTTP redirect.
+
+If the proxy runs on another host, change the published port in `docker-compose.yml` from `127.0.0.1:8000:8000` to `8000:8000` and firewall it appropriately.
 
 ### Updating the server (Docker)
 
@@ -91,37 +96,25 @@ docker compose up -d --build
 ```
 
 ## Logs
-Logs produced by the application and nginx are stored in the repository `./logs` directory, which is mounted into the containers by `docker-compose`:
 
-- Application logs (Gunicorn / app): `./logs` (inside the container this is `/app/logs`). Typical files you may see:
-	- `logs/app/access.log` — access requests
-	- `logs/app/error.log` — application/Gunicorn errors
-	- `logs/app/server.log` — app-specific logging (runners, API calls)
-	- `wsgi.log` — development-mode logging
-
-- Nginx logs are mounted to `./logs/nginx` and are available on the host at that path as well.
-
-Because the directory is mounted from the host, you can inspect logs directly on the host filesystem, for example:
+Everything is logged twice: to the container's stdout/stderr, and to files inside the `app_logs` volume.
 
 ```sh
-ls -la ./logs
-tail -n 200 ./logs/error.log
-tail -n 200 ./logs/nginx/error.log
+docker compose logs -f                  # all services
+docker compose logs -f iintra_server    # just the application
 ```
 
-You can also view logs through Docker: follow all services or a single service:
+Docker keeps at most 5 × 10 MB of stdout per container. The files in the volume are rotated daily and kept for 30 days; set `LOG_RETENTION_DAYS` to change that. The files are:
+
+- `logs/access.log` — access requests
+- `logs/error.log` — Gunicorn and application errors
+- `logs/server.log` — application logging (runners, API calls)
+
+To read them inside the container, or copy them out:
 
 ```sh
-docker compose logs -f         # follow logs from all compose services
-docker compose logs -f iintra_server
-docker compose logs -f nginx
-```
-
-Or use `docker logs` for the specific container name from `docker-compose.yml` (container names set in compose file):
-
-```sh
-docker logs -f improved_intra_server   # application container
-docker logs -f improved_intra_nginx    # nginx container
+docker compose exec iintra_server tail -n 200 logs/error.log
+docker compose cp iintra_server:/app/logs ./logs
 ```
 
 ## Resetting all user/extension sessions

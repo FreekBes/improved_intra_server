@@ -15,106 +15,22 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
-      - name: Link /opt/improved_intra_server to the repository
-        run: |
-          ln -s $GITHUB_WORKSPACE /opt/improved_intra_server
+      - name: Create the private environment file
+        run: cp .private.env.example .private.env
 
-      - name: Update and install system dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y \
-            nginx \
-            openssl \
-            dos2unix
+      - name: Build and start the stack
+        run: docker compose up -d --build --wait
 
-      - name: Start PostgreSQL
+      - name: Check that the application responds
         run: |
-          # Use the PostgreSQL preinstalled on the runner image
-          sudo systemctl start postgresql.service
-          for i in $(seq 1 30); do pg_isready --quiet && break; sleep 1; done
-          pg_isready
-          sudo -u postgres psql -tAc 'SELECT version();'
-
-      - name: Set up PostgreSQL
-        run: |
-          sudo -u postgres psql -c "ALTER USER postgres PASSWORD 'postgres';"
-          sudo -u postgres psql -c "CREATE DATABASE \"iintra\" WITH OWNER \"postgres\" ENCODING 'UTF8';"
-
-      - name: Install Python3
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y \
-            python3 \
-            python3-pip \
-            python3-dev \
-            python3-setuptools \
-            libpq-dev \
-            python3-virtualenv \
-            virtualenv
-
-      - name: Initialize the virtual environment
-        working-directory: /opt/improved_intra_server/app
-        run: |
-          virtualenv -p python3 venv
-
-      - name: Install Python dependencies
-        working-directory: /opt/improved_intra_server/app
-        run: |
-          source venv/bin/activate
-          venv/bin/pip install -r requirements.txt
-
-      - name: Set up nginx as reverse-proxy
-        working-directory: /opt/improved_intra_server
-        run: |
-          sudo cp ./deploy/nginx/snippets/*.nginx.snippet.conf /etc/nginx/snippets/
-          sudo rm -f /etc/nginx/sites-enabled/default
-          sudo mkdir -p /etc/nginx/ssl
-          sudo openssl req -newkey rsa:2048 -x509 -days 365 -nodes \
-            -keyout /etc/nginx/ssl/server.key -out /etc/nginx/ssl/server.pem \
-            -subj "/C=NL/ST=North-Holland/L=Amsterdam/O=ImprovedIntra/CN=iintra.freekb.es/"
-          sudo cp ./deploy/nginx/examples/nginx.example.ssl.conf /etc/nginx/sites-available/iintra.freekb.es.conf
-          sudo ln -s /etc/nginx/sites-available/iintra.freekb.es.conf /etc/nginx/sites-enabled/iintra.freekb.es.conf
-
-      - name: Test nginx configuration
-        run: |
-          cat /etc/nginx/sites-available/iintra.freekb.es.conf
-          cat /etc/nginx/snippets/*.nginx.snippet.conf
-          sudo nginx -t
-
-      - name: Restart nginx
-        run: |
-          sudo /etc/init.d/nginx restart
-
-      - name: Install testing dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y \
-            curl \
-            net-tools \
-            netcat-openbsd
-
-      - name: Prepare for Improved Intra server start
-        working-directory: /opt/improved_intra_server
-        run: |
-          dos2unix /opt/improved_intra_server/app/gunicorn.sh
-          mkdir -p /opt/improved_intra_server/app/logs
-          cp .private.env.example .private.env
-          sudo chown -R www-data:www-data /opt/improved_intra_server
-
-      - name: Start Improved Intra server
-        working-directory: /opt/improved_intra_server
-        shell: bash
-        run: |
-          bash /opt/improved_intra_server/app/gunicorn.sh &
-          timeout 3m bash -c 'until nc -w 10 127.0.0.1 8000; do sleep 1; done'
-          netstat -tulpn
-          curl -L http://localhost:8000/ --insecure --verbose --fail
-          curl -L https://iintra.freekb.es/ --insecure --verbose --resolve 'iintra.freekb.es:443:127.0.0.1' --fail
+          curl http://127.0.0.1:8000/ --verbose --fail
+          # Served by the application itself, no reverse proxy involved
+          curl http://127.0.0.1:8000/favicon.ico --verbose --fail --output /dev/null
 
       - name: Print logs
         if: always()
-        working-directory: /opt/improved_intra_server
-        run: |
-          cat /opt/improved_intra_server/app/logs/server.log || true
-          cat /opt/improved_intra_server/app/logs/error.log || true
-          cat /opt/improved_intra_server/app/logs/access.log || true
+        run: docker compose logs
+
+      - name: Stop the stack
+        if: always()
+        run: docker compose down -v

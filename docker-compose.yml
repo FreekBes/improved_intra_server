@@ -11,8 +11,14 @@ services:
     environment:
       # Deployment topology, not a secret: the database service name
       PSQL_HOST: db
+    ports:
+      # Bound to loopback: run your own reverse proxy in front of this.
+      # Use "8000:8000" instead if the proxy lives on another host.
+      - "127.0.0.1:8000:8000"
     volumes:
       - app_logs:/app/logs
+      # User-uploaded banners must outlive the container
+      - banners:/app/static/banners
     networks:
       - iintra_network
     logging:
@@ -27,36 +33,6 @@ services:
       retries: 5
       start_period: 10s
 
-  nginx:
-    image: nginx:stable
-    container_name: improved_intra_nginx
-    restart: always
-    depends_on:
-      - iintra_server
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./deploy/nginx/snippets:/etc/nginx/snippets
-      - ./deploy/nginx/conf.d:/etc/nginx/conf.d
-      - nginx_logs:/var/log/iintra
-      - ./static:/usr/share/nginx/html/static
-      # add volume for SSL certificates if needed
-      #- ./deploy/nginx/ssl:/etc/nginx/certs
-    networks:
-      - iintra_network
-    logging:
-      driver: json-file
-      options:
-        max-size: "10m"
-        max-file: "5"
-    healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost || exit 1"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 10s
-
   db:
     image: postgres:16
     container_name: improved_intra_db
@@ -66,7 +42,7 @@ services:
       POSTGRES_PASSWORD: ${PSQL_PASS:-postgres}
       POSTGRES_DB: ${PSQL_DB:-iintra}
     volumes:
-      - ./pgdata:/var/lib/postgresql/data
+      - pgdata:/var/lib/postgresql/data
     networks:
       - iintra_network
     logging:
@@ -75,24 +51,11 @@ services:
         max-size: "10m"
         max-file: "5"
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: ["CMD-SHELL", "pg_isready -U ${PSQL_USER:-postgres}"]
       interval: 5s
       timeout: 5s
       retries: 5
       start_period: 5s
-
-  logrotate:
-    build: ./deploy/logrotate
-    container_name: improved_intra_logrotate
-    restart: always
-    volumes:
-      - app_logs:/logs/app
-      - nginx_logs:/logs/nginx
-    logging:
-      driver: json-file
-      options:
-        max-size: "10m"
-        max-file: "5"
 
 networks:
   iintra_network:
@@ -100,4 +63,5 @@ networks:
 
 volumes:
   app_logs:
-  nginx_logs:
+  banners:
+  pgdata:

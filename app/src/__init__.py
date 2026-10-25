@@ -32,7 +32,11 @@ logging.basicConfig(
 	level=logging.DEBUG,
 	format=config['LOG_FORMAT'],
 	handlers=[
-		logging.handlers.WatchedFileHandler(config['LOG_FILE_SERVER']),
+		logging.handlers.TimedRotatingFileHandler(
+			config['LOG_FILE_SERVER'],
+			when='midnight',
+			backupCount=int(config.get('LOG_RETENTION_DAYS', 30))
+		),
 		logging.StreamHandler(),
 	],
 	force=True

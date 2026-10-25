@@ -7,11 +7,6 @@ static/banners/*
 .venv
 .env
 
-# SSL
-deploy/nginx/ssl/*.pem
-deploy/nginx/ssl/*.crt
-deploy/nginx/ssl/*.key
-
 # Garbage
 __pycache__
 
