@@ -24,6 +24,9 @@ from pygments.formatters.terminal import TerminalFormatter
 from src.lib.config import config
 
 requests.packages.urllib3.disable_warnings()
+
+# Without this a stalled Intra response would hold a worker thread forever
+REQUEST_TIMEOUT = 60 # seconds
 logging.basicConfig(filename=config['LOG_FILE_SERVER'], level=logging.DEBUG, format=config['LOG_FORMAT'])
 LOG = logging.getLogger(__name__)
 
@@ -69,6 +72,9 @@ class IntraAPIClient(object):
 		if not url.startswith("http"):
 			url = f"{self.api_url}/{url}"
 
+		# Popped before the retry loop, so a caller's timeout survives a retry
+		timeout = kwargs.pop('timeout', REQUEST_TIMEOUT)
+
 		while True:
 			LOG.debug(f"Attempting a request to {url}")
 
@@ -76,6 +82,7 @@ class IntraAPIClient(object):
 				url,
 				headers=self._make_authed_header(headers),
 				verify=self.verify_requests,
+				timeout=timeout,
 				**kwargs
 			)
 

@@ -7,6 +7,9 @@ from time import time
 from src import app
 
 ALLOWED_IMG_TYPES = ['jpg', 'jpeg', 'png', 'gif']
+
+# Without this a stalled response would hold a worker thread forever
+BANNER_FETCH_TIMEOUT = 15 # seconds
 BANNERS_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'static', 'banners')
 
 
@@ -30,7 +33,7 @@ def upload_banner(file, file_name, username:str):
 
 def get_banner_info(url):
 	try:
-		fd = urlopen(url)
+		fd = urlopen(url, timeout=BANNER_FETCH_TIMEOUT)
 		file_data = fd.read()
 		img = Image.open(BytesIO(file_data)) # Image.open takes a file-like object, not bytes
 		width = img.width
