@@ -8,7 +8,7 @@ if len(sys.argv) < 2:
 	sys.exit(1)
 
 runner_name = sys.argv[1]
-if runner_name not in ['events', 'outstandings', 'bannercleaning']:
+if runner_name not in ['events', 'outstandings', 'bannercleaning', 'anonymization']:
 	print('Usage: python3 run_runner.py <runner_name>')
 	sys.exit(1)
 
@@ -22,6 +22,9 @@ elif runner_name == 'outstandings':
 elif runner_name == 'bannercleaning':
 	from src.runners.bannercleaning import BannerCleaningRunner
 	runner = BannerCleaningRunner()
+elif runner_name == 'anonymization':
+	from src.runners.anonymization import AnonymizationRunner
+	runner = AnonymizationRunner()
 
 
 login = None

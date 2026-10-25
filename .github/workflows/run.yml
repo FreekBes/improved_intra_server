@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Link /opt/improved_intra_server to the repository
         run: |
@@ -27,28 +27,13 @@ jobs:
             openssl \
             dos2unix
 
-      - name: Install PostgreSQL dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y \
-            wget \
-            lsb-release \
-            gnupg2
-
-      - name: Add PostgreSQL repository
-        run: |
-          sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
-          wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
-
-      - name: Install PostgresQL
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y \
-          postgresql
-
       - name: Start PostgreSQL
         run: |
-          sudo service postgresql start
+          # Use the PostgreSQL preinstalled on the runner image
+          sudo systemctl start postgresql.service
+          for i in $(seq 1 30); do pg_isready --quiet && break; sleep 1; done
+          pg_isready
+          sudo -u postgres psql -tAc 'SELECT version();'
 
       - name: Set up PostgreSQL
         run: |
@@ -106,7 +91,7 @@ jobs:
           sudo apt-get install -y \
             curl \
             net-tools \
-            netcat
+            netcat-openbsd
 
       - name: Prepare for Improved Intra server start
         working-directory: /opt/improved_intra_server

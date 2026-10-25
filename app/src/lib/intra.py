@@ -62,7 +62,7 @@ class IntraAPIClient(object):
 		return ret
 
 
-	def request(self, method, url, headers={}, **kwargs):
+	def request(self, method, url, headers={}, noraise=False, **kwargs):
 		if not self.token:
 			self.request_token()
 		tries = 0
@@ -100,7 +100,7 @@ class IntraAPIClient(object):
 				time.sleep(float(res.headers['Retry-After']))
 				continue
 
-			if rc >= 400:
+			if rc >= 400 and not noraise:
 				req_data = "{}{}".format(url, "\n" + str(kwargs['params']) if 'params' in kwargs.keys() else "")
 				if rc < 500:
 					raise ValueError(f"\n{res.headers}\n\nClientError. Error {str(rc)}\n{str(res.content)}\n{req_data}")
@@ -111,31 +111,31 @@ class IntraAPIClient(object):
 			return res
 
 
-	def get(self, url, headers={}, **kwargs):
-		return self.request(requests.get, url, headers, **kwargs)
+	def get(self, url, headers={}, noraise=False, **kwargs):
+		return self.request(requests.get, url, headers, noraise=noraise, **kwargs)
 
 
-	def post(self, url, headers={}, **kwargs):
-		return self.request(requests.post, url, headers, **kwargs)
+	def post(self, url, headers={}, noraise=False, **kwargs):
+		return self.request(requests.post, url, headers, noraise=noraise, **kwargs)
 
 
-	def patch(self, url, headers={}, **kwargs):
-		return self.request(requests.patch, url, headers, **kwargs)
+	def patch(self, url, headers={}, noraise=False, **kwargs):
+		return self.request(requests.patch, url, headers, noraise=noraise, **kwargs)
 
 
-	def put(self, url, headers={}, **kwargs):
-		return self.request(requests.put, url, headers, **kwargs)
+	def put(self, url, headers={}, noraise=False, **kwargs):
+		return self.request(requests.put, url, headers, noraise=noraise, **kwargs)
 
 
-	def delete(self, url, headers={}, **kwargs):
-		return self.request(requests.delete, url, headers, **kwargs)
+	def delete(self, url, headers={}, noraise=False, **kwargs):
+		return self.request(requests.delete, url, headers, noraise=noraise, **kwargs)
 
 
-	def pages(self, url, headers={}, **kwargs):
+	def pages(self, url, headers={}, noraise=False, **kwargs):
 		kwargs['params'] = kwargs.get('params', {}).copy()
 		kwargs['params']['page'] = int(kwargs['params'].get('page', 1))
 		kwargs['params']['per_page'] = kwargs['params'].get('per_page', 100)
-		data = self.get(url=url, headers=headers, **kwargs)
+		data = self.get(url=url, headers=headers, noraise=noraise, **kwargs)
 		total = data.json()
 		if 'X-Total' not in data.headers:
 			return total
@@ -145,19 +145,19 @@ class IntraAPIClient(object):
 			initial=1, total=last_page - kwargs['params']['page'] + 1,
 			desc=url, unit='p', disable=not self.progress_bar):
 			kwargs['params']['page'] = page + 1
-			total += self.get(url=url, headers=headers, **kwargs).json()
+			total += self.get(url=url, headers=headers, noraise=noraise, **kwargs).json()
 		return total
 
 
-	def pages_threaded(self, url, headers={}, threads=20, stop_page=None, thread_timeout=15, **kwargs):
+	def pages_threaded(self, url, headers={}, threads=20, stop_page=None, thread_timeout=15, noraise=False, **kwargs):
 		def _page_thread(url, headers, queue, **kwargs):
-			queue.put(self.get(url=url, headers=headers, **kwargs).json())
+			queue.put(self.get(url=url, headers=headers, noraise=noraise, **kwargs).json())
 
 		kwargs['params'] = kwargs.get('params', {}).copy()
 		kwargs['params']['page'] = int(kwargs['params'].get('page', 1))
 		kwargs['params']['per_page'] = kwargs['params'].get('per_page', 100)
 
-		data = self.get(url=url, headers=headers, **kwargs)
+		data = self.get(url=url, headers=headers, noraise=noraise, **kwargs)
 		total = data.json()
 
 		if 'X-Total' not in data.headers:

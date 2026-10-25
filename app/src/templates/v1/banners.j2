@@ -48,6 +48,26 @@
 			</tr>
 		</template>
 		<h1>Banners uploaded by Improved Intra users</h1>
+		<form id="banner-filters" class="form-row align-items-end mx-0 mb-3">
+			<div class="col-sm-4 col-lg-3 mb-2">
+				<label for="campus-filter">Campus</label>
+				<select id="campus-filter" name="campus_id" class="form-control">
+					<option value="">All campuses</option>
+					{% for campus in campuses %}
+					<option value="{{ campus.intra_id }}">{{ campus.name }}</option>
+					{% endfor %}
+				</select>
+			</div>
+			<div class="col-sm-4 col-lg-3 mb-2">
+				<label for="login-filter">Uploader login</label>
+				<input id="login-filter" name="login" type="search" class="form-control" placeholder="Search by login" />
+			</div>
+			<div class="col-auto mb-2">
+				<button type="submit" class="btn btn-light">Apply filters</button>
+				<button type="button" id="clear-filters" class="btn btn-outline-light">Clear</button>
+			</div>
+		</form>
+		<p id="banner-status" role="status" aria-live="polite"></p>
 		<table class="table table-striped table-dark" id="banners-table">
 			<thead>
 				<tr>
@@ -61,83 +81,93 @@
 			</thead>
 			<tbody></tbody>
 		</table>
+		<button id="load-more" type="button" class="btn btn-outline-light mb-3">Load more</button>
 		<script>
 			let hasMoreBanners = true;
 			let req = null;
 			let offset = 0;
+			let filters = new URLSearchParams();
 			const pageSize = 100;
-			const rowHeight = 125;
+			const form = document.getElementById('banner-filters');
+			const tableBody = document.querySelector('#banners-table tbody');
+			const status = document.getElementById('banner-status');
+			const loadMore = document.getElementById('load-more');
 
 			function getMoreBanners() {
-				if (!hasMoreBanners) {
-					return;
-				}
-				if (req != null) {
-					req.addEventListener("load", function() {
-						getMoreBanners(offset);
-					});
-					return;
-				}
+				if (!hasMoreBanners || req) return;
+				status.textContent = 'Loading banners…';
+				loadMore.disabled = true;
 				req = new XMLHttpRequest();
-				req.addEventListener("load", function() {
+				req.addEventListener('load', function() {
+					if (this !== req) return;
 					req = null;
-					if (this.status == 204) {
-						hasMoreBanners = false;
-						return;
-					}
+					loadMore.disabled = false;
 					try {
-						const template = document.getElementById('banner-template');
-						const tableBody = document.getElementById('banners-table').children[1];
-						const res = JSON.parse(this.responseText);
-						console.log(res);
-						if (res['type'] == 'success') {
-							for (banner of res['data']) {
-								const bannerRow = template.content.cloneNode(true);
-								const cols = bannerRow.firstElementChild.children;
-								cols[0].innerText = banner['id'] + '.';
-								cols[1].firstElementChild.href = 'https://profile.intra.42.fr/users/' + banner['user']['login'];
-								cols[1].firstElementChild.innerText = banner['user']['login'] + (banner['user']['staff'] ? ' (staff)' : '');
-								cols[2].innerText = banner['user']['campus'] ? banner['user']['campus'] : 'Unknown';
-								cols[3].innerText = banner['created_at'].split(' ')[0];
-								cols[4].innerText = new URL(banner['url']).hostname;
-								cols[5].firstElementChild.src = banner['url'];
-								cols[5].firstElementChild.title = banner['url'];
-								tableBody.appendChild(bannerRow);
+						if (this.status !== 200 && this.status !== 204) throw new Error('Request failed');
+						const banners = this.status === 204 ? [] : JSON.parse(this.responseText).data;
+						const rows = document.createDocumentFragment();
+						for (const banner of banners) {
+							const row = document.getElementById('banner-template').content.cloneNode(true);
+							const cols = row.firstElementChild.children;
+							cols[0].textContent = banner.id + '.';
+							const userLink = cols[1].firstElementChild;
+							userLink.textContent = (banner.user.login || 'Unknown') + (banner.user.staff ? ' (staff)' : '');
+							if (banner.user.login) {
+								userLink.href = 'https://profile.intra.42.fr/users/' + encodeURIComponent(banner.user.login);
+							} else {
+								userLink.removeAttribute('href');
 							}
+							cols[2].textContent = banner.user.campus || 'Unknown';
+							cols[3].textContent = banner.created_at.split(' ')[0];
+							cols[4].textContent = new URL(banner.url).hostname;
+							cols[5].firstElementChild.src = banner.url;
+							cols[5].firstElementChild.title = banner.url;
+							rows.appendChild(row);
 						}
-						else {
-							console.error(res['message']);
-						}
-					}
-					catch (err) {
-						console.error(err);
+						tableBody.appendChild(rows);
+						offset += banners.length;
+						hasMoreBanners = banners.length === pageSize;
+						loadMore.hidden = !hasMoreBanners;
+						status.textContent = offset ? offset + ' banners shown' : 'No banners match these filters.';
+					} catch (err) {
+						status.textContent = 'Could not load banners. Use Load more to retry.';
 					}
 				});
-				req.addEventListener("error", function(err) {
-					console.error(err);
+				req.addEventListener('error', function() {
+					if (this !== req) return;
+					req = null;
+					loadMore.disabled = false;
+					status.textContent = 'Could not load banners. Use Load more to retry.';
 				});
-				req.open("GET", "{{ url_for('bannersoffset', offset='replace') }}".replace("replace", offset));
+				req.open('GET', "{{ url_for('bannersoffset', offset='replace') }}".replace('replace', offset) + '?' + filters);
 				req.send();
-				offset += pageSize;
 			}
 
-			getMoreBanners(offset);
+			function applyFilters() {
+				if (req) req.abort();
+				req = null;
+				filters = new URLSearchParams(new FormData(form));
+				offset = 0;
+				hasMoreBanners = true;
+				tableBody.replaceChildren();
+				loadMore.hidden = false;
+				getMoreBanners();
+			}
 
-			window.addEventListener('scroll', function(ev) {
-				if (!hasMoreBanners) {
-					return;
-				}
-				const {
-					scrollTop,
-					scrollHeight,
-					clientHeight
-				} = document.documentElement;
-
-				if (scrollTop + clientHeight >= scrollHeight - rowHeight * 10) {
-					console.log("Retrieving more banners...");
-					getMoreBanners(offset);
-				}
+			form.addEventListener('submit', function(event) {
+				event.preventDefault();
+				applyFilters();
+			});
+			document.getElementById('clear-filters').addEventListener('click', function() {
+				form.reset();
+				applyFilters();
+			});
+			loadMore.addEventListener('click', getMoreBanners);
+			window.addEventListener('scroll', function() {
+				const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
+				if (scrollTop + clientHeight >= scrollHeight - 1250) getMoreBanners();
 			}, { passive: true });
+			getMoreBanners();
 		</script>
 	</body>
 </html>

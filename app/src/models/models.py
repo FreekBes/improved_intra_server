@@ -290,7 +290,7 @@ class User(db.Model):
 	last_name = Column(StrippedString, default='')
 	display_name = Column(StrippedString, default=login)
 	staff = Column(Boolean, default=False)
-	anonymize_date = Column(Date)
+	anonymize_date = Column(Date, nullable=True, default=None)
 	created_at = Column(DateTime, default=func.now())
 
 	def __repr__(self):

@@ -3,7 +3,7 @@ import time
 
 from flask import session, jsonify, request, redirect, url_for, render_template, Response
 from src.v1.helpers import get_v1_settings, set_v1_settings
-from src.models.models import OAuth2Token, User, Team, Evaluation, Runner
+from src.models.models import OAuth2Token, User, Team, Evaluation, Runner, Campus
 from werkzeug.datastructures import CombinedMultiDict
 from src.lib.auth.oauth import authstart
 from src.v1.forms import OldSettings
@@ -109,7 +109,7 @@ def oldOutstandings():
 
 	# Retrieve outstandings for each project user and fetch the amount of outstanding evaluations for each team
 	# Outer join, to make sure even teams without evaluations are returned
-	db_q = db.session.query(Team, func.sum(case([(Evaluation.outstanding == True, 1)], else_ = 0)).label('outstandings')).outerjoin(Evaluation, Evaluation.intra_team_id == Team.intra_id).filter(Team.user_id == db_user.intra_id).order_by(Team.projects_user_id.desc(), Team.intra_id.desc()).group_by(Team.id)
+	db_q = db.session.query(Team, func.sum(case((Evaluation.outstanding == True, 1), else_ = 0)).label('outstandings')).outerjoin(Evaluation, Evaluation.intra_team_id == Team.intra_id).filter(Team.user_id == db_user.intra_id).order_by(Team.projects_user_id.desc(), Team.intra_id.desc()).group_by(Team.id)
 	db_res:list = db_q.all()
 
 	handled_team_ids:list[int] = []
@@ -151,4 +151,4 @@ def imagery():
 		return redirect(url_for('connect'), 302)
 	if not 'staff' in session or session['staff'] != True:
 		return 'Access Denied', 403
-	return render_template('v1/banners.j2')
+	return render_template('v1/banners.j2', campuses=Campus.query.order_by(Campus.name).all())
