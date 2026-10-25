@@ -1,6 +1,6 @@
-Any file that is static in here, any subdirectory, MUST be declared in useful/intra.nginx.snippet.conf!
+Any file that is static in here, any subdirectory, MUST be declared in deploy/nginx/snippets/iintra.nginx.snippet.conf!
 
------- useful/intra.nginx.snippet.conf:
+------ deploy/nginx/snippets/iintra.nginx.snippet.conf:
 ...
 # Static files
 location ~ ^/(banners/|campus_specifics/|fonts/|favicon.ico)/ {

@@ -37,12 +37,12 @@ services:
       - "80:80"
       - "443:443"
     volumes:
-      - ./nginx/snippets:/etc/nginx/snippets
-      - ./nginx/conf.d:/etc/nginx/conf.d
+      - ./deploy/nginx/snippets:/etc/nginx/snippets
+      - ./deploy/nginx/conf.d:/etc/nginx/conf.d
       - nginx_logs:/var/log/iintra
       - ./static:/usr/share/nginx/html/static
       # add volume for SSL certificates if needed
-      #- ./nginx/certs:/etc/nginx/certs
+      #- ./deploy/nginx/ssl:/etc/nginx/certs
     networks:
       - iintra_network
     logging:
@@ -82,7 +82,7 @@ services:
       start_period: 5s
 
   logrotate:
-    build: ./logrotate
+    build: ./deploy/logrotate
     container_name: improved_intra_logrotate
     restart: always
     volumes:

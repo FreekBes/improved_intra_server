@@ -71,7 +71,7 @@ docker compose down -v
 
 ### SSL / nginx notes
 
-The `nginx` service mounts `./nginx/snippets` and `./nginx/conf.d` from the repository. If you want to use custom SSL certificates, create a `./nginx/certs` directory and either uncomment the certs volume in `docker-compose.yml` or add a volume mapping, then update the nginx configs in `nginx/conf.d` accordingly.
+The `nginx` service mounts `./deploy/nginx/snippets` and `./deploy/nginx/conf.d` from the repository. If you want to use custom SSL certificates, place them in `./deploy/nginx/ssl` (gitignored) and uncomment the certs volume in `docker-compose.yml`, then update the nginx configs in `deploy/nginx/conf.d` accordingly.
 
 ### Updating the server (Docker)
 
