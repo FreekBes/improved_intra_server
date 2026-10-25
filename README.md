@@ -48,6 +48,8 @@ The compose stack contains two services:
 
 The application serves its own static files, so no reverse proxy is needed to run or develop against it. It is published on port 8000; open <http://127.0.0.1:8000> and you have the whole thing.
 
+The application container runs two processes, started by `app/entrypoint.sh`: the scheduled runners and the Gunicorn workers. Keeping the scheduler out of the workers means the jobs fire exactly once regardless of how many workers there are, so `GUNICORN_WORKERS` (default 2) and `GUNICORN_THREADS` (default 4) can be raised freely.
+
 All persistent state is bind-mounted from `./data`, which is gitignored: `data/pgdata` (the database), `data/banners` (user-uploaded banners) and `data/logs` (log files). Back up that one directory and you have everything.
 
 5. Check logs and health:
@@ -104,7 +106,8 @@ Docker keeps at most 5 × 10 MB of stdout per container. The files in the volume
 
 - `logs/access.log` — access requests
 - `logs/error.log` — Gunicorn and application errors
-- `logs/server.log` — application logging (runners, API calls)
+- `logs/server.log` — application logging from the web workers
+- `logs/scheduler.log` — the scheduled runners
 
 They are readable straight from the host:
 

@@ -3,6 +3,8 @@ services:
     build: .
     container_name: improved_intra_server
     restart: always
+    # tini as PID 1: reaps zombies and passes signals to entrypoint.sh
+    init: true
     depends_on:
       iintra_database:
         condition: service_healthy

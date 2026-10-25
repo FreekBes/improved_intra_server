@@ -14,13 +14,13 @@ LOG_RETENTION_DAYS = int(os.environ.get('LOG_RETENTION_DAYS', '30'))
 
 bind = '0.0.0.0:8000'
 
-# A single process, because wsgi.py starts an in-process APScheduler: more
-# workers would run every scheduled job once per worker. Threads give the
-# concurrency instead, which matters now that this process also serves the
-# static files.
-workers = 1
+# The scheduler runs as its own process (see entrypoint.sh), so the worker
+# count is no longer pinned to one. gthread lets each worker handle several
+# requests at once, which matters because these processes serve the static
+# files as well.
+workers = int(os.environ.get('GUNICORN_WORKERS', '2'))
 worker_class = 'gthread'
-threads = 4
+threads = int(os.environ.get('GUNICORN_THREADS', '4'))
 
 # Gunicorn only emits an access log when accesslog is set; the handlers below
 # decide where it actually goes.

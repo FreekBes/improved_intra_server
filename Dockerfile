@@ -17,6 +17,7 @@ RUN pip install --upgrade pip && \
     if [ -f "requirements.txt" ]; then pip install -r requirements.txt; fi
 
 COPY ./app /app/
+RUN chmod +x /app/entrypoint.sh
 # Public, non-secret defaults are version-controlled and ride along with the
 # image; .private.env supplies only secrets and per-deployment overrides.
 # .private.env is of course not copied into the image. Mount it yourself.
@@ -28,4 +29,4 @@ RUN mkdir -p /app/logs /app/static/banners
 
 ENV DEBUG=False
 
-CMD ["gunicorn", "wsgi:app"]
+CMD ["./entrypoint.sh"]
