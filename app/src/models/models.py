@@ -288,7 +288,10 @@ class User(db.Model):
 	email = Column(StrippedString)
 	first_name = Column(StrippedString, default='')
 	last_name = Column(StrippedString, default='')
-	display_name = Column(StrippedString, default=login)
+	# Passing the login Column itself would make this a SQL expression default,
+	# which PostgreSQL rejects: an INSERT cannot reference another column of the
+	# row it is inserting. Read the value from the pending parameters instead.
+	display_name = Column(StrippedString, default=lambda ctx: ctx.get_current_parameters()['login'])
 	staff = Column(Boolean, default=False)
 	anonymize_date = Column(Date, nullable=True, default=None)
 	created_at = Column(DateTime, default=func.now())
