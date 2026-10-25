@@ -8,10 +8,14 @@ import platform
 import logging
 
 # Import specifics
-from werkzeug import __version__ as __werkzeug_version__
-from flask import Flask, request, __version__ as __flask_version__
+from importlib.metadata import version as __dist_version
+from flask import Flask, request
 from flask_sqlalchemy import SQLAlchemy
 from urllib.parse import urlparse
+
+# Werkzeug 3.1 and Flask 3.2 no longer expose a module-level __version__
+__werkzeug_version__ = __dist_version('werkzeug')
+__flask_version__ = __dist_version('flask')
 
 from src.lib.config import config
 

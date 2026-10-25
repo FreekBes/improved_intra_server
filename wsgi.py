@@ -13,27 +13,29 @@ from src.lib.config import config
 from src import app, db
 
 
-# Set up database
-if not database_exists(db.engine.url):
-	print('Database \'iintra\' does not exist, creating...')
-	if 'microsoft' in platform.uname()[2].lower():
-		print('You are using Microsoft\'s Windows Subsystem for Linux, which under WSL1 has problems with PostgreSQL.')
-		print('If the program hangs here, you will need to switch to WSL2 to continue.')
-	create_database(db.engine.url, encoding='utf8', template='template0')
-	print('Database created')
+# Flask-SQLAlchemy 3.x requires an application context for db.engine, db.session and Model.query
+with app.app_context():
+	# Set up database
+	if not database_exists(db.engine.url):
+		print('Database \'iintra\' does not exist, creating...')
+		if 'microsoft' in platform.uname()[2].lower():
+			print('You are using Microsoft\'s Windows Subsystem for Linux, which under WSL1 has problems with PostgreSQL.')
+			print('If the program hangs here, you will need to switch to WSL2 to continue.')
+		create_database(db.engine.url, encoding='utf8', template='template0')
+		print('Database created')
 
-# Set up tables
-print('Initializing database models...') # Models come from src.models.models import on line 1
-db.create_all()
-db.session.commit()
-print('Database models initialized')
+	# Set up tables
+	print('Initializing database models...') # Models come from src.models.models import on line 1
+	db.create_all()
+	db.session.commit()
+	print('Database models initialized')
 
-# Set up default content
-print('Initializing default content...')
+	# Set up default content
+	print('Initializing default content...')
 
-populate_banner_pos(db.session)
-populate_color_schemes(db.session)
-print('Default content initialized')
+	populate_banner_pos(db.session)
+	populate_color_schemes(db.session)
+	print('Default content initialized')
 
 # Set up scheduled jobs (runners)
 runner_scheduler = BackgroundScheduler({

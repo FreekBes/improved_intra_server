@@ -109,7 +109,7 @@ def oldOutstandings():
 
 	# Retrieve outstandings for each project user and fetch the amount of outstanding evaluations for each team
 	# Outer join, to make sure even teams without evaluations are returned
-	db_q = db.session.query(Team, func.sum(case([(Evaluation.outstanding == True, 1)], else_ = 0)).label('outstandings')).outerjoin(Evaluation, Evaluation.intra_team_id == Team.intra_id).filter(Team.user_id == db_user.intra_id).order_by(Team.projects_user_id.desc(), Team.intra_id.desc()).group_by(Team.id)
+	db_q = db.session.query(Team, func.sum(case((Evaluation.outstanding == True, 1), else_ = 0)).label('outstandings')).outerjoin(Evaluation, Evaluation.intra_team_id == Team.intra_id).filter(Team.user_id == db_user.intra_id).order_by(Team.projects_user_id.desc(), Team.intra_id.desc()).group_by(Team.id)
 	db_res:list = db_q.all()
 
 	handled_team_ids:list[int] = []
