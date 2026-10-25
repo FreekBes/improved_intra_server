@@ -5,6 +5,7 @@ it out of the WSGI application means the jobs fire exactly once however many
 gunicorn workers are serving requests.
 """
 
+import os
 import signal
 
 from apscheduler.schedulers.blocking import BlockingScheduler
@@ -12,7 +13,11 @@ from src.runners.outstandings import outstandingsRunner
 from src.runners.bannercleaning import bannerCleaningRunner
 from src.runners.anonymization import anonymizationRunner
 from src.runners.events import eventsRunner
+from src.lib.logrotation import rotate_logs
 from src.lib.db import session
+
+LOG_DIR = os.environ.get('LOG_DIR', 'logs')
+LOG_RETENTION_DAYS = int(os.environ.get('LOG_RETENTION_DAYS', '30'))
 
 
 def job(runner):
@@ -78,6 +83,20 @@ def main():
 		hour='3', # Every day at 3 AM
 		id='anonymization-rnr',
 		name='anonymization-runner',
+		replace_existing=True,
+		coalesce=True,
+		misfire_grace_time=43200 # 12 hours
+	)
+
+	scheduler.add_job(
+		lambda: rotate_logs(LOG_DIR, LOG_RETENTION_DAYS), # Rotate the log files every process writes to
+		'cron',
+		month='*',
+		day='*',
+		hour='0',
+		minute='5', # Just after midnight, so a day's logs land in one file
+		id='logrotate-rnr',
+		name='logrotate-runner',
 		replace_existing=True,
 		coalesce=True,
 		misfire_grace_time=43200 # 12 hours

@@ -102,7 +102,7 @@ docker compose logs -f                  # all services
 docker compose logs -f iintra_server    # just the application
 ```
 
-Docker keeps at most 5 × 10 MB of stdout per container. The files in the volume are rotated daily and kept for 30 days; set `LOG_RETENTION_DAYS` to change that. The files are:
+Docker keeps at most 5 × 10 MB of stdout per container. The files are rotated by a scheduled job just after midnight and kept for 30 days; set `LOG_RETENTION_DAYS` to change that. The files are:
 
 - `logs/access.log` — access requests
 - `logs/error.log` — Gunicorn and application errors

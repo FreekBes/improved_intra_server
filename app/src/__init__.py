@@ -32,11 +32,9 @@ logging.basicConfig(
 	level=logging.DEBUG,
 	format=config['LOG_FORMAT'],
 	handlers=[
-		logging.handlers.TimedRotatingFileHandler(
-			config['LOG_FILE_SERVER'],
-			when='midnight',
-			backupCount=int(config.get('LOG_RETENTION_DAYS', 30))
-		),
+		# Rotation is done by the scheduler; WatchedFileHandler reopens
+		# the file once it has been rotated away.
+		logging.handlers.WatchedFileHandler(config['LOG_FILE_SERVER']),
 		logging.StreamHandler(),
 	],
 	force=True

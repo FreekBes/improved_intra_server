@@ -4,13 +4,12 @@ Gunicorn picks this file up automatically when it is started from this
 directory, so the container CMD does not have to repeat any of it.
 
 Access and error logs are written to stdout/stderr (so `docker logs` works)
-*and* to files under logs/, rotated daily and kept for 30 days.
+*and* to files under logs/, which the scheduler rotates.
 """
 
 import os
 
 LOG_DIR = os.environ.get('LOG_DIR', 'logs')
-LOG_RETENTION_DAYS = int(os.environ.get('LOG_RETENTION_DAYS', '30'))
 
 bind = '0.0.0.0:8000'
 
@@ -46,11 +45,11 @@ logconfig_dict = {
 			'stream': 'ext://sys.stderr',
 		},
 		'error_file': {
-			'class': 'logging.handlers.TimedRotatingFileHandler',
+			# Rotation is done by the scheduler; this reopens the file
+			# when that happens.
+			'class': 'logging.handlers.WatchedFileHandler',
 			'formatter': 'generic',
 			'filename': os.path.join(LOG_DIR, 'error.log'),
-			'when': 'midnight',
-			'backupCount': LOG_RETENTION_DAYS,
 		},
 		'access_console': {
 			'class': 'logging.StreamHandler',
@@ -58,11 +57,11 @@ logconfig_dict = {
 			'stream': 'ext://sys.stdout',
 		},
 		'access_file': {
-			'class': 'logging.handlers.TimedRotatingFileHandler',
+			# Rotation is done by the scheduler; this reopens the file
+			# when that happens.
+			'class': 'logging.handlers.WatchedFileHandler',
 			'formatter': 'access',
 			'filename': os.path.join(LOG_DIR, 'access.log'),
-			'when': 'midnight',
-			'backupCount': LOG_RETENTION_DAYS,
 		},
 	},
 	'loggers': {
