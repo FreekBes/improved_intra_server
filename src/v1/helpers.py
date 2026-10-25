@@ -130,8 +130,8 @@ def set_v1_settings(form:OldSettings):
 					db_banner_img_url = BannerImg(db_user.intra_id, form.custom_banner_url.data, width=w, height=h, size=s)
 					db.session.add(db_banner_img_url)
 					db.session.flush()
-					db.session.refresh(db_banner_img)
-					db_profile.banner_img = db_banner_img.id
+					db.session.refresh(db_banner_img_url)
+					db_profile.banner_img = db_banner_img_url.id
 		else:
 			db_profile.banner_img = None
 

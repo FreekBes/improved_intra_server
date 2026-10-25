@@ -3,6 +3,7 @@ import os
 
 from urllib.request import urlopen
 from PIL import Image
+from io import BytesIO
 from time import time
 from src import app
 
@@ -30,12 +31,13 @@ def get_banner_info(url):
 	try:
 		fd = urlopen(url)
 		file_data = fd.read()
-		img = Image.open(file_data)
+		img = Image.open(BytesIO(file_data)) # Image.open expects a file-like object, not raw bytes
 		width = img.width
 		height = img.height
 		size = len(file_data)
 		return width, height, size
-	except:
+	except Exception as e:
+		print("An exception occurred while retrieving banner info: {}".format(str(e)))
 		return 0, 0, 0
 
 
