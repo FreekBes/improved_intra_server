@@ -23,7 +23,7 @@
 		[
 			"@semantic-release/github",
 			{
-				"releaseNameTemplate": "Improved Intra Server <%= nextRelease.version %>"
+				"releaseNameTemplate": "Improved Intra Server v<%= nextRelease.version %>"
 			}
 		]
 	]
