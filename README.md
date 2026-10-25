@@ -25,14 +25,16 @@ git clone https://github.com/FreekBes/improved_intra_server.git
 cd improved_intra_server
 ```
 
-3. Create the secret environment file used by the application. The app loads `.secret.env` at runtime; an example is provided in the repository.
+3. Create the secret environment file used by the application. The app loads `.private.env` at runtime; an example is provided in the repository.
 
 ```sh
-cp .secret.env.example .secret.env
-# Edit .secret.env and fill in the values (SESSION_KEY, INTRA credentials, etc.)
+cp .private.env.example .private.env
+# Edit .private.env and fill in the values (SESSION_KEY, INTRA credentials, etc.)
 ```
 
-Note: `docker-compose.yml` references a `.env` file for docker-compose substitution if you want to override compose-time variables. That file is optional; the compose file includes defaults. If you need to provide host-specific variables for docker-compose, create a `.env` in the repository root.
+Note: non-secret defaults live in `.public.env`, which is committed and baked into the image, so you only need to fill in `.private.env`. Anything set in `.private.env` (or in the environment) overrides `.public.env`.
+
+If you change `PSQL_USER`, `PSQL_PASS` or `PSQL_DB`, start the stack with `docker compose --env-file .private.env up -d` so the database container is created with the same credentials the app uses. With the defaults, plain `docker compose up -d` is fine.
 
 4. Start the stack:
 
@@ -45,7 +47,7 @@ The compose stack contains three services:
 - `nginx` (official nginx image) serving static files and acting as a reverse proxy
 - `iintra_server` (this application, served with Gunicorn on port 8000)
 
-By default the app is exposed on container port 8000 (mapped to host port 8000 in the compose file). Nginx in the compose file exposes host ports 8080 (HTTP) and 4430 (HTTPS) — adjust these mappings in `docker-compose.yml` if you want standard ports (80/443).
+The application listens on container port 8000 and is not published to the host; nginx proxies to it over the compose network. Nginx publishes host ports 80 (HTTP) and 443 (HTTPS) — adjust these mappings in `docker-compose.yml` if those ports are already in use.
 
 5. Check logs and health:
 
@@ -77,7 +79,7 @@ To update after pulling new changes:
 
 ```sh
 git pull
-cp .secret.env.example .secret.env  # only if you need new variables, edit as necessary
+cp .private.env.example .private.env  # only if you need new variables, edit as necessary
 docker compose build iintra_server
 docker compose up -d
 ```
@@ -123,7 +125,7 @@ docker logs -f improved_intra_nginx    # nginx container
 ```
 
 ## Resetting all user/extension sessions
-If you wish to reset all extension sessions, effectively logging out all extension sessions, you can do so by changing the _SESSION_KEY_ in the `.secret.env` file. This will invalidate all existing Flask server sessions and force the extension to reauthenticate the user. Normally, this would happen without the user having to do anything - because of the `ext_token` or `user_token` implementation. However, if you wish to force the user to reauthenticate by logging in to the Intranet again, you also do this by deleting all `user_tokens` from the database **(use with caution)**:
+If you wish to reset all extension sessions, effectively logging out all extension sessions, you can do so by changing the _SESSION_KEY_ in the `.private.env` file. This will invalidate all existing Flask server sessions and force the extension to reauthenticate the user. Normally, this would happen without the user having to do anything - because of the `ext_token` or `user_token` implementation. However, if you wish to force the user to reauthenticate by logging in to the Intranet again, you also do this by deleting all `user_tokens` from the database **(use with caution)**:
 ```postgresql
 START TRANSACTION;
 DELETE FROM user_tokens;

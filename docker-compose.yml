@@ -4,10 +4,13 @@ services:
     container_name: improved_intra_server
     restart: always
     depends_on:
-      - db
-      - nginx
+      db:
+        condition: service_healthy
     env_file:
-      - .env
+      - .private.env
+    environment:
+      # Deployment topology, not a secret: the database service name
+      PSQL_HOST: db
     volumes:
       - ./logs/app:/app/logs
     networks:
@@ -23,6 +26,8 @@ services:
     image: nginx:stable
     container_name: improved_intra_nginx
     restart: always
+    depends_on:
+      - iintra_server
     ports:
       - "80:80"
       - "443:443"
@@ -47,9 +52,9 @@ services:
     container_name: improved_intra_db
     restart: always
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: iintra
+      POSTGRES_USER: ${PSQL_USER:-postgres}
+      POSTGRES_PASSWORD: ${PSQL_PASS:-postgres}
+      POSTGRES_DB: ${PSQL_DB:-iintra}
     volumes:
       - ./pgdata:/var/lib/postgresql/data
     networks:

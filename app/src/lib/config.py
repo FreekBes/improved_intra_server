@@ -4,7 +4,7 @@ from dotenv import dotenv_values
 
 # Load config from .env files
 config = {
-	**dotenv_values(".shared.env", verbose=True),  # load shared development variables
-	**dotenv_values(".secret.env", verbose=True),  # load sensitive variables
+	**dotenv_values(".public.env", verbose=True),  # load public, version-controlled defaults
+	**dotenv_values(".private.env", verbose=True),  # load private secrets (gitignored)
 	**os.environ,  # override loaded values with environment variables
 }

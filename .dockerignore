@@ -1,0 +1,13 @@
+.git/
+.gitignore
+**/__pycache__/
+**/*.py[cod]
+**/.venv/
+**/venv/
+logs/
+pgdata/
+static/banners/*
+
+# Never let secrets reach the image; they are injected as environment variables
+.private.env
+.env

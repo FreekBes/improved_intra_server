@@ -3,7 +3,7 @@ static/banners/*
 !static/banners/*.txt
 
 # Environment
-.secret.env
+.private.env
 .venv
 .env
 

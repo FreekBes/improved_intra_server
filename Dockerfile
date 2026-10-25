@@ -17,6 +17,9 @@ RUN pip install --upgrade pip && \
     if [ -f "requirements.txt" ]; then pip install -r requirements.txt; fi
 
 COPY ./app /app/
+# Shared, non-secret defaults are version-controlled and ride along with the
+# image; .secret.env supplies only secrets and per-deployment overrides.
+COPY .public.env /app/.public.env
 RUN mkdir -p /app/logs
 
 ENV DEBUG=False
