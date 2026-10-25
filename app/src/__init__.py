@@ -10,6 +10,7 @@ import logging.handlers
 # Import specifics
 from flask import Flask, request
 from flask_sqlalchemy import SQLAlchemy
+from flask_wtf.csrf import CSRFProtect
 from urllib.parse import urlparse
 
 from src.lib.config import config
@@ -42,6 +43,7 @@ app.secret_key = config['SESSION_KEY']
 # Uncomment the following line to echo queries for debugging
 # app.config['SQLALCHEMY_ECHO'] = True
 db = SQLAlchemy(app)
+csrf = CSRFProtect(app)
 print('Flask initialized')
 
 # Import routes
@@ -52,6 +54,7 @@ from src.v2.routes.options.set import *
 from src.v2.routes.options.json import *
 from src.v2.routes.home import *
 from src.v2.routes.takeout import *
+from src.v2.routes.delete import *
 from src.v2.routes.events import *
 from src.v2.routes.outstandings import *
 from src.v1 import routes as v1routes

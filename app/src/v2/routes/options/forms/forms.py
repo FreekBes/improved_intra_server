@@ -13,8 +13,6 @@ configure_uploads(app, (images))
 
 
 class ImprovedIntraForm(FlaskForm):
-	class Meta:
-		csrf = False
 	ext_version = HiddenField('Improved Intra extension version', name='ext_version', default='unknown')
 
 

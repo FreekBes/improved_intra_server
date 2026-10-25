@@ -71,6 +71,7 @@ document.getElementById('save-btn').addEventListener('click', function(ev) {
 
 	// convert the modified user settings to a FormData object
 	const formData = new FormData();
+	formData.append('csrf_token', document.querySelector('meta[name="csrf-token"]').content);
 	formData.append('ext_version', document.getElementById('ext_version_input').value);
 	for (const key in mod_user_settings) {
 		formData.append(key, mod_user_settings[key]);

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+	<meta charset='utf-8' />
+	<title>Improved Intra 42</title>
+	<link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon" />
+	<link rel="icon" type="image/ico" href="{{ url_for('static', filename='favicon.ico') }}" />
+	<link rel="preconnect" href="https://fonts.googleapis.com" />
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+	<link rel="stylesheet" href="{{ url_for('static', filename='styles/home.css') }}" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+</head>
+<body>
+	<header>
+		<img id="logo" src="{{ url_for('static', filename='imgs/logo-wide.png') }}" alt="IMPROVED INTRA 42"/>
+	</header>
+	<main>
+		<div class="container">
+		{% if error %}
+			<h2>Your data was not deleted</h2>
+			<p>{{ error|e }}</p>
+			<a class="button" href="{{ url_for('options_section', section='help') }}">Back to help</a>
+		{% else %}
+			<h2>Your data has been deleted</h2>
+			<p>
+				Everything Improved Intra had stored about you is gone, and you have been
+				signed out. The extension will keep working with its local settings; signing
+				in again creates a new, empty account.
+			</p>
+			<a class="button" href="{{ url_for('home') }}">Improved Intra home</a>
+		{% endif %}
+		</div>
+	</main>
+</body>
+</html>

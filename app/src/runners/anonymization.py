@@ -10,7 +10,12 @@ from time import sleep
 
 
 class AnonymizationRunner:
-	def anonymize_user(self, user:User):
+	def anonymize_user(self, user:User) -> bool:
+		"""Delete everything stored about a user. Returns whether it worked."""
+		# Read the id up front: after a failed flush the instance is expired, and
+		# touching an attribute in the error handler would try to reload it on a
+		# session that needs rolling back, masking the real error.
+		user_id = user.intra_id
 		try:
 			# Delete runners for this user
 			runners:list[Runner] = session.query(Runner).filter_by(user_id=user.intra_id).all()
@@ -29,6 +34,10 @@ class AnonymizationRunner:
 			for profile in profiles:
 				session.delete(profile)
 				logging.info('Deleted profile for user {} from DB due to anonymization'.format(user.intra_id))
+
+			# Profiles point at banner_imgs, so they have to be gone from the
+			# database before the banners are deleted.
+			session.flush()
 
 			# Delete all user's banners from database and disk
 			banners = session.query(BannerImg).filter_by(user_id=user.intra_id).all()
@@ -74,14 +83,21 @@ class AnonymizationRunner:
 				session.delete(token)
 				logging.info('Deleted user token of user {} from DB due to anonymization'.format(user.intra_id))
 
+			# Everything above references the user. Flush those deletes first:
+			# the models declare foreign keys but no ORM relationships, so the
+			# unit of work does not know it has to order them that way.
+			session.flush()
+
 			# Finally, delete the user from the database
 			session.delete(user)
 			logging.info('Deleted user {} from DB due to anonymization'.format(user.intra_id))
 			session.commit()
+			return True
 
 		except Exception as e:
-			logging.error('Error anonymizing user {}: {}'.format(user.intra_id, str(e)))
+			logging.error('Error anonymizing user {}: {}'.format(user_id, str(e)))
 			session.rollback()
+			return False
 
 	def run(self):
 		users:list[User] = session.query(User).all()
