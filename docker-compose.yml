@@ -12,9 +12,14 @@ services:
       # Deployment topology, not a secret: the database service name
       PSQL_HOST: db
     volumes:
-      - ./logs/app:/app/logs
+      - app_logs:/app/logs
     networks:
       - iintra_network
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "5"
     healthcheck:
       test: ["CMD-SHELL", "curl -f http://localhost:8000 || exit 1"]
       interval: 10s
@@ -34,12 +39,17 @@ services:
     volumes:
       - ./nginx/snippets:/etc/nginx/snippets
       - ./nginx/conf.d:/etc/nginx/conf.d
-      - ./logs/nginx:/var/log/nginx
+      - nginx_logs:/var/log/iintra
       - ./static:/usr/share/nginx/html/static
       # add volume for SSL certificates if needed
       #- ./nginx/certs:/etc/nginx/certs
     networks:
       - iintra_network
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "5"
     healthcheck:
       test: ["CMD-SHELL", "curl -f http://localhost || exit 1"]
       interval: 10s
@@ -59,6 +69,11 @@ services:
       - ./pgdata:/var/lib/postgresql/data
     networks:
       - iintra_network
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "5"
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 5s
@@ -66,6 +81,23 @@ services:
       retries: 5
       start_period: 5s
 
+  logrotate:
+    build: ./logrotate
+    container_name: improved_intra_logrotate
+    restart: always
+    volumes:
+      - app_logs:/logs/app
+      - nginx_logs:/logs/nginx
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "5"
+
 networks:
   iintra_network:
     driver: bridge
+
+volumes:
+  app_logs:
+  nginx_logs:

@@ -24,4 +24,4 @@ RUN mkdir -p /app/logs
 
 ENV DEBUG=False
 
-CMD ["gunicorn", "-w", "1", "--bind", "0.0.0.0:8000", "--access-logfile", "logs/access.log", "--error-logfile", "logs/error.log", "wsgi:app"]
+CMD ["gunicorn", "wsgi:app"]
