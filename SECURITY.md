@@ -1,14 +1,11 @@
 # Security Policy
 
-## Supported versions
+## Supported versions of the server
 
 | Version | Supported          |
 | ------- | ------------------ |
-| > 3.2   | :white_check_mark: |
-| 3.2.x   | :white_check_mark: |
-| < 3.2   | :x:                |
-| 2.0.x   | :white_check_mark: |
-| < 2.0   | :x:                |
+| > 3.2.x | :white_check_mark: |
+| < 3.2.0 | :x:                |
 
 ## Reporting a vulnerability
 
