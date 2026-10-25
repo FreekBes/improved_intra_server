@@ -1,6 +1,6 @@
 import logging
 
-from src.models.models import User, Profile, Settings, BannerImg, Team, Evaluation, Event, UserToken, OAuth2Token, Runner
+from src.models.models import User, Profile, Settings, BannerImg, Team, Evaluation, Event, UserToken, Runner
 from src.lib.db import session
 from src.lib.intra import ic
 from src.lib.banners import banner_exists, delete_banner
@@ -73,12 +73,6 @@ class AnonymizationRunner:
 			for token in user_tokens:
 				session.delete(token)
 				logging.info('Deleted user token of user {} from DB due to anonymization'.format(user.intra_id))
-
-			# Delete user's OAuth2 tokens from database
-			oauth_tokens = session.query(OAuth2Token).filter_by(user_id=user.intra_id).all()
-			for token in oauth_tokens:
-				session.delete(token)
-				logging.info('Deleted OAuth2 token of user {} from DB due to anonymization'.format(user.intra_id))
 
 			# Finally, delete the user from the database
 			session.delete(user)

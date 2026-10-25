@@ -1,4 +1,4 @@
-from src.models.models import BannerImg, Campus, Evaluation, Event, OAuth2Token, Profile, Settings, Team, User, UserToken
+from src.models.models import BannerImg, Campus, Evaluation, Event, Profile, Settings, Team, User, UserToken
 from src.models.helpers import row_to_json_str, rows_to_json_str, row_to_dict, keyedtuple_rows_to_dict
 from src.lib.auth.decorators import session_required_redirect
 from flask import session, send_file, request
@@ -67,10 +67,6 @@ def takeout():
 		# Do not retrieve the token value, only the creation date and last used date - for security's sake
 		user_tokens:list = db.session.query(UserToken.user_id, UserToken.created_at, UserToken.last_used_at, literal('***').label('token')).filter_by(user_id=user.intra_id).all()
 
-		# Retrieve the user's OAuth tokens
-		# Do not retrieve the token value nor the refresh token, for security's sake
-		oauth_tokens:list = db.session.query(OAuth2Token.user_id, OAuth2Token.name, OAuth2Token.token_type, OAuth2Token.expires_at, literal('***').label('access_token'), literal('***').label('refresh_token')).filter_by(user_id=user.intra_id).all()
-
 		# Create a zip file with the user data
 		data = io.BytesIO()
 		with zipfile.ZipFile(data, 'w') as zip:
@@ -98,10 +94,6 @@ def takeout():
 			if user_tokens:
 				with zip.open("user_tokens.json", 'w') as f:
 					f.write(json.dumps(keyedtuple_rows_to_dict(user_tokens), indent=2, sort_keys=True, default=str).encode('utf-8'))
-			if oauth_tokens:
-				with zip.open("oauth_tokens.json", 'w') as f:
-					f.write(json.dumps(keyedtuple_rows_to_dict(oauth_tokens), indent=2, sort_keys=True, default=str).encode('utf-8'))
-
 			# Add banner images to the zip file if they are hosted on our server
 			if banners:
 				for banner in banners:

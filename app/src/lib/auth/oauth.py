@@ -1,27 +1,13 @@
-import time
 
-from src.models.models import Campus, OAuth2Token, Profile, Settings, User, Runner
+from src.models.models import Campus, Profile, Settings, User, Runner
 from authlib.integrations.flask_client import OAuth
 from flask import url_for, session, redirect
 from src.lib.auth.users import add_mod_user
 from functools import wraps
-from src import app, db
+from src import app
 
 
-def update_token(name:str, token:str, refresh_token:str=None, access_token:str=None):
-	if refresh_token:
-		item:OAuth2Token = OAuth2Token.query.filter_by(name=name, refresh_token=refresh_token).first()
-	elif access_token:
-		item:OAuth2Token = OAuth2Token.query.filter_by(name=name, access_token=access_token).first()
-	else:
-		return
-	item.access_token = token['access_token']
-	item.refresh_token = token['refresh_token']
-	item.expires_at = token['expires_at']
-	db.session.commit()
-
-
-oauth = OAuth(app, update_token=update_token)
+oauth = OAuth(app)
 oauth.register(
 	name='intra',
 	client_id=app.config['O2_CLIENT_ID'],
@@ -100,13 +86,6 @@ def auth():
 	# Update user info in DB
 	if not add_mod_user(user):
 		return 'Access Denied', 403
-
-	# Add or modify token in DB
-	db_token = OAuth2Token(user_id=user['id'], name='intra', token_type=token['token_type'], access_token=token['access_token'], refresh_token=token['refresh_token'], expires_at=int(time.time()+token['expires_in']))
-	db.session.merge(db_token)
-
-	# Commit all DB changes
-	db.session.commit()
 
 	# Set session data
 	db_user:User = User.query.filter_by(intra_id=user['id']).first()
