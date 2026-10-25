@@ -1,4 +1,3 @@
-import imghdr
 import os
 
 from urllib.request import urlopen
@@ -14,7 +13,9 @@ BANNERS_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '.
 def upload_banner(file, file_name, username:str):
 	try:
 		image_data = file.read()
-		ext = imghdr.what(None, image_data)
+		# imghdr was removed from the standard library in Python 3.13
+		with Image.open(BytesIO(image_data)) as img:
+			ext = (img.format or '').lower()
 		if ext not in ALLOWED_IMG_TYPES:
 			return None, None
 		banner_file = username + '-' + str(int(time())) + '.' + ext
@@ -31,7 +32,7 @@ def get_banner_info(url):
 	try:
 		fd = urlopen(url)
 		file_data = fd.read()
-		img = Image.open(BytesIO(file_data)) # Image.open expects a file-like object, not raw bytes
+		img = Image.open(BytesIO(file_data)) # Image.open takes a file-like object, not bytes
 		width = img.width
 		height = img.height
 		size = len(file_data)
