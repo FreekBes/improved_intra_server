@@ -1,12 +1,19 @@
 # Back-end for Improved Intra
 This repository contains the back-end for use with the [Improved Intra](https://github.com/FreekBes/improved_intra) browser extension.
 
+Improved Intra **4.0.0 and newer** are supported. Support for 3.x was dropped:
+the endpoints it used (`connect.php`, `options.php`, `update.php`,
+`testkey.php`, `delete.php` and `settings/<login>.json`) are gone, and those
+paths now return 404. Releases up to 4.4.x still request `outstandings.php`
+and `imagery.php`, which redirect to `/v2/outstandings/<login>` and
+`/v2/banners`.
+
 
 ## Deploy with Docker
 
 This repository ships a Dockerfile and `docker-compose.yml` to run the Improved Intra back-end. Docker is the only supported way to run it, in development as well as in production: there is no bare-metal setup.
 
-Supported on Linux (Debian/Ubuntu tested). You will need Docker and docker-compose (or the Docker Compose plugin) installed on the host.
+Supported on Linux (Debian/Ubuntu tested). You need Docker with the Compose v2 plugin: every command below uses `docker compose`, which the older `docker-compose` package does not provide.
 
 ### Quick start
 
@@ -14,7 +21,7 @@ Supported on Linux (Debian/Ubuntu tested). You will need Docker and docker-compo
 
 ```sh
 sudo apt update
-sudo apt install -y docker.io docker-compose
+sudo apt install -y docker.io docker-compose-v2
 sudo systemctl enable --now docker
 ```
 
@@ -50,7 +57,7 @@ docker compose up -d --build
 
 The compose stack contains two services:
 - `iintra_server` (this application, served with Gunicorn)
-- `db` (Postgres 16)
+- `iintra_database` (Postgres 16)
 
 The application serves its own static files, so no reverse proxy is needed to run or develop against it. It is published on port 8000; open <http://127.0.0.1:8000> and you have the whole thing.
 
@@ -88,16 +95,33 @@ To update after pulling new changes:
 
 ```sh
 git pull
-cp .private.env.example .private.env  # only if you need new variables, edit as necessary
-docker compose build iintra_server
-docker compose up -d
+diff .private.env.example .private.env   # check whether new variables appeared
+docker compose up -d --build
 ```
+
+Do not copy `.private.env.example` over `.private.env`: that replaces your
+secrets with the placeholders. Compare the two and add anything missing by hand.
 
 If you need to rebuild everything and refresh images:
 
 ```sh
 docker compose up -d --build
 ```
+
+## Database migrations
+
+The application creates its tables with SQLAlchemy's `create_all()`, which only
+ever adds things. Anything that has to be dropped or altered goes in a numbered
+SQL file under `app/migrations/`.
+
+`app/init_db.py` runs them at startup, before the workers and the scheduler
+start: each file is applied once, in filename order, in its own transaction,
+and recorded in a `schema_migrations` table. Re-running is a no-op, and a fresh
+install applies them all against an empty database, which is why they have to
+be written so that doing nothing is valid (`DROP TABLE IF EXISTS`, and so on).
+
+To add one, drop a `NNN_description.sql` file in that directory. There is no
+down-migration: restore from `./data/pgdata` if one goes wrong.
 
 ## Logs
 
@@ -131,6 +155,13 @@ COMMIT;
 
 ## Using a self-hosted back-end server in development
 On a user machine, modify the hosts file to point to your development server. Don't forget to remove those lines after development!
+
+The extension requests `https://iintra.freekb.es`, but the stack only listens
+on port 8000 over plain HTTP, so pointing the hosts file at it is not enough on
+its own: you also need something terminating TLS on port 443 and proxying to
+8000. The configurations in `deploy/nginx/` do that, and a self-signed
+certificate is fine, which is what the next section is about. Browsing to
+<http://127.0.0.1:8000> directly needs none of this.
 
 ### Unix
 ```sh
